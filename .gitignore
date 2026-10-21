@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+.pytest_cache/
+shorts/.cache/
+shorts/.venv/
+shorts/memory/*.json.bak
+.hoplite/
