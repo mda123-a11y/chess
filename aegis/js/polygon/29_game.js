@@ -1044,6 +1044,7 @@
     await bootYield('world');
     if(root.GNavigation){await root.GNavigation.prepare(world);await bootYield('navmesh');}
     QM.world = world;
+    try { if (root.AEGIS_TUNE) root.AEGIS_TUNE.tuneTextures(THREE, renderer, scene, QM.tierKey); } catch (e) { console.warn('tune', e && e.message); }
     try { if (world.setDetail) world.setDetail(QM.T.grass); } catch (e) { /* нет */ }
     /* v6: геометрическая трава вблизи (js/polygon/17b_grass.js) */
     let GRASS = null;
@@ -1086,7 +1087,8 @@
       WX.zones = !world.mapId && root.GZones ? root.GZones.create(THREE, { scene, world, camera, audio, fx }) : null;
       if (WX.zones) WX.zones.setQuality(QM.tierKey);
     } catch (e) { console.warn('zones:', e && e.message, e && e.stack); WX.zones = null; }
-    WX.set(SET.weather || 'overcast');
+    /* бой на карте: случайная погода (17c_weather.js), сохранённая в настройках — только для полигона */
+    WX.set(world.mapId && root.GWeather && root.GWeather.pickBattle ? root.GWeather.pickBattle(world.mapId) : (SET.weather || 'overcast'));
 
     /* ====================================================== бойцы ====== */
     /* AEGIS: четыре генерала. Изначально без оружия, руки по швам; оружие
@@ -1131,7 +1133,7 @@
       const rig = new RIG.Rig(THREE, ch);
       squad.push({
         key: sp.key, char: ch, rig, gun: null, wspec: null, spawn: sp, gen: GEN, band,
-        L: sp.npc ? AE.normLoadout({slots:[{t:'gun',id:'ak74'},{t:'ammo',w:'primary'},{t:'ammo',w:'primary'},null,null,null]}) : LOADOUTS[sp.key] || (AE ? AE.emptyLoadout() : { slots: [], cfg: {} }),
+        L: sp.npc ? AE.normLoadout({slots:[{t:'gun',id:(root.GAudioDist?root.GAudioDist.npcGun(sp.key):'ak74')},{t:'ammo',w:'primary'},{t:'ammo',w:'primary'},null,null,null]}) : LOADOUTS[sp.key] || (AE ? AE.emptyLoadout() : { slots: [], cfg: {} }),
         npc: !!sp.npc,
         inv: { primary: null, pistol: null }, slot: -1, used: {},
         ctrl: PLAYER.create(THREE, { world, audio, fx, trait: GEN && GEN.trait }),
@@ -2666,6 +2668,7 @@
           const ud = hit.object.userData || {};
           C.lastHit = { kind: hitKind, v8: v8k, name: hit.object.name || '', y: +hit.point.y.toFixed(2), d: +origin.distanceTo(hit.point).toFixed(2) };
           if (ud.onHit) try { ud.onHit(hit, dir, s); } catch (e) { /* */ }
+          if (world.bulletHit && hit.object !== world.ground && !hitTarget) try { world.bulletHit(hit.point, dir, 1); } catch (e) { console.warn('bulletHit', e && e.message); }
           if (hitTarget) {
             if (!hitTargetsDone.has(hitTarget)) { hitTargetsDone.add(hitTarget); registerTargetHit(s, hitTarget, hit, nrm); }
             else fx.impact(hit.point, nrm, 'target', hitTarget.hinge);
@@ -3375,7 +3378,24 @@
       }
     }
     C.magsStep = magsStep; C.MAGS = MAGS; C.dropMag = dropMag;
+    /* выстрелы ботов: сэмплы их оружия + расстояние/перекрытие/ангар (19b_audio_distance) */
+    const ADIST = root.GAudioDist ? root.GAudioDist.bind(audio) : null;
+    const _adE = new THREE.Vector3(), _adS = new THREE.Vector3();
+    function aiShotSound(s) {
+      if (!ADIST || !s.char || !s.gun) return false;
+      const inv = (s.inv.primary && s.inv.primary.w === s.gun) ? s.inv.primary : (s.inv.pistol && s.inv.pistol.w === s.gun) ? s.inv.pistol : (s.inv.primary || s.inv.pistol);
+      const id = (inv && inv.id) || s.gun.id;
+      if (!id) return false;
+      const p = s.char.root.position;
+      ADIST.listen(camera.position, camera.quaternion);
+      return ADIST.shot({
+        id, key: s.key, x: p.x, y: p.y + ((s.ctrl.prone || 0) > 0.6 ? 0.4 : 1.3), z: p.z,
+        supp: !!(s.gun.stats && s.gun.stats.suppressed), indoor: world.mapId === 'angar_map', quality: C.SET.quality,
+        occluded: () => { _adE.copy(camera.position); _adS.set(p.x, p.y + 1.3, p.z); return !C.worldVisible(_adE, _adS); }
+      });
+    }
     C.gunSound = (s, ev) => {
+      if (ev === 'shot' && s && !s.active && aiShotSound(s)) return;
       const inv = curInv(s);
       const g = inv ? gunAudio(inv) : null;
       if (ev === 'shot') { if (!call(g, ['shot'])) audio.shot({ vol: 1 }); return; }
@@ -3866,6 +3886,7 @@
       const pos = g.pos.clone();
       const gy = gAt0(pos.x, pos.z);
       if (pos.y < gy + 0.03) pos.y = gy + 0.03;
+      if (world.explode) try { world.explode(pos, g.kind === 'm84' ? { radius: 3.5, power: 0.35 } : { radius: 6, power: 1 }); } catch (e) { console.warn('world.explode', e && e.message); }
       if (g.kind === 'm84') {
         if (F.BLAST) F.BLAST.explode(pos, 'm84');
         if (audio.explosion) audio.explosion(F.spatialFrom(pos), 'm84');
@@ -4133,6 +4154,8 @@
        теней всегда покрывала окрестность с высоким разрешением. */
     function updateSun() {
       const p = camera.position;
+      /* привязка к сетке текселей: края теней не «ползут» при ходьбе (js/app/render_tune.js) */
+      if (root.AEGIS_TUNE) { root.AEGIS_TUNE.snapSun(sun, p.x, p.z, C.sunDir); return; }
       sun.position.set(p.x + C.sunDir.x * 40, C.sunDir.y * 40 + 6, p.z + C.sunDir.z * 40);
       sun.target.position.set(p.x, 0, p.z);
       sun.target.updateMatrixWorld();

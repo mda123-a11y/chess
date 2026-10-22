@@ -1,6 +1,196 @@
 /* Extracted environment only from user supplied angar_map.html. Rebuild: tools/map-extraction/. No original input, renderer, player, weapons, artillery or drone boot. */
 window.AEGIS_MAP_BUILDERS=window.AEGIS_MAP_BUILDERS||{};
 window.AEGIS_MAP_BUILDERS['angar_map']=async function(ctx){
+
+var __HK = { sound: null, fx: null, break: null };
+var LIVE = { cell: 4, bins: new Map(), all: new Set() };
+var __groundY = function (x, z) { return 0; };
+function __qrot(v, q, inv) {
+  var qx = q[0], qy = q[1], qz = q[2], qw = q[3];
+  if (inv) { qx = -qx; qy = -qy; qz = -qz; }
+  var x = v[0], y = v[1], z = v[2];
+  var tx = 2 * (qy * z - qz * y), ty = 2 * (qz * x - qx * z), tz = 2 * (qx * y - qy * x);
+  v[0] = x + qw * tx + qy * tz - qz * ty;
+  v[1] = y + qw * ty + qz * tx - qx * tz;
+  v[2] = z + qw * tz + qx * ty - qy * tx;
+  return v;
+}
+function __aabb(c) {
+  if (c.type === 0 || c.t === 0) return;
+  if (c.hx === undefined) return;
+  var hx = c.hx, hy = c.hy, hz = c.hz, ex = hx, ey = hy, ez = hz;
+  if (c.q) {
+    var m = [[hx, 0, 0], [0, hy, 0], [0, 0, hz]].map(function (a) { return __qrot(a, c.q, false); });
+    ex = Math.abs(m[0][0]) + Math.abs(m[1][0]) + Math.abs(m[2][0]);
+    ey = Math.abs(m[0][1]) + Math.abs(m[1][1]) + Math.abs(m[2][1]);
+    ez = Math.abs(m[0][2]) + Math.abs(m[1][2]) + Math.abs(m[2][2]);
+  }
+  c.x0 = c.cx - ex; c.x1 = c.cx + ex; c.y0 = c.cy - ey; c.y1 = c.cy + ey; c.z0 = c.cz - ez; c.z1 = c.cz + ez;
+}
+function liveAdd(c) {
+  __aabb(c);
+  if (LIVE.all.has(c)) return;
+  LIVE.all.add(c);
+  var cs = LIVE.cell;
+  for (var i = Math.floor(c.x0 / cs); i <= Math.floor(c.x1 / cs); i++)
+    for (var j = Math.floor(c.z0 / cs); j <= Math.floor(c.z1 / cs); j++) {
+      var k = i + "," + j, a = LIVE.bins.get(k);
+      if (!a) LIVE.bins.set(k, a = []);
+      a.push(c);
+    }
+}
+function liveRemove(c) {
+  c.dead = true;
+  if (!LIVE.all.delete(c)) return;
+  var cs = LIVE.cell;
+  for (var i = Math.floor(c.x0 / cs); i <= Math.floor(c.x1 / cs); i++)
+    for (var j = Math.floor(c.z0 / cs); j <= Math.floor(c.z1 / cs); j++) {
+      var a = LIVE.bins.get(i + "," + j);
+      if (a) { var n = a.indexOf(c); if (n >= 0) a.splice(n, 1); }
+    }
+}
+function liveMoved(c) {
+  var cs = LIVE.cell;
+  for (var i = Math.floor(c.x0 / cs); i <= Math.floor(c.x1 / cs); i++)
+    for (var j = Math.floor(c.z0 / cs); j <= Math.floor(c.z1 / cs); j++) {
+      var a = LIVE.bins.get(i + "," + j);
+      if (a) { var n = a.indexOf(c); if (n >= 0) a.splice(n, 1); }
+    }
+  LIVE.all.delete(c);
+  liveAdd(c);
+  c.moved = true;
+}
+function __rayBox(c, o, d, maxT, out) {
+  var l = [o[0] - c.cx, o[1] - c.cy, o[2] - c.cz], ld = [d[0], d[1], d[2]];
+  if (c.q) { __qrot(l, c.q, true); __qrot(ld, c.q, true); }
+  var h = [c.hx, c.hy, c.hz], t0 = 0, t1 = maxT, ax = -1, sg = 0;
+  for (var a = 0; a < 3; a++) {
+    if (Math.abs(ld[a]) < 1e-9) { if (Math.abs(l[a]) > h[a]) return -1; continue; }
+    var ta = (-h[a] - l[a]) / ld[a], tb = (h[a] - l[a]) / ld[a], s = -1;
+    if (ta > tb) { var tt = ta; ta = tb; tb = tt; s = 1; }
+    if (ta > t0) { t0 = ta; ax = a; sg = s; }
+    if (tb < t1) t1 = tb;
+    if (t0 > t1) return -1;
+  }
+  if (ax < 0) return -1;
+  var n = [0, 0, 0]; n[ax] = sg;
+  if (c.q) __qrot(n, c.q, false);
+  out.n = n;
+  return t0;
+}
+/* Closest hit along a segment. mode: 0 = everything, 1 = only owned (destructible) bodies */
+function rayLive(ox, oy, oz, dx, dy, dz, maxT, ownedOnly) {
+  var best = null, bt = maxT, seen = new Set(), o = [ox, oy, oz], d = [dx, dy, dz], cs = LIVE.cell, out = {};
+  var steps = Math.max(1, Math.ceil(maxT / (cs * 0.5)));
+  for (var s = 0; s <= steps; s++) {
+    var t = Math.min(maxT, s * cs * 0.5), px = ox + dx * t, pz = oz + dz * t;
+    for (var i = Math.floor((px - 0.01) / cs); i <= Math.floor((px + 0.01) / cs); i++)
+      for (var j = Math.floor((pz - 0.01) / cs); j <= Math.floor((pz + 0.01) / cs); j++) {
+        var a = LIVE.bins.get(i + "," + j);
+        if (!a) continue;
+        for (var k = 0; k < a.length; k++) {
+          var c = a[k];
+          if (seen.has(c) || c.dead) continue;
+          seen.add(c);
+          if (ownedOnly && !(c.idx >= 0)) continue;
+          if (c.noRay) continue;
+          var tt2 = __rayBox(c, o, d, bt, out);
+          if (tt2 >= 0 && tt2 <= bt) { bt = tt2; best = { c: c, n: out.n, t: tt2 }; }
+        }
+      }
+  }
+  return best;
+}
+var PH = { owners: [], dyn: [], soft: [], ready: true, maxDyn: 220 };
+function registerOwner(o) { PH.owners.push(o); return PH.owners.length - 1; }
+var GRP = { STATIC: 1, DYN: 2, DEBRIS: 4, CHAR: 8, PROJ: 16 };
+var SURF_CODE = { conc: -2, metal: -3, wood: -4, sand: -5, glass: -6 };
+var SURF_NAME = { "-2": "conc", "-3": "metal", "-4": "wood", "-5": "sand", "-6": "glass" };
+function addStaticCollider(c, userIndex) {
+  normCollider(c);
+  c.idx = userIndex ?? (SURF_CODE[c.surf] ?? -2);
+  c.body = c;
+  c.dyn = true;
+  COLLIDERS.push(c);
+  liveAdd(c);
+  return c;
+}
+function addStaticCompound(parts, quat, userIndex, origin) {
+  var q = [quat.x, quat.y, quat.z, quat.w], list = [];
+  for (var i = 0; i < parts.length; i++) {
+    var p = parts[i];
+    var c = { cx: p.cx, cy: p.cy, cz: p.cz, hx: Math.max(p.hx, 5e-3), hy: Math.max(p.hy, 5e-3), hz: Math.max(p.hz, 5e-3), q: q, surf: "wood" };
+    list.push(addStaticCollider(c, userIndex));
+  }
+  return { parts: list };
+}
+function removeBody(b) {
+  if (!b) return;
+  if (b.parts) for (var i = 0; i < b.parts.length; i++) liveRemove(b.parts[i]);
+  else liveRemove(b);
+}
+function blastImpulse() {}
+function pokeCloth() {}
+function rayFirst(from, to, mask) {
+  var dx = to.x - from.x, dy = to.y - from.y, dz = to.z - from.z, len = Math.hypot(dx, dy, dz);
+  if (len < 1e-6) return null;
+  dx /= len; dy /= len; dz /= len;
+  var h = rayLive(from.x, from.y, from.z, dx, dy, dz, len, false), tb = h ? h.t : len + 1, out = null;
+  if (h) out = { f: h.t / len, idx: h.c.idx ?? -2, p: new THREE.Vector3(from.x + dx * h.t, from.y + dy * h.t, from.z + dz * h.t), n: new THREE.Vector3(h.n[0], h.n[1], h.n[2]) };
+  if (dy < -1e-4) {
+    for (var s = 0; s <= 6; s++) {
+      var t = len * s / 6, x = from.x + dx * t, z = from.z + dz * t, gy = __groundY(x, z), y = from.y + dy * t;
+      if (y <= gy) { var tg = Math.max(0, (gy - from.y) / dy); if (tg < tb) out = { f: tg / len, idx: -2, p: new THREE.Vector3(from.x + dx * tg, gy, from.z + dz * tg), n: new THREE.Vector3(0, 1, 0) }; break; }
+    }
+  }
+  return out;
+}
+function rayAll(from, to, mask) { var r = rayFirst(from, to, mask); return r ? [r] : []; }
+var __DEB = { list: [] };
+function __debFree(d) {
+  if (d.mesh.parent) d.mesh.parent.remove(d.mesh);
+  if (d.mesh.geometry && !d.mesh.geometry.userData?.shared) d.mesh.geometry.dispose?.();
+}
+function addDynamic(mesh, opt) {
+  opt = opt || {};
+  var max = (typeof Q !== "undefined" && Q.debris) ? Math.round(Q.debris * 0.5) : 80;
+  while (__DEB.list.length >= max) __debFree(__DEB.list.shift());
+  var rv = function (v) { return v ? [v.x, v.y, v.z] : [0, 0, 0]; };
+  var d = { mesh: mesh, v: rv(opt.vel), w: rv(opt.spin), life: Math.min(opt.life || 20, 20), rest: false, r: Math.max(0.02, Math.min(0.4, (opt.size ? Math.max(opt.size[0], opt.size[1], opt.size[2]) : 0.2) * 0.4)) };
+  __DEB.list.push(d);
+  return d;
+}
+function __debUpdate(dt) {
+  var L = __DEB.list;
+  for (var i = L.length - 1; i >= 0; i--) {
+    var d = L[i], m = d.mesh;
+    d.life -= dt;
+    if (d.life <= 0) { __debFree(d); L.splice(i, 1); continue; }
+    if (d.rest) continue;
+    d.v[1] -= 9.81 * dt;
+    m.position.x += d.v[0] * dt; m.position.y += d.v[1] * dt; m.position.z += d.v[2] * dt;
+    m.rotation.x += d.w[0] * dt; m.rotation.y += d.w[1] * dt; m.rotation.z += d.w[2] * dt;
+    var h = rayLive(m.position.x, m.position.y + 0.4, m.position.z, 0, -1, 0, 0.4 + d.r + 0.05, false), gy = __groundY(m.position.x, m.position.z), fy = h ? m.position.y + 0.4 - h.t : -1e9;
+    if (gy > fy) fy = gy;
+    if (m.position.y - d.r <= fy) {
+      m.position.y = fy + d.r;
+      if (d.v[1] < -1.2) { d.v[1] *= -0.28; d.v[0] *= 0.6; d.v[2] *= 0.6; d.w[0] *= 0.5; d.w[1] *= 0.5; d.w[2] *= 0.5; }
+      else { d.rest = true; d.life = Math.min(d.life, 12); }
+    }
+  }
+}
+var SND = new Proxy({}, { get: function (t, k) { return function (p, a) { if (__HK.sound) __HK.sound(String(k), p, a); }; } });
+var __noopFn = function () { return __noopObj; };
+var __noopObj = new Proxy(__noopFn, { get: function (t, k) { return k === Symbol.toPrimitive ? function () { return 0; } : __noopObj; }, apply: function () { return __noopObj; } });
+var FXS = __noopObj;
+function impactFX() {}
+function __bulletAt(p, dir, power) {
+  var h = rayLive(p.x - dir.x * 0.3, p.y - dir.y * 0.3, p.z - dir.z * 0.3, dir.x, dir.y, dir.z, 0.9, true);
+  if (!h) return null;
+  var hp = new THREE.Vector3(p.x - dir.x * 0.3 + dir.x * h.t, p.y - dir.y * 0.3 + dir.y * h.t, p.z - dir.z * 0.3 + dir.z * h.t);
+  return bulletHit({ idx: h.c.idx, p: hp, n: new THREE.Vector3(h.n[0], h.n[1], h.n[2]) }, dir, power);
+}
+
 var THREE = ctx.THREE;
 var BGU = ctx.BGU;
 var clamp = (v, a, b) => v < a ? a : v > b ? b : v;
@@ -2229,6 +2419,9 @@ function roundedBox(w, h, d, r = 0.12, seg = 3) {
   g.computeVertexNormals();
   return g;
 }
+function ensureColorGeo(g, mat) {
+  if (mat && mat.vertexColors && !g.attributes.color) tintGeo(g, 1, 1, 1);
+}
 var HW = 40;
 var HD = 30;
 var WALL_H = 5.6;
@@ -2390,6 +2583,15 @@ function pitRadius(p, a) {
 function pitProfile(f, kind) {
   if (kind === "crater") return Math.pow(Math.max(0, 1 - f * f), 0.85);
   return 1 - smoothstep(0.55, 1, f);
+}
+function floorDepthAt(x, z) {
+  for (const p of PITS) {
+    const dx = x - p.x, dz = z - p.z, d2 = dx * dx + dz * dz;
+    if (d2 > p.Rmax * p.Rmax) continue;
+    const f = Math.sqrt(d2) / pitRadius(p, Math.atan2(dz, dx));
+    if (f < 1) return -p.depth * pitProfile(f, p.kind);
+  }
+  return 0;
 }
 function pitSpotFree(x, z, r, rHole) {
   if (Math.abs(x) > HW - 2.5 || Math.abs(z) > HD - 2.5) return false;
@@ -3514,7 +3716,23 @@ function lightReq(p, color, intensity, dist, decay = 2, prio = 1) {
   r.s = prio * intensity * clamp(1 - dc / (dist + 16), 0.02, 1);
 }
 var _kc = new THREE.Color();
-var PH = {ready:false,dyn:[],soft:[]};
+var SUN_UP = true;
+var GRP = GRP;
+var SURF_NAME = SURF_NAME;
+var PH = PH;
+var addStaticCollider = addStaticCollider;
+var addStaticCompound = addStaticCompound;
+var removeBody = removeBody;
+var registerOwner = registerOwner;
+var addDynamic = addDynamic;
+function impulse(body, ix, iy, iz, rx = 0, ry = 0, rz = 0) {
+  body.activate(true);
+  PH.v1.setValue(ix, iy, iz);
+  PH.v2.setValue(rx, ry, rz);
+  body.applyImpulse(PH.v1, PH.v2);
+}
+var rayFirst = rayFirst;
+var pokeCloth = pokeCloth;
 function makeNoise2(seed) {
   let s = seed >>> 0;
   const r = () => {
@@ -3698,7 +3916,11 @@ var Chips = class {
     this.mesh.instanceMatrix.needsUpdate = true;
   }
 };
+var SND = SND;
+var FXS = FXS;
 var DEST = { sheets: [], beams: [], glass: [], props: [], broken: 0, dirty: /* @__PURE__ */ new Set() };
+var BUDGET = 60;
+var HOOKS = { ignite: null, playerBlast: null, charBlast: null, onBreak: null };
 var V$3 = (x = 0, y = 0, z = 0) => new THREE.Vector3(x, y, z);
 var _a = V$3();
 var _b = V$3();
@@ -3828,6 +4050,287 @@ function fixWinding(g) {
     }
   }
 }
+var EDGE_POOLS = {};
+var EDGE_OF = /* @__PURE__ */ new Map();
+function edgePool(mat) {
+  if (EDGE_POOLS[mat]) return EDGE_POOLS[mat];
+  const MAXQ = Q.debris >= 400 ? 9e3 : 5e3, NV = MAXQ * 4;
+  const g = new THREE.BufferGeometry();
+  const mk = (n) => new THREE.BufferAttribute(new Float32Array(NV * n), n).setUsage(THREE.DynamicDrawUsage);
+  g.setAttribute("position", mk(3));
+  g.setAttribute("normal", mk(3));
+  g.setAttribute("uv", mk(2));
+  g.setAttribute("color", mk(3));
+  g.setAttribute("aBurn", mk(2));
+  const idx = new Uint32Array(MAXQ * 6);
+  for (let i = 0; i < MAXQ; i++) {
+    idx.set([i * 4, i * 4 + 1, i * 4 + 2, i * 4, i * 4 + 2, i * 4 + 3], i * 6);
+  }
+  g.setIndex(new THREE.BufferAttribute(idx, 1));
+  g.boundingSphere = new THREE.Sphere(new THREE.Vector3(), 1e4);
+  const m = new THREE.Mesh(g, M[mat]);
+  m.castShadow = true;
+  m.receiveShadow = true;
+  m.frustumCulled = false;
+  m.userData.nomerge = true;
+  scene.add(m);
+  return EDGE_POOLS[mat] = { mesh: m, g, free: [], next: 0, MAXQ };
+}
+function neighbor(s, k, e) {
+  const i = k % s.nu, j = k / s.nu | 0;
+  const [di, dj] = [[0, -1], [1, 0], [0, 1], [-1, 0]][e];
+  const ii = i + di, jj = j + dj;
+  return ii < 0 || jj < 0 || ii >= s.nu || jj >= s.nv ? -1 : jj * s.nu + ii;
+}
+var _en = V$3();
+var _ea = V$3();
+var _eb = V$3();
+function edgeAdd(s, k, e) {
+  const P = edgePool(s.mat);
+  let slot = P.free.length ? P.free.pop() : P.next < P.MAXQ ? P.next++ : -1;
+  if (slot < 0) return;
+  const q = chunkPoly(s, k), [u0, v0] = q[e], [u1, v1] = q[(e + 1) % 4];
+  const W = (u, v, n) => V$3(s.c.x + s.U.x * u + s.V.x * v + s.N.x * n, s.c.y + s.U.y * u + s.V.y * v + s.N.y * n, s.c.z + s.U.z * u + s.V.z * v + s.N.z * n);
+  let pts = [W(u0, v0, s.t / 2), W(u0, v0, -s.t / 2), W(u1, v1, -s.t / 2), W(u1, v1, s.t / 2)];
+  _ea.subVectors(pts[1], pts[0]);
+  _eb.subVectors(pts[3], pts[0]);
+  const ex = V$3().subVectors(W(u1, v1, 0), W(u0, v0, 0)).normalize();
+  _en.crossVectors(ex, s.N).normalize();
+  if (V$3().crossVectors(_ea, V$3().subVectors(pts[2], pts[0])).dot(_en) < 0) pts = [pts[0], pts[3], pts[2], pts[1]];
+  const g = P.g, b = slot * 4, el = Math.hypot(u1 - u0, v1 - v0) * 0.82;
+  const ch = s.char[k];
+  for (let i = 0; i < 4; i++) {
+    g.attributes.position.setXYZ(b + i, pts[i].x, pts[i].y, pts[i].z);
+    g.attributes.normal.setXYZ(b + i, _en.x, _en.y, _en.z);
+    g.attributes.color.setXYZ(b + i, s.tint[0] * 0.92, s.tint[1] * 0.88, s.tint[2] * 0.8);
+    g.attributes.aBurn.setXY(b + i, ch, 0);
+  }
+  g.attributes.uv.setXY(b, 0, 0);
+  g.attributes.uv.setXY(b + 1, 0, 0.01);
+  g.attributes.uv.setXY(b + 2, el, 0.01);
+  g.attributes.uv.setXY(b + 3, el, 0);
+  for (const a of ["position", "normal", "color", "aBurn", "uv"]) {
+    const at = g.attributes[a];
+    at.addUpdateRange(b * at.itemSize, 4 * at.itemSize);
+    at.needsUpdate = true;
+  }
+  const key = s.id * 4096 + k;
+  let arr = EDGE_OF.get(key);
+  if (!arr) {
+    arr = [];
+    EDGE_OF.set(key, arr);
+  }
+  arr.push({ P, slot });
+}
+function edgeRemoveChunk(s, k) {
+  const key = s.id * 4096 + k, arr = EDGE_OF.get(key);
+  if (!arr) return;
+  for (const { P, slot } of arr) {
+    const pa = P.g.attributes.position, b = slot * 4;
+    for (let i = 0; i < 4; i++) pa.setXYZ(b + i, 0, -50, 0);
+    pa.addUpdateRange(b * 3, 12);
+    pa.needsUpdate = true;
+    P.free.push(slot);
+  }
+  EDGE_OF.delete(key);
+}
+var _sm = new THREE.Matrix4();
+function sheetQuat(s) {
+  _sm.makeBasis(s.U, s.V, s.N);
+  return new THREE.Quaternion().setFromRotationMatrix(_sm);
+}
+function rebuildSheetBody(s) {
+  if (s.body) {
+    removeBody(s.body);
+    s.body = null;
+  }
+  const parts = [];
+  const nOff = s.t / 2 - s.colDepth / 2;
+  const add = (u0, u1, v0, v1) => {
+    const u = (u0 + u1) / 2, v = (v0 + v1) / 2;
+    parts.push({
+      cx: s.c.x + s.U.x * u + s.V.x * v + s.N.x * nOff,
+      cy: s.c.y + s.U.y * u + s.V.y * v + s.N.y * nOff,
+      cz: s.c.z + s.U.z * u + s.V.z * v + s.N.z * nOff,
+      hx: (u1 - u0) / 2,
+      hy: (v1 - v0) / 2,
+      hz: s.colDepth / 2
+    });
+  };
+  if (s.deadN === 0) add(-s.w / 2, s.w / 2, -s.h / 2, s.h / 2);
+  else for (let i = 0; i < s.nu; i++) {
+    let j = 0;
+    while (j < s.nv) {
+      if (!s.alive[j * s.nu + i]) {
+        j++;
+        continue;
+      }
+      const j0 = j;
+      while (j < s.nv && s.alive[j * s.nu + i]) j++;
+      add(-s.w / 2 + i * s.cw, -s.w / 2 + (i + 1) * s.cw, -s.h / 2 + j0 * s.ch, -s.h / 2 + j * s.ch);
+    }
+  }
+  if (!parts.length) return;
+  s.body = addStaticCompound(parts, sheetQuat(s), s.owner, s.c);
+}
+function chunkAt(s, p) {
+  _a.subVectors(p, s.c);
+  const u = _a.dot(s.U), v = _a.dot(s.V);
+  const i = clamp(Math.floor((u + s.w / 2) / s.cw), 0, s.nu - 1), j = clamp(Math.floor((v + s.h / 2) / s.ch), 0, s.nv - 1);
+  return j * s.nu + i;
+}
+function collapseRange(mesh, start, count, center) {
+  const pa = mesh.geometry.attributes.position;
+  for (let i = start; i < start + count; i++) pa.setXYZ(i, center.x, center.y, center.z);
+  pa.addUpdateRange(start * 3, count * 3);
+  pa.needsUpdate = true;
+}
+function breakChunk(s, k, dir, power, mode) {
+  if (!s.alive[k]) return;
+  s.alive[k] = 0;
+  s.deadN++;
+  DEST.broken++;
+  const cc = s.chunkCenter[k];
+  if (s.mesh) collapseRange(s.mesh, s.base + k * CV, CV, cc);
+  edgeRemoveChunk(s, k);
+  for (let e = 0; e < 4; e++) {
+    const nb = neighbor(s, k, e);
+    if (nb >= 0 && s.alive[nb]) edgeAdd(s, nb, (e + 2) % 4);
+  }
+  FXS.decals.removeKey(s.id * 4096 + k);
+  DEST.dirty.add(s);
+  spawnChunkDebris(s, k, dir, power, mode);
+  if (HOOKS.onBreak) HOOKS.onBreak("chunk", cc, mode);
+}
+function dropIslands(s, dir) {
+  const nu = s.nu, nv = s.nv, seen = new Uint8Array(nu * nv), stack = [];
+  for (let j = 0; j < nv; j++) for (let i = 0; i < nu; i++) {
+    const k = j * nu + i;
+    if ((i === 0 || j === 0 || i === nu - 1 || j === nv - 1) && s.alive[k]) {
+      seen[k] = 1;
+      stack.push(k);
+    }
+  }
+  while (stack.length) {
+    const k = stack.pop(), i = k % nu, j = k / nu | 0;
+    for (const [di, dj] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+      const ii = i + di, jj = j + dj;
+      if (ii < 0 || jj < 0 || ii >= nu || jj >= nv) continue;
+      const q = jj * nu + ii;
+      if (!seen[q] && s.alive[q]) {
+        seen[q] = 1;
+        stack.push(q);
+      }
+    }
+  }
+  for (let k = 0; k < nu * nv; k++) if (s.alive[k] && !seen[k]) breakChunk(s, k, dir, 0.3, "fall");
+  if (s.deadN > nu * nv * 0.8) {
+    for (let k = 0; k < nu * nv; k++) if (s.alive[k]) breakChunk(s, k, dir, 0.2, "fall");
+  }
+}
+function chunkPoly(s, k) {
+  const i = k % s.nu, j = k / s.nu | 0, G = s.G, nu1 = s.nu + 1;
+  return [G[j * nu1 + i], G[j * nu1 + i + 1], G[(j + 1) * nu1 + i + 1], G[(j + 1) * nu1 + i]].map((p) => [p[0], p[1]]);
+}
+function splitPoly(poly) {
+  let cx = 0, cy = 0;
+  for (const p of poly) {
+    cx += p[0] / poly.length;
+    cy += p[1] / poly.length;
+  }
+  const a = Math.random() * Math.PI, nx = Math.cos(a), ny = Math.sin(a);
+  const A2 = [], B = [];
+  for (let i = 0; i < poly.length; i++) {
+    const p = poly[i], q = poly[(i + 1) % poly.length];
+    const dp = (p[0] - cx) * nx + (p[1] - cy) * ny, dq = (q[0] - cx) * nx + (q[1] - cy) * ny;
+    (dp >= 0 ? A2 : B).push(p);
+    if (dp >= 0 !== dq >= 0) {
+      const t = dp / (dp - dq);
+      const m = [p[0] + (q[0] - p[0]) * t, p[1] + (q[1] - p[1]) * t];
+      A2.push(m);
+      B.push(m);
+    }
+  }
+  return [A2, B].filter((P) => P.length >= 3);
+}
+function spawnChunkDebris(s, k, dir, power, mode) {
+  const poly = chunkPoly(s, k);
+  const split = BUDGET > 20 && (mode === "blast" ? Math.random() < 0.7 : mode === "bullet" ? Math.random() < 0.5 : false);
+  const pieces = BUDGET <= 0 ? [] : split ? splitPoly(poly) : [poly];
+  BUDGET -= pieces.length;
+  const charred = s.char[k];
+  const q = sheetQuat(s);
+  for (const P of pieces) {
+    let cu = 0, cv2 = 0;
+    for (const p of P) {
+      cu += p[0] / P.length;
+      cv2 += p[1] / P.length;
+    }
+    const shape = new THREE.Shape(P.map((p) => new THREE.Vector2(p[0] - cu, p[1] - cv2)));
+    const g = new THREE.ExtrudeGeometry(shape, { depth: s.t, bevelEnabled: false });
+    g.translate(0, 0, -s.t / 2);
+    const uv = g.attributes.uv, pa = g.attributes.position;
+    for (let i = 0; i < uv.count; i++) uv.setXY(i, (pa.getX(i) + cu) * 0.82, (pa.getY(i) + cv2) * 0.82);
+    tintGeo(g, s.tint[0], s.tint[1], s.tint[2]);
+    const nb = new Float32Array(pa.count * 2);
+    for (let i = 0; i < pa.count; i++) {
+      nb[i * 2] = charred;
+      nb[i * 2 + 1] = mode === "fire" ? 1 : 0;
+    }
+    g.setAttribute("aBurn", new THREE.BufferAttribute(nb, 2));
+    const mesh = new THREE.Mesh(g, M[s.mat] || M.osb);
+    mesh.userData.ownGeo = true;
+    mesh.castShadow = true;
+    mesh.receiveShadow = true;
+    mesh.quaternion.copy(q);
+    mesh.position.set(s.c.x + s.U.x * cu + s.V.x * cv2, s.c.y + s.U.y * cu + s.V.y * cv2, s.c.z + s.U.z * cu + s.V.z * cv2);
+    scene.add(mesh);
+    let mu = 1e9, Mu = -1e9, mv = 1e9, Mv = -1e9;
+    for (const p of P) {
+      mu = Math.min(mu, p[0]);
+      Mu = Math.max(Mu, p[0]);
+      mv = Math.min(mv, p[1]);
+      Mv = Math.max(Mv, p[1]);
+    }
+    const sp = power * (mode === "blast" ? 9 : mode === "bullet" ? 1.6 : 0.4);
+    const vel = dir.clone().multiplyScalar(sp).add(V$3(rnd(-0.6, 0.6), rnd(0, 1) * (mode === "blast" ? 2 : 0.5), rnd(-0.6, 0.6)));
+    addDynamic(mesh, {
+      size: [Math.max(0.02, Mu - mu), Math.max(0.02, Mv - mv), s.t * 1.6],
+      mass: Math.max(0.15, (Mu - mu) * (Mv - mv) * s.t * 620),
+      vel,
+      spin: V$3(rnd(-8, 8), rnd(-8, 8), rnd(-8, 8)).multiplyScalar(mode === "blast" ? 1 : 0.4),
+      friction: 0.8,
+      restitution: 0.12,
+      life: sr(25, 40),
+      surf: "wood",
+      group: GRP.DEBRIS
+    });
+  }
+  const cc = s.chunkCenter[k];
+  const nChips = (mode === "blast" ? 6 : mode === "bullet" ? 4 : 2) + (pieces.length ? 0 : 4);
+  const fl = floorBelow(cc);
+  for (let i = 0; i < nChips; i++) {
+    const v = dir.clone().multiplyScalar(rnd(1, 4) * (mode === "blast" ? 2 : 1)).add(V$3(rnd(-1.5, 1.5), rnd(0, 2.5), rnd(-1.5, 1.5)));
+    FXS.splinters.spawn(cc, v, V$3(rnd(0.08, 0.22), rnd(6e-3, 0.012), rnd(0.012, 0.03)), fl, rnd(6, 12));
+  }
+  FXS.dust.spawn({
+    p: cc,
+    v: dir.clone().multiplyScalar(0.6).add(V$3(0, 0.2, 0)),
+    life: rnd(1.5, 3),
+    s0: 0.25,
+    s1: 1.1,
+    col: mode === "fire" ? [0.18, 0.16, 0.15] : [0.72, 0.62, 0.48],
+    a0: 0.35,
+    a1: 0,
+    drag: 1.5,
+    g: 0.05
+  });
+}
+function floorBelow(p) {
+  const h = rayFirst(_b.set(p.x, p.y + 0.05, p.z), _c.set(p.x, p.y - 30, p.z), GRP.STATIC);
+  if (!h) return floorDepthAt(p.x, p.z);
+  return Math.abs(h.p.y) < 0.02 ? h.p.y + floorDepthAt(p.x, p.z) : h.p.y;
+}
 function createBeam(o) {
   const a = o.a.clone(), b = o.b.clone();
   const axis = V$3().subVectors(b, a);
@@ -3891,7 +4394,213 @@ function createBeam(o) {
   for (let i = 0; i < nPts; i++) hashAdd(V$3().lerpVectors(a, b, (i + 0.5) / nPts), { t: "b", b: bm });
   return bm;
 }
+function beamBody(bm) {
+  const c = {
+    cx: bm.center.x,
+    cy: bm.center.y,
+    cz: bm.center.z,
+    hx: bm.sx / 2,
+    hy: bm.sy / 2,
+    hz: bm.L / 2,
+    q: [bm.q.x, bm.q.y, bm.q.z, bm.q.w],
+    surf: bm.surf,
+    noPlayer: bm.noPlayer
+  };
+  bm.body = addStaticCollider(c, bm.owner);
+}
+function breakBeam(bm, hitP, dir, power, mode) {
+  if (bm.dead) return;
+  bm.dead = true;
+  DEST.broken++;
+  if (bm.mesh) collapseRange(bm.mesh, bm.base, bm.count, bm.center);
+  if (bm.body) {
+    removeBody(bm.body);
+    bm.body = null;
+  }
+  FXS.decals.removeKey(1e5 + bm.id);
+  const t = hitP ? clamp(V$3().subVectors(hitP, bm.a).dot(bm.axis), 0.12, bm.L - 0.12) : bm.L * sr(0.3, 0.7);
+  for (const [t0, t1] of [[0, t], [t, bm.L]]) {
+    const len = t1 - t0;
+    if (len < 0.1) continue;
+    const g = new THREE.BoxGeometry(bm.sx, bm.sy, len, 1, 1, 2);
+    const pa = g.attributes.position, brokenEnd = t0 === 0 ? len / 2 : -len / 2;
+    for (let i = 0; i < pa.count; i++)
+      if (Math.abs(pa.getZ(i) - brokenEnd) < 1e-4) pa.setZ(i, pa.getZ(i) + (brokenEnd > 0 ? 1 : -1) * rnd(-0.07, 0.05));
+    g.computeVertexNormals();
+    tintGeo(g, ...bm.tint);
+    const nb = new Float32Array(pa.count * 2);
+    for (let i = 0; i < pa.count; i++) {
+      nb[i * 2] = bm.char;
+      nb[i * 2 + 1] = mode === "fire" ? 0.8 : 0;
+    }
+    g.setAttribute("aBurn", new THREE.BufferAttribute(nb, 2));
+    const mesh = new THREE.Mesh(g, M[bm.mat] || M.wood);
+    mesh.userData.ownGeo = true;
+    mesh.castShadow = mesh.receiveShadow = true;
+    mesh.quaternion.copy(bm.q);
+    mesh.position.copy(bm.a).addScaledVector(bm.axis, (t0 + t1) / 2);
+    scene.add(mesh);
+    const k = mode === "blast" ? power * 6 : 0.6 * power;
+    const vel = dir.clone().multiplyScalar(k).add(V$3(rnd(-0.3, 0.3), mode === "blast" ? rnd(0.5, 2) : 0, rnd(-0.3, 0.3)));
+    addDynamic(mesh, {
+      size: [bm.sx, bm.sy, len],
+      mass: bm.sx * bm.sy * len * 520,
+      vel,
+      spin: V$3(rnd(-2, 2), rnd(-2, 2), rnd(-2, 2)).multiplyScalar(mode === "blast" ? 2 : 0.5),
+      life: sr(40, 70),
+      group: GRP.DYN,
+      friction: 0.8,
+      restitution: 0.08,
+      surf: bm.surf
+    });
+  }
+  const hp = hitP || bm.center;
+  const fl = floorBelow(hp);
+  for (let i = 0; i < 8; i++) FXS.splinters.spawn(
+    hp,
+    dir.clone().multiplyScalar(rnd(1, 3)).add(V$3(rnd(-1.5, 1.5), rnd(0, 2), rnd(-1.5, 1.5))),
+    V$3(rnd(0.08, 0.3), rnd(8e-3, 0.02), rnd(0.012, 0.03)),
+    fl,
+    rnd(8, 14)
+  );
+  if (bm.wood) SND.wood(hp, 1.2);
+  else SND.hit(hp, "metal");
+  if (HOOKS.onBreak) HOOKS.onBreak("beam", hp, mode);
+}
 var registerGlass = function(){};
+function glassBody(gl) {
+  const c = {
+    cx: gl.center.x,
+    cy: gl.center.y,
+    cz: gl.center.z,
+    hx: gl.w / 2,
+    hy: gl.h / 2,
+    hz: 0.012,
+    q: [gl.q.x, gl.q.y, gl.q.z, gl.q.w],
+    surf: "glass",
+    noPlayer: !gl.playerCollide
+  };
+  gl.body = addStaticCollider(c, gl.owner);
+}
+function clipRect(poly, hw, hh) {
+  const clip = (P2, f) => {
+    const out = [];
+    for (let i = 0; i < P2.length; i++) {
+      const a = P2[i], b = P2[(i + 1) % P2.length], fa = f(a), fb = f(b);
+      if (fa >= 0) out.push(a);
+      if (fa >= 0 !== fb >= 0) {
+        const t = fa / (fa - fb);
+        out.push([a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t]);
+      }
+    }
+    return out;
+  };
+  let P = poly;
+  for (const f of [(p) => p[0] + hw, (p) => hw - p[0], (p) => p[1] + hh, (p) => hh - p[1]]) {
+    P = clip(P, f);
+    if (P.length < 3) return null;
+  }
+  return P;
+}
+function shatterGlass(gl, hitP, dir, power) {
+  if (gl.dead) return;
+  gl.dead = true;
+  DEST.broken++;
+  if (gl.body) {
+    removeBody(gl.body);
+    gl.body = null;
+  }
+  gl.mesh.visible = false;
+  FXS.decals.removeKey(2e5 + gl.id);
+  const hp = hitP || gl.center;
+  _a.subVectors(hp, gl.center);
+  const iu = clamp(_a.dot(gl.U), -gl.w / 2, gl.w / 2), iv = clamp(_a.dot(gl.Vv), -gl.h / 2, gl.h / 2);
+  const spokes = 9 + Math.floor(Math.random() * 5);
+  const rings = [0.08, 0.22, 0.45, 0.8, 1.3].map((r) => r * Math.max(gl.w, gl.h));
+  const ang = [];
+  for (let i = 0; i < spokes; i++) ang.push((i + rnd(-0.3, 0.3)) / spokes * Math.PI * 2);
+  const P = (a, r) => [iu + Math.cos(a) * r, iv + Math.sin(a) * r];
+  const stay = [], fall = [];
+  for (let s = 0; s < spokes; s++) for (let r = 0; r < rings.length; r++) {
+    const a0 = ang[s], a1 = ang[(s + 1) % spokes] + (s === spokes - 1 ? Math.PI * 2 : 0);
+    const r0 = r === 0 ? 0 : rings[r - 1] * rnd(0.9, 1.1), r1 = rings[r] * rnd(0.9, 1.1);
+    const poly = r === 0 ? [[iu, iv], P(a0, r1), P(a1, r1)] : [P(a0, r0), P(a0, r1), P(a1, r1), P(a1, r0)];
+    const cp = clipRect(poly, gl.w / 2, gl.h / 2);
+    if (!cp) continue;
+    const onEdge = cp.some((p) => Math.abs(Math.abs(p[0]) - gl.w / 2) < 1e-3 || Math.abs(Math.abs(p[1]) - gl.h / 2) < 1e-3);
+    (onEdge && r >= 2 && Math.random() < 0.4 ? stay : fall).push(cp);
+  }
+  if (stay.length) {
+    const parts = stay.map((cp) => new THREE.ShapeGeometry(new THREE.Shape(cp.map((p) => new THREE.Vector2(p[0], p[1])))));
+    const g = BGU.mergeGeometries(parts, false);
+    if (g) {
+      const m = new THREE.Mesh(g, gl.mesh.material);
+      m.position.copy(gl.center);
+      m.quaternion.copy(gl.q);
+      m.userData.nomerge = true;
+      scene.add(m);
+      gl.remnant = m;
+    }
+  }
+  let dynLeft = Q.debris >= 400 ? 14 : 7;
+  const area = (cp) => {
+    let s = 0;
+    for (let i = 0; i < cp.length; i++) {
+      const a = cp[i], b = cp[(i + 1) % cp.length];
+      s += a[0] * b[1] - b[0] * a[1];
+    }
+    return Math.abs(s) / 2;
+  };
+  for (const cp of fall) {
+    let cu = 0, cv2 = 0;
+    for (const p of cp) {
+      cu += p[0] / cp.length;
+      cv2 += p[1] / cp.length;
+    }
+    const wp = V$3().copy(gl.center).addScaledVector(gl.U, cu).addScaledVector(gl.Vv, cv2);
+    const A2 = area(cp);
+    const out = dir.clone().multiplyScalar(power * rnd(1, 3)).add(V$3(rnd(-0.5, 0.5), rnd(-0.2, 0.6), rnd(-0.5, 0.5)));
+    if (A2 > 0.01 && dynLeft-- > 0) {
+      const shape = new THREE.Shape(cp.map((p) => new THREE.Vector2(p[0] - cu, p[1] - cv2)));
+      const g = new THREE.ExtrudeGeometry(shape, { depth: 6e-3, bevelEnabled: false });
+      const m = new THREE.Mesh(g, gl.mesh.material);
+      m.userData.ownGeo = true;
+      m.position.copy(wp);
+      m.quaternion.copy(gl.q);
+      m.castShadow = true;
+      scene.add(m);
+      let mu = 1e9, Mu = -1e9, mv = 1e9, Mv = -1e9;
+      for (const p of cp) {
+        mu = Math.min(mu, p[0]);
+        Mu = Math.max(Mu, p[0]);
+        mv = Math.min(mv, p[1]);
+        Mv = Math.max(Mv, p[1]);
+      }
+      addDynamic(m, {
+        size: [Mu - mu, Mv - mv, 0.012],
+        mass: A2 * 6e-3 * 2500,
+        vel: out,
+        spin: V$3(rnd(-6, 6), rnd(-6, 6), rnd(-6, 6)),
+        life: sr(12, 20),
+        friction: 0.5,
+        restitution: 0.05,
+        surf: "glass",
+        group: GRP.DEBRIS
+      });
+    } else {
+      const fl = floorBelow(wp);
+      for (let i = 0; i < 2; i++) FXS.glassChips.spawn(
+        wp,
+        out.clone().add(V$3(rnd(-1, 1), rnd(0, 1), rnd(-1, 1))),
+        V$3(rnd(0.02, 0.07), rnd(0.02, 0.07), 1),
+        fl,
+        rnd(8, 15)
+      );
+    }
+  }
+  SND.glass(hp, 14);
+  if (HOOKS.onBreak) HOOKS.onBreak("glass", hp, "blast");
+}
 var PROP_BAKE = [];
 function registerProp(group, o = {}) {
   group.userData.nomerge = true;
@@ -3927,6 +4636,172 @@ function registerProp(group, o = {}) {
   hashAdd(center, { t: "p", p });
   return p;
 }
+function propBody(p) {
+  const c = Object.assign({ surf: p.surf }, p.col);
+  p.body = addStaticCollider(c, p.owner);
+}
+function breakProp(p, hitP, dir, power, mode) {
+  if (p.dead) return;
+  p.dead = true;
+  DEST.broken++;
+  if (p.body) {
+    removeBody(p.body);
+    p.body = null;
+  }
+  for (const [mesh, start, count] of p.ranges) collapseRange(mesh, start, count, p.center);
+  const n = p.parts.length;
+  const wq = new THREE.Quaternion(), ws = V$3(), wpos = V$3();
+  for (const part of p.parts) {
+    const g = part.geo;
+    g.computeBoundingBox();
+    const sz = g.boundingBox.getSize(V$3()), ctr = g.boundingBox.getCenter(V$3());
+    const wp = ctr.clone().applyMatrix4(part.mw);
+    part.mw.decompose(wpos, wq, ws);
+    const geo = g.clone();
+    geo.translate(-ctr.x, -ctr.y, -ctr.z);
+    ensureColorGeo(geo, part.mat);
+    const nm = new THREE.Mesh(geo, part.mat);
+    nm.userData.ownGeo = true;
+    nm.position.copy(wp);
+    nm.quaternion.copy(wq);
+    nm.scale.copy(ws);
+    nm.castShadow = true;
+    nm.receiveShadow = true;
+    scene.add(nm);
+    const away = V$3().subVectors(wp, hitP || p.center).normalize();
+    const k = mode === "blast" ? power * 7 : 1.2;
+    addDynamic(nm, {
+      size: [Math.max(0.02, sz.x * ws.x), Math.max(0.02, sz.y * ws.y), Math.max(0.02, sz.z * ws.z)],
+      mass: Math.max(0.3, p.mass / n),
+      vel: away.multiplyScalar(k).addScaledVector(dir, k * 0.5).add(V$3(0, mode === "blast" ? rnd(1, 3) : 0.5, 0)),
+      spin: V$3(rnd(-5, 5), rnd(-5, 5), rnd(-5, 5)),
+      life: sr(35, 60),
+      group: n > 12 ? GRP.DEBRIS : GRP.DYN,
+      surf: p.surf
+    });
+  }
+  if (p.explosive && HOOKS.barrel) HOOKS.barrel(p);
+  if (p.wood) SND.wood(p.center, 1.5);
+  if (p.onBreak) p.onBreak(p, hitP, dir, power, mode);
+  if (HOOKS.onBreak) HOOKS.onBreak("prop", p.center, mode);
+}
+function initDestructiblePhysics() {
+  for (const s of DEST.sheets) {
+    s.owner = registerOwner({ type: "sheet", s });
+    rebuildSheetBody(s);
+  }
+  for (const b of DEST.beams) {
+    b.owner = registerOwner({ type: "beam", b });
+    if (b.collide) beamBody(b);
+  }
+  for (const g of DEST.glass) {
+    g.owner = registerOwner({ type: "glass", g });
+    glassBody(g);
+  }
+  for (const p of DEST.props) {
+    p.owner = registerOwner({ type: "prop", p });
+    propBody(p);
+  }
+}
+function flushDestruction() {
+  let guard = 0;
+  while (DEST.dirty.size && guard++ < 4) {
+    const list = [...DEST.dirty];
+    DEST.dirty.clear();
+    for (const s of list) dropIslands(s, V$3(0, -1, 0));
+    for (const s of list) rebuildSheetBody(s);
+  }
+}
+function bulletHit(hit, dir, power) {
+  const own = hit.idx >= 0 ? PH.owners[hit.idx] : null;
+  const dmg = 34 * power;
+  if (hit.idx === -1) {
+    pokeCloth(hit.p, 0.35, 30 * power);
+    return { stop: false, cost: 0.02, surf: "cloth" };
+  }
+  if (!own) {
+    const surf = SURF_NAME[hit.idx] || "conc";
+    impactFX(hit.p, hit.n, surf, dir);
+    return { stop: surf !== "wood" && surf !== "glass", cost: surf === "wood" ? 0.5 : 1, surf };
+  }
+  if (own.type === "sheet") {
+    const s = own.s;
+    let dn = dir.dot(s.N);
+    if (Math.abs(dn) < 0.05) dn = dn < 0 ? -0.05 : 0.05;
+    _a.subVectors(hit.p, s.c);
+    const off = _a.dot(s.N);
+    const pf = hit.p.clone().addScaledVector(dir, (s.t / 2 - off) / dn);
+    const k = chunkAt(s, pf);
+    if (!s.alive[k]) return { stop: false, cost: 0, surf: "wood" };
+    const out = dn < 0 ? s.N : s.N.clone().negate();
+    FXS.decals.add(pf, s.N, rnd(0.07, 0.1), Math.random() < 0.5 ? 0 : 1, s.id * 4096 + k);
+    const fl = floorBelow(pf);
+    for (let i2 = 0; i2 < 3; i2++) FXS.splinters.spawn(
+      pf,
+      dir.clone().multiplyScalar(rnd(0.5, 2.5)).addScaledVector(out, rnd(0.2, 1)).add(V$3(rnd(-0.6, 0.6), rnd(0, 1), rnd(-0.6, 0.6))),
+      V$3(rnd(0.03, 0.09), rnd(3e-3, 7e-3), rnd(6e-3, 0.014)),
+      fl,
+      rnd(5, 10)
+    );
+    FXS.dust.spawn({ p: pf, v: out.clone().multiplyScalar(0.8), life: rnd(0.8, 1.6), s0: 0.08, s1: 0.45, col: [0.75, 0.64, 0.5], a0: 0.4, a1: 0, drag: 2 });
+    SND.hit(pf, "wood");
+    damageChunk(s, k, dmg, dir, power, "bullet");
+    const i = k % s.nu, j = k / s.nu | 0;
+    for (const [di, dj] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+      const ii = i + di, jj = j + dj;
+      if (ii >= 0 && jj >= 0 && ii < s.nu && jj < s.nv) damageChunk(s, jj * s.nu + ii, dmg * 0.18, dir, power * 0.5, "bullet");
+    }
+    return { stop: false, cost: 0.12, surf: "wood" };
+  }
+  if (own.type === "beam") {
+    const b = own.b;
+    FXS.decals.add(hit.p, hit.n, rnd(0.06, 0.08), b.wood ? 0 : 2, 1e5 + b.id);
+    impactFX(hit.p, hit.n, b.surf, dir);
+    if (b.wood) {
+      b.hp -= dmg * b.fragile;
+      if (b.hp <= 0) breakBeam(b, hit.p, dir, power, "bullet");
+    }
+    return { stop: !b.wood, cost: b.wood ? Math.min(0.9, (b.sx + b.sy) * 2.2) : 1, surf: b.surf };
+  }
+  if (own.type === "glass") {
+    const g = own.g;
+    g.hp -= 1;
+    if (g.hp <= 0) shatterGlass(g, hit.p, dir, power);
+    else {
+      FXS.decals.add(hit.p, hit.n.dot(dir) < 0 ? hit.n : hit.n.clone().negate(), rnd(0.35, 0.55), 3, 2e5 + g.id);
+      SND.glass(hit.p, 3);
+    }
+    return { stop: false, cost: 0.05, surf: "glass" };
+  }
+  if (own.type === "prop") {
+    const p = own.p;
+    impactFX(hit.p, hit.n, p.surf, dir);
+    p.hp -= dmg;
+    if (p.explosive && p.hp < 60 && !p.leaking) {
+      p.leaking = true;
+      if (HOOKS.leak) HOOKS.leak(p, hit.p);
+    }
+    const killed = p.hp <= 0;
+    if (killed) breakProp(p, hit.p, dir, power, "bullet");
+    return { stop: !p.wood, cost: 0.5, surf: p.surf, feedback: p.target ? killed ? 2 : 1 : 0 };
+  }
+  if (own.type === "door") return doorBulletHit(own.d, hit, dir, power);
+  if (own.type === "dyn") {
+    const r = own.rec;
+    impulse(r.body, dir.x * 2.5 * power, dir.y * 2.5 * power, dir.z * 2.5 * power, 0, 0, 0);
+    impactFX(hit.p, hit.n, r.surf, dir);
+    if (r.onHit) r.onHit(r, hit, dir, power);
+    return { stop: r.surf !== "wood", cost: 0.35, surf: r.surf };
+  }
+  return { stop: true, cost: 1, surf: "conc" };
+}
+function damageChunk(s, k, dmg, dir, power, mode) {
+  if (!s.alive[k]) return;
+  s.hp[k] -= dmg;
+  if (s.hp[k] <= 0) breakChunk(s, k, dir, power, mode);
+}
+var impactFX = impactFX;
+var explode = function(){};
 var BX0 = -15;
 var BX1 = 15;
 var BZ0 = -9.5;
@@ -7155,6 +8030,7 @@ function buildInterior() {
   S(crate, -8.8, y2, 7.6, 0.3, 0.9);
   S(crate, -14.4, y2, 0.4, 0.1, 0.8);
 }
+var V = (x = 0, y = 0, z = 0) => new THREE.Vector3(x, y, z);
 var DOOR_LEAVES = [];
 var DOOR_T = 0.042;
 var DOOR_OPEN = 1.62;
@@ -7168,6 +8044,8 @@ var _dq = new THREE.Quaternion();
 var _dp = new THREE.Vector3();
 var _ds = new THREE.Vector3();
 var _dY = new THREE.Vector3(0, 1, 0);
+var _dl = new THREE.Vector3();
+var _dv = new THREE.Vector3();
 var DOOR_PAINTS = [[0.44, 0.49, 0.42], [0.8, 0.78, 0.72], [0.42, 0.3, 0.2], [0.38, 0.46, 0.54], [0.31, 0.34, 0.25]];
 function doorLayout(lw, lh) {
   const st = 0.12 / lw, mul = 0.05 / lw, top = 1 - 0.13 / lh, bot = 0.24 / lh, l0 = 0.93 / lh, l1 = 1.1 / lh;
@@ -7435,16 +8313,32 @@ function doorPose(L) {
   DOOR.handle.setMatrixAt(L.i, _dm);
   if (L.body) {
     doorWorld(L);
-    const tr = DOOR.tr;
-    tr.setIdentity();
-    PH.v1.setValue(_dp.x, _dp.y, _dp.z);
-    tr.setOrigin(PH.v1);
-    PH.q1.setValue(_dq.x, _dq.y, _dq.z, _dq.w);
-    tr.setRotation(PH.q1);
-    L.body.getMotionState().setWorldTransform(tr);
-    L.body.setWorldTransform(tr);
+        __moveDoorBody(L.body, _dp, _dq);
   }
 }
+function updateDoors(dt) {
+  let moving = false;
+  for (const L of DOOR_LEAVES) {
+    if (L.open === L.target) continue;
+    const dA = L.target - L.open, stepA = L.speed * dt;
+    L.open = Math.abs(dA) <= stepA ? L.target : L.open + Math.sign(dA) * stepA;
+    if (L.open === L.target && L.speed > 6) SND.door(L.c, "close");
+    else if (L.open === L.target && L.target === 0) SND.door(L.c, "close");
+    doorPose(L);
+    moving = true;
+  }
+  DOOR.chunks.update(dt);
+  if (moving) DOOR.leaf.instanceMatrix.needsUpdate = DOOR.handle.instanceMatrix.needsUpdate = DOOR.hinges.instanceMatrix.needsUpdate = true;
+  if (DOOR.dirty.size) {
+    for (const i of DOOR.dirty) DOOR.dmg.addLayerUpdate(i);
+    DOOR.dmg.needsUpdate = true;
+    DOOR.dirty.clear();
+    if (SUN_UP) renderer.shadowMap.needsUpdate = true;
+  }
+  if (DOOR.wasMoving && !moving && SUN_UP) renderer.shadowMap.needsUpdate = true;
+  DOOR.wasMoving = moving;
+}
+var _dq2 = new THREE.Quaternion();
 var dIdx = (L, x, y) => ((L.i * DMG_H + y) * DMG_W + x) * 4;
 function dRange(L, z, y, rz, ry) {
   const sx = DMG_W / L.lw, sy = DMG_H / L.lh;
@@ -7460,6 +8354,20 @@ function dRange(L, z, y, rz, ry) {
 function dPut(D2, i, v) {
   if (v > D2[i]) D2[i] = v;
 }
+function dSample(L, z, y) {
+  const tx = clamp(Math.floor(z / L.lw * DMG_W), 0, DMG_W - 1), ty = clamp(Math.floor(y / L.lh * DMG_H), 0, DMG_H - 1);
+  return DOOR.dmg.image.data[dIdx(L, tx, ty)];
+}
+function dHole(L, z, y, rad, ring) {
+  const D2 = DOOR.dmg.image.data, [x0, x1, y0, y1, sx, sy] = dRange(L, z, y, rad + ring, rad + ring);
+  for (let ty = y0; ty <= y1; ty++) for (let tx = x0; tx <= x1; tx++) {
+    const d = Math.hypot((tx + 0.5) / sx - z, (ty + 0.5) / sy - y), i = dIdx(L, tx, ty);
+    if (d < rad) D2[i] = 255;
+    else if (d < rad + ring) dPut(D2, i, Math.round(112 * (1 - (d - rad) / ring)));
+  }
+  D2[dIdx(L, clamp(Math.floor(z * sx), 0, DMG_W - 1), clamp(Math.floor(y * sy), 0, DMG_H - 1))] = 255;
+  DOOR.dirty.add(L.i);
+}
 function dRim(L, z, y, rad, ch, val, ay = 1.6, jag = 0.4) {
   const D2 = DOOR.dmg.image.data, [x0, x1, y0, y1, sx, sy] = dRange(L, z, y, rad * (1 + jag), rad * ay * (1 + jag));
   const ph = Math.random() * 6.28, ph2 = Math.random() * 6.28;
@@ -7467,6 +8375,59 @@ function dRim(L, z, y, rad, ch, val, ay = 1.6, jag = 0.4) {
     const dz = (tx + 0.5) / sx - z, dy = ((ty + 0.5) / sy - y) / ay, a = Math.atan2(dy, dz);
     const rr = rad * (1 + jag * (0.6 * Math.sin(a * 3 + ph) + 0.4 * Math.sin(a * 7 + ph2))), d = Math.hypot(dz, dy);
     if (d < rr) dPut(D2, dIdx(L, tx, ty) + ch, Math.round(val * Math.min(1, (rr - d) / (rr * 0.35) + 0.25)));
+  }
+  DOOR.dirty.add(L.i);
+}
+function dLine(L, z0, y0, z1, y1, ch, val) {
+  const D2 = DOOR.dmg.image.data, sx = DMG_W / L.lw, sy = DMG_H / L.lh;
+  const n = Math.max(2, Math.ceil(Math.hypot((z1 - z0) * sx, (y1 - y0) * sy) * 2));
+  for (let k = 0; k <= n; k++) {
+    const t = k / n, tx = Math.floor(lerp(z0, z1, t) * sx), ty = Math.floor(lerp(y0, y1, t) * sy);
+    if (tx < 0 || ty < 0 || tx >= DMG_W || ty >= DMG_H) continue;
+    dPut(D2, dIdx(L, tx, ty) + ch, Math.round(val * (1 - t * 0.6)));
+  }
+  DOOR.dirty.add(L.i);
+}
+function dPoly(L, pts, zMin = 0) {
+  const D2 = DOOR.dmg.image.data;
+  let a = 1e9, b = -1e9, c = 1e9, e = -1e9;
+  for (const [z, y] of pts) {
+    a = Math.min(a, z);
+    b = Math.max(b, z);
+    c = Math.min(c, y);
+    e = Math.max(e, y);
+  }
+  const pad = 0.035, [x0, x1, y0, y1, sx, sy] = dRange(L, (a + b) / 2, (c + e) / 2, (b - a) / 2 + pad, (e - c) / 2 + pad);
+  const inside = (z, y) => {
+    let r = false;
+    for (let i = 0, j = pts.length - 1; i < pts.length; j = i++) {
+      const [zi, yi] = pts[i], [zj, yj] = pts[j];
+      if (yi > y !== yj > y && z < (zj - zi) * (y - yi) / (yj - yi) + zi) r = !r;
+    }
+    return r;
+  };
+  const edgeD = (z, y) => {
+    let m = 1e9;
+    for (let i = 0, j = pts.length - 1; i < pts.length; j = i++) {
+      const [zi, yi] = pts[i], [zj, yj] = pts[j], dz = zj - zi, dy = yj - yi, t = clamp(((z - zi) * dz + (y - yi) * dy) / (dz * dz + dy * dy || 1), 0, 1);
+      m = Math.min(m, Math.hypot(z - zi - dz * t, y - yi - dy * t));
+    }
+    return m;
+  };
+  for (let ty = y0; ty <= y1; ty++) for (let tx = x0; tx <= x1; tx++) {
+    const z = (tx + 0.5) / sx, y = (ty + 0.5) / sy, i = dIdx(L, tx, ty);
+    if (z < zMin) continue;
+    if (inside(z, y)) {
+      D2[i] = 255;
+      continue;
+    }
+    const d = edgeD(z, y);
+    if (d < 0.02) dPut(D2, i, Math.round(110 * (1 - d / 0.02)));
+    if (d < pad) {
+      const v = Math.round(255 * (1 - d / pad) * (0.6 + Math.random() * 0.4));
+      dPut(D2, i + 1, v);
+      dPut(D2, i + 2, v);
+    }
   }
   DOOR.dirty.add(L.i);
 }
@@ -7482,6 +8443,131 @@ function doorWear(L) {
   }
   for (let k = 0; k < 6; k++) dRim(L, L.lw - 0.075 + (r() - 0.5) * 0.06, 1 + (r() - 0.5) * 0.1, 3e-3 + r() * 5e-3, 1 + (k & 1), 220, 1, 0.4);
   DOOR.dirty.delete(L.i);
+}
+function dCell(L, z, y) {
+  return clamp(Math.floor(y / L.lh * DCELL_Y), 0, DCELL_Y - 1) * DCELL_Z + clamp(Math.floor(z / L.lw * DCELL_Z), 0, DCELL_Z - 1);
+}
+function dCellThr(L, c) {
+  const u = (c % DCELL_Z + 0.5) / DCELL_Z, v = (Math.floor(c / DCELL_Z) + 0.5) / DCELL_Y;
+  return L.lay.panels.some(([u0, u1, v0, v1]) => u > u0 && u < u1 && v > v0 && v < v1) ? 4 : 11;
+}
+function doorToWorld(L, x, y, z, out) {
+  _dq2.setFromAxisAngle(_dY, L.ang + L.open);
+  return out.set(x, y, z).applyQuaternion(_dq2).add(L.hinge);
+}
+function breakCell(L, c, dir, maxChunks = 3) {
+  if (L.broken[c]) return;
+  L.broken[c] = 1;
+  const cw = L.lw / DCELL_Z, ch = L.lh / DCELL_Y;
+  const zc = (c % DCELL_Z + 0.5 + rnd(-0.15, 0.15)) * cw, yc = (Math.floor(c / DCELL_Z) + 0.5 + rnd(-0.15, 0.15)) * ch;
+  const rz = cw * rnd(0.45, 0.7), ry = ch * rnd(0.5, 0.85), pts = [], N = 14;
+  for (let k = 0; k < N; k++) {
+    const a = k / N * Math.PI * 2, spike = k % 2 && Math.abs(Math.sin(a)) > 0.7 ? rnd(1.1, 1.6) : rnd(0.65, 1.05);
+    pts.push([zc + Math.cos(a) * rz * rnd(0.75, 1.05), yc + Math.sin(a) * ry * spike]);
+  }
+  dPoly(L, pts, L.lay.st * L.lw * 0.85);
+  for (let k = 0; k < 3; k++) dLine(L, zc + rnd(-rz, rz) * 0.6, yc + ry * 0.8, zc + rnd(-rz, rz) * 0.6, yc + ry * rnd(1.2, 2), 0, 96);
+  const fl = L.d.y, n = Math.min(maxChunks, 1 + Math.floor(Math.random() * 3));
+  for (let k = 0; k < n; k++) {
+    const p = doorToWorld(L, rnd(-0.01, 0.01), yc + rnd(-ry, ry) * 0.5, clamp(zc + rnd(-rz, rz) * 0.5, 0.05, L.lw - 0.05), new THREE.Vector3());
+    const v = dir.clone().multiplyScalar(rnd(1.2, 3.2)).add(_dv.set(rnd(-0.8, 0.8), rnd(0.2, 1.4), rnd(-0.8, 0.8)));
+    DOOR.chunks.spawn(p, v, _ds.set(rnd(0.018, 0.032), ry * rnd(0.5, 1.1), rz * rnd(0.4, 0.9)), fl, rnd(70, 110));
+  }
+  const pc = doorToWorld(L, 0, yc, zc, new THREE.Vector3());
+  for (let k = 0; k < 8; k++) FXS.splinters.spawn(
+    pc,
+    _dv.copy(dir).multiplyScalar(rnd(0.6, 3)).add(_ds.set(rnd(-1, 1), rnd(0, 1.6), rnd(-1, 1))),
+    _ds.set(rnd(0.03, 0.11), rnd(3e-3, 8e-3), rnd(6e-3, 0.02)),
+    fl,
+    rnd(6, 12)
+  );
+  FXS.dust.spawn({ p: pc, v: dir.clone().multiplyScalar(0.9), life: rnd(1.2, 2.2), s0: 0.12, s1: 0.8, col: [0.74, 0.64, 0.5], a0: 0.45, a1: 0, drag: 2.2, g: -0.1 });
+  SND.hit(pc, "wood");
+  const i = c % DCELL_Z, j = Math.floor(c / DCELL_Z);
+  for (const [di, dj] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+    const ii = i + di, jj = j + dj;
+    if (ii >= 0 && jj >= 0 && ii < DCELL_Z && jj < DCELL_Y) L.cells[jj * DCELL_Z + ii] += 1.2;
+  }
+  L.chunks++;
+}
+function dCheck(L, c, dir, maxChunks) {
+  if (!L.broken[c] && L.cells[c] >= dCellThr(L, c)) breakCell(L, c, dir, maxChunks);
+}
+function doorBulletHit(L, hit, dir, power) {
+  _dq2.setFromAxisAngle(_dY, L.ang + L.open).invert();
+  _dl.copy(hit.p).sub(L.hinge).applyQuaternion(_dq2);
+  const z = clamp(_dl.z, 4e-3, L.lw - 4e-3), y = clamp(_dl.y, 4e-3, L.lh - 4e-3);
+  if (dSample(L, z, y) >= 128) return { stop: false, cost: 0, surf: "wood" };
+  _dv.copy(dir).applyQuaternion(_dq2);
+  const inCh = _dv.x > 0 ? 2 : 1, outCh = 3 - inCh;
+  dHole(L, z, y, rnd(4e-3, 7e-3), rnd(8e-3, 0.013));
+  dRim(L, z, y, rnd(7e-3, 0.012), inCh, 190, 1.2, 0.3);
+  dRim(L, z, y, rnd(0.018, 0.034), outCh, 255, 1.9, 0.55);
+  for (let k = 0, n = 3 + Math.floor(Math.random() * 4); k < n; k++) {
+    const up = Math.random() < 0.5 ? -1 : 1;
+    dLine(L, z + rnd(-6e-3, 6e-3), y, z + rnd(-0.014, 0.014), y + up * rnd(0.02, 0.075), outCh, 235);
+  }
+  if (Math.random() < 0.35) dLine(L, z, y, z + rnd(-4e-3, 4e-3), y + (Math.random() < 0.5 ? -1 : 1) * rnd(0.03, 0.12), 0, 92);
+  const fl = L.d.y, ex = _ds.copy(hit.p).addScaledVector(dir, DOOR_T / Math.max(0.2, Math.abs(_dv.x))).clone();
+  for (let i2 = 0; i2 < 2; i2++) FXS.splinters.spawn(
+    hit.p,
+    _dp.copy(dir).multiplyScalar(-rnd(0.3, 1.2)).add(_dl.set(rnd(-0.5, 0.5), rnd(0, 0.8), rnd(-0.5, 0.5))),
+    _dv.set(rnd(0.015, 0.04), rnd(2e-3, 4e-3), rnd(4e-3, 8e-3)),
+    fl,
+    rnd(4, 8)
+  );
+  for (let i2 = 0; i2 < 5; i2++) FXS.splinters.spawn(
+    ex,
+    _dp.copy(dir).multiplyScalar(rnd(1, 3.5)).add(_dl.set(rnd(-0.7, 0.7), rnd(-0.2, 1), rnd(-0.7, 0.7))),
+    _dv.set(rnd(0.03, 0.09), rnd(3e-3, 7e-3), rnd(6e-3, 0.016)),
+    fl,
+    rnd(5, 11)
+  );
+  if (Math.random() < 0.55) DOOR.chunks.spawn(
+    ex,
+    _dp.copy(dir).multiplyScalar(rnd(1, 2.5)).add(_dl.set(rnd(-0.5, 0.5), rnd(0, 0.8), rnd(-0.5, 0.5))),
+    _dv.set(rnd(6e-3, 0.012), rnd(0.02, 0.05), rnd(0.012, 0.03)),
+    fl,
+    rnd(40, 80)
+  );
+  FXS.dust.spawn({ p: ex, v: _dp.copy(dir).multiplyScalar(0.8), life: rnd(0.7, 1.3), s0: 0.05, s1: 0.4, col: [0.76, 0.66, 0.52], a0: 0.4, a1: 0, drag: 2.6 });
+  SND.hit(hit.p, "wood");
+  const c = dCell(L, z, y);
+  L.cells[c] += power;
+  const i = c % DCELL_Z, j = Math.floor(c / DCELL_Z);
+  for (const [di, dj] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+    const ii = i + di, jj = j + dj;
+    if (ii >= 0 && jj >= 0 && ii < DCELL_Z && jj < DCELL_Y) L.cells[jj * DCELL_Z + ii] += 0.22 * power;
+  }
+  dCheck(L, c, dir, 3);
+  return { stop: false, cost: 0.16, surf: "wood" };
+}
+function doorBlast(p, R, P) {
+  for (const L of DOOR_LEAVES) {
+    const d = L.c.distanceTo(p);
+    if (d > R) continue;
+    const k = 1 - d / R;
+    const dir = V().subVectors(L.c, p).setY(0).normalize();
+    const side = Math.sign(dir.dot(L.n)) || 1;
+    L.target = side * DOOR_OPEN;
+    L.speed = 14;
+    _dq2.setFromAxisAngle(_dY, L.ang + L.open).invert();
+    _dv.copy(dir).applyQuaternion(_dq2);
+    const outCh = _dv.x > 0 ? 1 : 2;
+    for (let n = Math.min(40, Math.round(26 * k * P)); n > 0; n--) {
+      const z = rnd(0.02, L.lw - 0.02), y = rnd(0.02, L.lh - 0.02);
+      dHole(L, z, y, rnd(4e-3, 0.011), 0.012);
+      dRim(L, z, y, rnd(0.02, 0.045), outCh, 255, 1.7, 0.6);
+      L.cells[dCell(L, z, y)] += rnd(0.4, 1.4) * P;
+    }
+    let br = 0;
+    for (let c = 0; c < L.cells.length && br < 5; c++) {
+      const was = L.broken[c];
+      L.cells[c] += 5 * k * k * P * Math.random();
+      dCheck(L, c, dir, 2);
+      if (!was && L.broken[c]) br++;
+    }
+  }
 }
 var AMMO_BOXES = [];
 var _ammoTex = null;
@@ -7624,5 +8710,42 @@ await ctx.stage('buildFloorDetails');buildFloorDetails();
 await ctx.stage('buildTag');buildTag();
 await ctx.stage('flushBuckets');flushBuckets();
 await ctx.stage('bakeScene');bakeScene();
-const native = COLLIDERS.map(c=>normCollider(c)); return {native, heightAt:()=>0, bounds:{x0:-HW+.5,x1:HW-.5,z0:-HD+.5,z1:HD-.5}, bases:{alpha:{x:-34,z:0},delta:{x:34,z:0}},update:()=>{}};
+
+function initDoorPhysics() {
+  for (const L of DOOR_LEAVES) {
+    L.idx = registerOwner({ type: "door", d: L });
+    doorWorld(L);
+    const c = { cx: _dp.x, cy: _dp.y, cz: _dp.z, hx: DOOR_T / 2, hy: L.lh / 2, hz: L.lw / 2, q: [_dq.x, _dq.y, _dq.z, _dq.w], surf: "wood", door: true, nonav: true };
+    L.body = addStaticCollider(c, L.idx);
+  }
+}
+function __moveDoorBody(c, p, q) {
+  c.cx = p.x; c.cy = p.y; c.cz = p.z; c.q = [q.x, q.y, q.z, q.w];
+  __aabb(c);
+  liveMoved(c);
+}
+HOOKS.doorBlast = doorBlast;
+initDestructiblePhysics();
+initDoorPhysics();
+for (const c of COLLIDERS) liveAdd(c);
+
+const native = COLLIDERS;
+const __api = {
+  native, heightAt: () => 0, bounds: { x0: -HW + .5, x1: HW - .5, z0: -HD + .5, z1: HD - .5 }, bases: { alpha: { x: -34, z: 0 }, delta: { x: 34, z: 0 } },
+  hooks: __HK,
+  crates: AMMO_BOXES.map((b, i) => ({ id: 'ammo' + i, kind: 'ammo', x: b.p.x, y: b.p.y, z: b.p.z, r: 1.9 })),
+  doors: DOOR_LEAVES,
+  bulletHit(p, dir, power) { const r = __bulletAt(p, dir, power || 1); flushDestruction(); return r; },
+  explode(p, o) { explode(p, o); },
+  toggleDoor(L, fromPos) {
+    const side = Math.sign((fromPos.x - L.c.x) * L.n.x + (fromPos.z - L.c.z) * L.n.z) || 1;
+    L.speed = 2.6;
+    if (Math.abs(L.target) > 0.1) L.target = 0; else { L.target = -side * DOOR_OPEN; SND.door(L.c, 'open'); }
+  },
+  doorNear(x, y, z, r) { let best = null, bd = r; for (const L of DOOR_LEAVES) { if (Math.abs(y - (L.d.y + 1)) > 1.6) continue; const d = Math.hypot(L.c.x - x, L.c.z - z); if (d < bd) { bd = d; best = L; } } return best; },
+  update(dt, t) { updateDoors(dt); __debUpdate(dt); },
+  indoor(x, z) { return Math.abs(x) < HW - 0.3 && Math.abs(z) < HD - 0.3; },
+  rayLive,
+};
+return __api;
 };

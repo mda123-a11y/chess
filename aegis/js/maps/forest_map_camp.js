@@ -1,6 +1,7 @@
 /* Extracted environment only from user supplied forest_map_camp.html. Rebuild: tools/map-extraction/. No original input, renderer, player, weapons, artillery or drone boot. */
 window.AEGIS_MAP_BUILDERS=window.AEGIS_MAP_BUILDERS||{};
 window.AEGIS_MAP_BUILDERS['forest_map_camp']=async function(ctx){
+
 var THREE35 = ctx.THREE;
 var PRESETS = {
   potato: {
@@ -3418,6 +3419,7 @@ function gridChunk(x0, z0, size, step, skirt) {
   g.setAttribute("position", new THREE8.Float32BufferAttribute(pos, 3));
   g.setAttribute("normal", new THREE8.Float32BufferAttribute(nrm, 3));
   g.setAttribute("aSplat", new THREE8.Float32BufferAttribute(spl, 4));
+  g.setAttribute("aAO", new THREE8.Float32BufferAttribute(ao, 1));
   g.setIndex(idx2);
   g.computeBoundingSphere();
   g.computeBoundingBox();

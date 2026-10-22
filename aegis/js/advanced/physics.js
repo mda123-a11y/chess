@@ -42,6 +42,8 @@ var AegisPhysics;
             this.poseSteps = 0;
             this.statics = [];
             this.navRevision = 0;
+            this.staticCount = 0;
+            this.navSkip = new Set();
             this.sim = new R.World(v(0, -9.81, 0));
             this.sim.timestep = 1 / 60;
             this.sim.numSolverIterations = 8;
@@ -66,37 +68,9 @@ var AegisPhysics;
             this.terrain = this.sim.createCollider(R.ColliderDesc.trimesh(verts, indices, R.TriMeshFlags.FIX_INTERNAL_EDGES)
                 .setFriction(0.85)
                 .setCollisionGroups(GROUP_STATIC));
-            for (const c of world.colliders || []) {
-                if (c.source?.dead)
-                    continue;
-                let desc;
-                const x = c.type === "box" ? (c.x0 + c.x1) / 2 : c.x, z = c.type === "box" ? (c.z0 + c.z1) / 2 : c.z;
-                const lo = c.y0 ?? world.heightAt(x, z), hi = c._top ?? (c.step ? c.h : world.heightAt(x, z) + (c.h || 2)), h = hi - lo;
-                if (!Number.isFinite(h) || h < 0.015)
-                    continue;
-                if (c.type === "box") {
-                    const o = c.obb;
-                    desc = R.ColliderDesc.cuboid(Math.max(0.01, o ? o.hw : (c.x1 - c.x0) / 2), h / 2, Math.max(0.01, o ? o.hd : (c.z1 - c.z0) / 2));
-                    desc.setTranslation(o ? o.x : x, lo + h / 2, o ? o.z : z);
-                    if (o) {
-                        const a = Math.atan2(o.s, o.c);
-                        desc.setRotation({
-                            x: 0,
-                            y: Math.sin(a / 2),
-                            z: 0,
-                            w: Math.cos(a / 2),
-                        });
-                    }
-                }
-                else if (c.type === "cyl")
-                    desc = R.ColliderDesc.cylinder(h / 2, Math.max(0.015, c.r)).setTranslation(x, lo + h / 2, z);
-                else
-                    continue;
-                this.statics.push({
-                    source: c.source,
-                    col: this.sim.createCollider(desc.setFriction(0.8).setCollisionGroups(GROUP_STATIC)),
-                });
-            }
+            for (const c of world.colliders || [])
+                this.addStatic(c);
+            this.staticCount = (world.colliders || []).length;
         }
         /** Export fixed collider surfaces, not visual LOD meshes. Winding is outward. */
         navigationGeometry() {
@@ -119,6 +93,8 @@ var AegisPhysics;
             this.sim.forEachCollider((col) => {
                 if (!((col.collisionGroups() >>> 16) & 1) || col.isSensor())
                     return;
+                if (this.navSkip.has(col.handle))
+                    return; // doors: bots open them on approach
                 const shape = col.shape;
                 if (shape.type === R.ShapeType.TriMesh) {
                     add(col, shape.vertices, shape.indices);
@@ -486,6 +462,64 @@ var AegisPhysics;
             a.body.setNextKinematicTranslation(v(c.pos.x, c.pos.y + a.center, c.pos.z));
             Object.assign(a.last, c.pos);
         }
+        /** One Rapier static from an engine collider record; builders may append records at runtime (broken walls). */
+        addStatic(c) {
+            const world = this.world;
+            if (c.source?.dead)
+                return;
+            let desc;
+            const x = c.type === "box" ? (c.x0 + c.x1) / 2 : c.x, z = c.type === "box" ? (c.z0 + c.z1) / 2 : c.z;
+            const lo = c.y0 ?? world.heightAt(x, z), hi = c._top ?? (c.step ? c.h : world.heightAt(x, z) + (c.h || 2)), h = hi - lo;
+            if (!Number.isFinite(h) || h < 0.015)
+                return;
+            if (c.type === "obox") {
+                // arbitrary orientation (stairs, ramps, leaning beams): exact oriented cuboid
+                desc = R.ColliderDesc.cuboid(Math.max(0.01, c.hx), Math.max(0.01, c.hy), Math.max(0.01, c.hz))
+                    .setTranslation(c.cx, c.cy, c.cz)
+                    .setRotation({ x: c.q[0], y: c.q[1], z: c.q[2], w: c.q[3] });
+            }
+            else if (c.type === "box") {
+                const o = c.obb;
+                desc = R.ColliderDesc.cuboid(Math.max(0.01, o ? o.hw : (c.x1 - c.x0) / 2), h / 2, Math.max(0.01, o ? o.hd : (c.z1 - c.z0) / 2));
+                desc.setTranslation(o ? o.x : x, lo + h / 2, o ? o.z : z);
+                if (o) {
+                    const a = Math.atan2(o.s, o.c);
+                    desc.setRotation({
+                        x: 0,
+                        y: Math.sin(a / 2),
+                        z: 0,
+                        w: Math.cos(a / 2),
+                    });
+                }
+            }
+            else if (c.type === "cyl")
+                desc = R.ColliderDesc.cylinder(h / 2, Math.max(0.015, c.r)).setTranslation(x, lo + h / 2, z);
+            else
+                return;
+            const col = this.sim.createCollider(desc.setFriction(0.8).setCollisionGroups(GROUP_STATIC));
+            if (c.source?.nonav)
+                this.navSkip.add(col.handle);
+            this.statics.push({ source: c.source, col });
+        }
+        /** Pick up colliders appended by the map and reposition kinematic ones (doors). */
+        syncStatics() {
+            const list = this.world.colliders || [];
+            if (list.length > this.staticCount) {
+                for (; this.staticCount < list.length; this.staticCount++)
+                    this.addStatic(list[this.staticCount]);
+                this.navRevision++;
+            }
+            for (const st of this.statics) {
+                const src = st.source;
+                if (!src?.moved)
+                    continue;
+                src.moved = false;
+                st.col.setTranslation({ x: src.cx, y: src.cy, z: src.cz });
+                st.col.setRotation({ x: src.q[0], y: src.q[1], z: src.q[2], w: src.q[3] });
+                if (!src.nonav)
+                    this.navRevision++;
+            }
+        }
         removeActor(c) {
             const a = this.actors.get(c);
             if (!a)
@@ -496,6 +530,7 @@ var AegisPhysics;
         }
         begin(dt) {
             const start = performance.now();
+            this.syncStatics();
             for (let i = this.statics.length - 1; i >= 0; i--)
                 if (this.statics[i].source?.dead) {
                     this.sim.removeCollider(this.statics[i].col, true);

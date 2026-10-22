@@ -90,14 +90,18 @@
       }
     }
     const trees = (world.trees || []);
-    W.set = (k) => { W.target = Math.max(0, Math.min(1, k)); };
+    /* Ангар целиком под крышей: струи, лужи и капли с крон там не рисуем
+       (дождь остаётся звуком по жести и цветокоррекцией пресета) */
+    const indoor = !!(world && (world.indoor || world.mapId === 'angar_map'));
+    W.indoor = indoor;
+    W.set = (k) => { W.target = indoor ? 0 : Math.max(0, Math.min(1, k)); };
     W.update = (dt, t, scars) => {
       if (!(dt > 0)) return;
       dt = Math.min(dt, 0.1);
       W.k += (W.target - W.k) * Math.min(1, dt * 0.5);
       /* земля мокнет медленнее, чем начинается дождь, и сохнет ещё медленнее */
       W.wet += ((W.target > 0.05 ? 1 : 0) - W.wet) * dt * (W.target > W.wet ? 0.018 : 0.006);
-      const n = Math.round(W.k * MAXN * (quality === 'high' ? 1 : quality === 'medium' ? 0.55 : 0.3));
+      const n = Math.round(W.k * MAXN * (quality === 'low' || quality === 'ultra' ? (quality === 'ultra' ? 0.18 : 0.3) : quality === 'medium' ? 0.55 : 1));
       g.instanceCount = n; W.count = n;
       mesh.visible = n > 0;
       uni.uK.value = W.k; uni.uT.value = t % 600; uni.uCam.value.copy(camera.position);
@@ -122,5 +126,27 @@
     };
     return W;
   }
-  root.GWeather = { create };
+  /* Случайная погода боя. Как в Battlefield / Squad / DayZ: пресет выбирается
+     при входе на карту взвешенным жребием, а не хранится в настройках
+     игрока (сохранённый выбор действует только на полигоне). Для тестов:
+     ?weather=rain или window.__FORCE_WEATHER. */
+  const NAMES = { overcast: 'Пасмурно', morning: 'Ясное утро', rain: 'Дождь', fog: 'Густой туман', dusk: 'Сумерки', night: 'Ночь' };
+  const ALIAS = { clear: 'morning', sunny: 'morning', storm: 'rain', gloom: 'overcast' };
+  const W_OPEN = { morning: 35, overcast: 25, fog: 15, rain: 15, dusk: 10 };
+  const W_HANGAR = { morning: 35, overcast: 35, dusk: 15, rain: 15 };
+  function forcedWeather() {
+    let k = null;
+    try { k = (typeof window !== 'undefined' && window.__FORCE_WEATHER) || new URLSearchParams(location.search).get('weather'); } catch (e) { /* */ }
+    k = k && (ALIAS[k] || k);
+    return k && NAMES[k] ? k : null;
+  }
+  function pickBattle(mapId, rnd) {
+    const f = forcedWeather();
+    if (f) return f;
+    const tab = mapId === 'angar_map' ? W_HANGAR : W_OPEN;
+    let r = (rnd || Math.random)() * Object.values(tab).reduce((a, b) => a + b, 0);
+    for (const k of Object.keys(tab)) { r -= tab[k]; if (r < 0) return k; }
+    return 'overcast';
+  }
+  root.GWeather = { create, pickBattle, forcedWeather, NAMES };
 })(typeof window !== 'undefined' ? window : globalThis);
