@@ -2419,6 +2419,11 @@ function roundedBox(w, h, d, r = 0.12, seg = 3) {
   g.computeVertexNormals();
   return g;
 }
+function ensureColor(o) {
+  const mats = Array.isArray(o.material) ? o.material : [o.material];
+  if (!o.geometry || o.geometry.attributes.color) return;
+  if (mats.some((m) => m && m.vertexColors)) tintGeo(o.geometry, 1, 1, 1);
+}
 function ensureColorGeo(g, mat) {
   if (mat && mat.vertexColors && !g.attributes.color) tintGeo(g, 1, 1, 1);
 }
@@ -3731,6 +3736,7 @@ function impulse(body, ix, iy, iz, rx = 0, ry = 0, rz = 0) {
   PH.v2.setValue(rx, ry, rz);
   body.applyImpulse(PH.v1, PH.v2);
 }
+var blastImpulse = blastImpulse;
 var rayFirst = rayFirst;
 var pokeCloth = pokeCloth;
 function makeNoise2(seed) {
@@ -3936,6 +3942,45 @@ function hashAdd(p, ref) {
     HASH.set(k, a);
   }
   a.push(ref);
+}
+function query(p, r, filter) {
+  const out = [];
+  const x0 = Math.floor((p.x - r) / HC), x1 = Math.floor((p.x + r) / HC), y0 = Math.floor((p.y - r) / HC), y1 = Math.floor((p.y + r) / HC), z0 = Math.floor((p.z - r) / HC), z1 = Math.floor((p.z + r) / HC);
+  const seen = /* @__PURE__ */ new Set();
+  for (let x = x0; x <= x1; x++) for (let y = y0; y <= y1; y++) for (let z = z0; z <= z1; z++) {
+    const a = HASH.get(hk(x, y, z));
+    if (!a) continue;
+    for (const ref of a) {
+      if (!refAlive(ref)) continue;
+      if (ref.t !== "c") {
+        const key = ref.t === "b" ? ref.b : ref.t === "p" ? ref.p : ref.g;
+        if (seen.has(key)) continue;
+        seen.add(key);
+      }
+      const pos = refPos(ref, p), d = pos.distanceTo(p);
+      if (d <= r && (!filter || filter(ref))) out.push({ ref, pos, d });
+    }
+  }
+  return out;
+}
+function refAlive(ref) {
+  if (ref.t === "c") return ref.s.alive[ref.k] === 1;
+  if (ref.t === "b") return !ref.b.dead;
+  if (ref.t === "p") return !ref.p.dead;
+  if (ref.t === "g") return !ref.g.dead;
+  return false;
+}
+var _rp = V$3();
+function refPos(ref, p) {
+  if (ref.t === "c") return ref.s.chunkCenter[ref.k];
+  if (ref.t === "b") {
+    const b = ref.b;
+    if (!p) return b.center;
+    const t = clamp(_rp.subVectors(p, b.a).dot(b.axis), 0, b.L);
+    return V$3().copy(b.a).addScaledVector(b.axis, t);
+  }
+  if (ref.t === "p") return ref.p.center;
+  if (ref.t === "g") return ref.g.center;
 }
 var quadIdx = (idx, a, b, c, d) => {
   idx.push(a, b, c, a, c, d);
@@ -4467,7 +4512,64 @@ function breakBeam(bm, hitP, dir, power, mode) {
   else SND.hit(hp, "metal");
   if (HOOKS.onBreak) HOOKS.onBreak("beam", hp, mode);
 }
-var registerGlass = function(){};
+function registerGlass(mesh, o = {}) {
+  mesh.updateWorldMatrix(true, false);
+  const gl = {
+    id: DEST.glass.length,
+    mesh,
+    w: mesh.userData.glass.w,
+    h: mesh.userData.glass.h,
+    hp: o.hp ?? 2,
+    dead: false,
+    center: V$3().setFromMatrixPosition(mesh.matrixWorld),
+    q: new THREE.Quaternion().setFromRotationMatrix(mesh.matrixWorld),
+    playerCollide: !!o.playerCollide
+  };
+  gl.N = V$3(0, 0, 1).applyQuaternion(gl.q);
+  gl.U = V$3(1, 0, 0).applyQuaternion(gl.q);
+  gl.Vv = V$3(0, 1, 0).applyQuaternion(gl.q);
+  DEST.glass.push(gl);
+  hashAdd(gl.center, { t: "g", g: gl });
+  return gl;
+}
+function instanceGlass() {
+  const groups = /* @__PURE__ */ new Map();
+  for (const gl of DEST.glass) {
+    const m = gl.mesh;
+    if (!m || !m.parent || m.isInstancedMesh || Array.isArray(m.material)) continue;
+    if (!groups.has(m.material)) groups.set(m.material, []);
+    groups.get(m.material).push(gl);
+  }
+  const unit = new THREE.PlaneGeometry(1, 1), zero = new THREE.Matrix4().makeScale(0, 0, 0);
+  const mw = new THREE.Matrix4(), sc = new THREE.Matrix4(), box = new THREE.Box3(), size = new THREE.Vector3(), ctr = new THREE.Vector3();
+  for (const [mat, list] of groups) {
+    if (list.length < 2) continue;
+    const im = new THREE.InstancedMesh(unit, mat, list.length);
+    im.userData.nomerge = true;
+    im.castShadow = false;
+    im.receiveShadow = list[0].mesh.receiveShadow;
+    im.renderOrder = list[0].mesh.renderOrder;
+    list.forEach((gl, i) => {
+      const m = gl.mesh;
+      m.updateWorldMatrix(true, false);
+      m.geometry.computeBoundingBox();
+      box.copy(m.geometry.boundingBox);
+      box.getSize(size);
+      box.getCenter(ctr);
+      mw.copy(m.matrixWorld).multiply(sc.makeTranslation(ctr.x, ctr.y, ctr.z)).multiply(sc.makeScale(size.x || 1, size.y || 1, 1));
+      im.setMatrixAt(i, mw);
+      m.removeFromParent();
+      gl.mesh = { material: mat, set visible(v) {
+        if (!v) {
+          im.setMatrixAt(i, zero);
+          im.instanceMatrix.needsUpdate = true;
+        }
+      } };
+    });
+    im.computeBoundingSphere();
+    scene.add(im);
+  }
+}
 function glassBody(gl) {
   const c = {
     cx: gl.center.x,
@@ -4801,7 +4903,72 @@ function damageChunk(s, k, dmg, dir, power, mode) {
   if (s.hp[k] <= 0) breakChunk(s, k, dir, power, mode);
 }
 var impactFX = impactFX;
-var explode = function(){};
+function explode(p, o = {}) {
+  const R = o.radius ?? 6, P = o.power ?? 1;
+  const Rb = R * 0.42;
+  for (const { ref, pos, d } of query(p, Rb)) {
+    const k = Math.pow(1 - d / Rb, 1.2);
+    const dir = V$3().subVectors(pos, p).normalize();
+    const dmg = 760 * P * k;
+    if (ref.t === "c") {
+      ref.s.char[ref.k] = Math.max(ref.s.char[ref.k], 0.25 * k * P);
+      damageChunk(ref.s, ref.k, dmg * (0.7 + Math.random() * 0.6), dir, P * k * 1.4, "blast");
+    } else if (ref.t === "b") {
+      ref.b.hp -= dmg * 0.8 * ref.b.fragile;
+      if (ref.b.hp <= 0) breakBeam(ref.b, pos.clone().lerp(p, 0.3), dir, P * k * 1.4, "blast");
+    } else if (ref.t === "p") {
+      ref.p.hp -= dmg;
+      if (ref.p.hp <= 0) breakProp(ref.p, p, dir, P * k * 1.4, "blast");
+    }
+  }
+  for (const { ref, pos, d } of query(p, R * 1.6, (r) => r.t === "g")) {
+    if (Math.random() < 1 - d / (R * 1.6) * 0.7) shatterGlass(ref.g, pos, V$3().subVectors(pos, p).normalize(), 1.5 * (1 - d / (R * 1.6)));
+  }
+  flushDestruction();
+  blastImpulse(p, R * 1.3, 28 * P);
+  pokeCloth(p, R * 2.5, 60 * P);
+  if (HOOKS.playerBlast) HOOKS.playerBlast(p, R, P);
+  if (HOOKS.doorBlast) HOOKS.doorBlast(p, R * 0.8, P);
+  charSphere(p, R * 0.45, 0.35 * P, 0.15);
+  if (HOOKS.ignite) {
+    if (o.fire) HOOKS.ignite(p, o.fire, R * 0.5);
+    else if (Math.random() < 0.45 * P) HOOKS.ignite(p, 0.5, R * 0.4);
+  }
+}
+var HOT = /* @__PURE__ */ new Map();
+function burnRange(mesh, start, count, p, r, dChar, heat) {
+  const pa = mesh.geometry.attributes.position, ba = mesh.geometry.attributes.aBurn;
+  if (!ba) return 0;
+  let maxC = 0;
+  for (let i = start; i < start + count; i++) {
+    _a.fromBufferAttribute(pa, i);
+    const d = _a.distanceTo(p);
+    if (d > r) {
+      maxC = Math.max(maxC, ba.getX(i));
+      continue;
+    }
+    const k = 1 - d / r;
+    const c = Math.min(1, ba.getX(i) + dChar * k);
+    ba.setXY(i, c, Math.max(ba.getY(i), heat * k));
+    maxC = Math.max(maxC, c);
+  }
+  ba.addUpdateRange(start * 2, count * 2);
+  ba.needsUpdate = true;
+  if (heat > 0) HOT.set(mesh.uuid + ":" + start, { mesh, start, count });
+  return maxC;
+}
+function charSphere(p, r, dChar, heat) {
+  for (const { ref } of query(p, r + 0.4)) {
+    if (ref.t === "c") {
+      const s = ref.s;
+      if (!s.mesh) continue;
+      s.char[ref.k] = burnRange(s.mesh, s.base + ref.k * CV, CV, p, r, dChar, heat);
+    } else if (ref.t === "b" && ref.b.wood && ref.b.mesh) {
+      const b = ref.b;
+      b.char = burnRange(b.mesh, b.base, b.count, p, r, dChar, heat);
+    }
+  }
+}
 var BX0 = -15;
 var BX1 = 15;
 var BZ0 = -9.5;
@@ -8642,6 +8809,13 @@ function ammoBox(x, y, z, rotY) {
   AMMO_BOXES.push({ p: new THREE.Vector3(x, y + 0.5, z), lid: lidPivot, open: 0 });
 }
 var WIND = { dir: new THREE.Vector3(0.2, 0, 1).normalize(), base: 6.5, vec: new THREE.Vector3(), speed: 6.5 };
+function collectGlass() {
+  const out = [];
+  scene.traverse((o) => {
+    if (o.isMesh && o.userData.glass && !DEST.glass.some((g) => g.mesh === o)) out.push(o);
+  });
+  return out;
+}
 var _lampNear = [];
 var _lampOff = new THREE.Vector3(0, -0.08, 0);
 var _lampP = new THREE.Vector3();
@@ -8711,6 +8885,9 @@ await ctx.stage('buildTag');buildTag();
 await ctx.stage('flushBuckets');flushBuckets();
 await ctx.stage('bakeScene');bakeScene();
 
+for (const o of collectGlass()) registerGlass(o, { hp: 1 });
+instanceGlass();
+scene.traverse((o) => { if (o.isMesh) ensureColor(o); });
 function initDoorPhysics() {
   for (const L of DOOR_LEAVES) {
     L.idx = registerOwner({ type: "door", d: L });

@@ -2,13 +2,17 @@ const sh = require('./shared.cjs');
 module.exports = {
   prelude: sh.prelude,
   overrides: { ...sh.overrides, initDoorPhysics: 'initDoorPhysics' },
-  roots: ['initDestructiblePhysics', 'flushDestruction', 'bulletHit', 'explode', 'updateDoors', 'doorBlast', 'doorBulletHit', 'doorPose', 'doorWorld', 'DOOR_LEAVES', 'DOOR', 'AMMO_BOXES', 'HOOKS', 'DEST', 'PH', 'sheetQuat'],
+  unoverride: ['registerGlass', 'explode'],
+  roots: ['collectGlass', 'registerGlass', 'instanceGlass', 'ensureColor', 'initDestructiblePhysics', 'flushDestruction', 'bulletHit', 'explode', 'updateDoors', 'doorBlast', 'doorBulletHit', 'doorPose', 'doorWorld', 'DOOR_LEAVES', 'DOOR', 'AMMO_BOXES', 'HOOKS', 'DEST', 'PH', 'sheetQuat'],
   patches: [
     // the door body is kinematic: move the shared collider record instead of an ammo.js body
     [`L.body.getMotionState().setWorldTransform(tr);\n    L.body.setWorldTransform(tr);`, `__moveDoorBody(L.body, _dp, _dq);`],
     [`const tr = DOOR.tr;\n    tr.setIdentity();\n    PH.v1.setValue(_dp.x, _dp.y, _dp.z);\n    tr.setOrigin(PH.v1);\n    PH.q1.setValue(_dq.x, _dq.y, _dq.z, _dq.w);\n    tr.setRotation(PH.q1);\n`, ``],
   ],
   after: String.raw`
+for (const o of collectGlass()) registerGlass(o, { hp: 1 });
+instanceGlass();
+scene.traverse((o) => { if (o.isMesh) ensureColor(o); });
 function initDoorPhysics() {
   for (const L of DOOR_LEAVES) {
     L.idx = registerOwner({ type: "door", d: L });

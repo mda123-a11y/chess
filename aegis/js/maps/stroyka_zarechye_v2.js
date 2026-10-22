@@ -2,6 +2,10 @@
 window.AEGIS_MAP_BUILDERS=window.AEGIS_MAP_BUILDERS||{};
 window.AEGIS_MAP_BUILDERS['stroyka_zarechye_v2']=async function(ctx){
 
+var THREE = ctx.THREE;
+var __HK = { sound: null, fx: null, break: null };
+var __deepNoop = (function () { var f = function () { return p; }; var p = new Proxy(f, { get: function (t, k) { return k === Symbol.toPrimitive ? function () { return 0; } : p; }, apply: function () { return p; } }); return p; })();
+
 var THREE35 = ctx.THREE;
 var PRESETS = {
   potato: {
@@ -165,6 +169,7 @@ var camera = ctx.camera;
 var MAXA = () => Math.min(Q.aniso, renderer.capabilities.getMaxAnisotropy());
 var FRAME = { t: 0, dt: 0.016, n: 0 };
 var NO_REFLECT = [];
+var PERF = { pr: Math.min(devicePixelRatio, Q.pixel), minPr: Math.min(Q.minPr, Q.pixel), maxPr: Math.min(devicePixelRatio, Q.pixel), acc: 0, n: 0, t: 0, load: 0, auto: true, frameMs: 16, lvl: 0, calm: 0, shadowEvery: Q.shadowEvery };
 var CELL = 4;
 var GRID = /* @__PURE__ */ new Map();
 var COLLIDERS = [];
@@ -2270,6 +2275,10 @@ float sfxNoise(vec3 x) {
 }
 `
 );
+var cdirty = false;
+var markCharDirty = () => {
+  cdirty = true;
+};
 var WIND = { dir: new THREE4.Vector2(0.8, 0.6).normalize(), strength: 0.6, gust: 0.5, angle: 0.64, base: 0.6 };
 var windUniforms = {
   uTime: { value: 0 },
@@ -2943,6 +2952,13 @@ function hideTree(t) {
   }
   updateForestLOD(true);
 }
+var charTree = function(){};
+function thinTree(t, k) {
+  t.thin = Math.min(1, (t.thin || 0) + k);
+  t.color.multiplyScalar(1 - k * 0.25);
+  updateForestLOD(true);
+}
+var treeGeo = (t) => ({ trunk: t.L.trunkIM.geometry, crown: t.L.hiIM.geometry, bark: t.L.trunkIM.material, foliage: t.L.hiIM.material, sp: t.L.sp });
 function treeNear(x, z, r) {
   for (let i = -1; i <= 1; i++) for (let j = -1; j <= 1; j++) {
     const L = TREE_GRID.get(tkey(x + i * 6, z + j * 6));
@@ -3016,7 +3032,7 @@ function buildForest() {
     const k = tkey(x, z);
     if (!TREE_GRID.has(k)) TREE_GRID.set(k, []);
     TREE_GRID.get(k).push(t);
-    if (e < MAP.FENCE + 1) {
+    if (true) {
       t.col = addCircle(x, z, Math.max(0.18, t.r * 1.05), t.y, t.y + h);
       t.col.tree = t;
     }
@@ -3347,8 +3363,29 @@ function grassDensityExact(x, z) {
   return clamp(d * (1 - bog2 * 2.2), 0, 1.3);
 }
 var PHYS = {ready:false,bodies:[],statics:new Map()};
-var addStaticCollider = function(){};
-var addBody = function(){return null};
+var V0 = null;
+var V1 = null;
+var addStaticCollider = function(c){ if(c && !COLLIDERS.includes(c)) COLLIDERS.push(c); };
+var removeStaticCollider = function(c){ if(c) c.dead = true; };
+var BODY_IDX0 = 1e6;
+var addBody = function(mesh, o){ return __addBody(mesh, o); };
+var killBody = function(){};
+function freezeBody(b) {
+  if (!b?.body) return;
+  const i = PHYS.bodies.indexOf(b);
+  if (i >= 0) PHYS.bodies.splice(i, 1);
+  V0.setValue(0, 0, 0);
+  V1.setValue(0, 0, 0);
+  b.body.setLinearVelocity(V0);
+  b.body.setAngularVelocity(V1);
+  b.body.setMassProps(0, V0);
+  b.body.setCollisionFlags(b.body.getCollisionFlags() | 1);
+  b.body.setActivationState(2);
+  b.frozen = true;
+}
+var isSleeping = (b) => b?.body && !b.body.isActive();
+var blastImpulse = function(){};
+var rayCast = function(){ return null; };
 var THREE8 = ctx.THREE;
 var CH = 16;
 var INNER = 176;
@@ -3631,6 +3668,21 @@ function buildTerrain() {
   scene.add(outer);
   TERRAIN.chunks.push(outer);
 }
+var THREE9 = ctx.THREE;
+var WEATHER = {
+  mode: "clear",
+  auto: true,
+  next: 240,
+  ov: 0.05,
+  rain: 0,
+  storm: 0,
+  fogK: 0,
+  wet: 0,
+  flash: 0,
+  flashDir: new THREE9.Vector3(0, 1, 0),
+  onStrike: null,
+  strikes: 0
+};
 var THREE11 = ctx.THREE;
 var GRASS = { im: null, center: new THREE11.Vector2(1e9, 1e9), count: 0, cap: 1 };
 function clumpGeo(planes, w, h, segs = 2) {
@@ -4149,6 +4201,8 @@ function fernGeo() {
 }
 var THREE12 = ctx.THREE;
 var LAKE = { mesh: null, mat: null, ripples: [], mirror: null };
+function addRipple(x, z, strength = 1) {
+}
 function mergeSimple(geos) {
   const pos = [], nrm = [], uv = [], idx2 = [];
   let off = 0;
@@ -4464,6 +4518,19 @@ function flushStatic() {
   console.info(`[static] материалов ${BUCKETS.size} (одноцветных ${plainIn} → ${PLAIN.size}), мешей ${draws2}, теневых двойников ${pAcc.size} (${Math.round(pv / 1e3)}k вершин)`);
   BUCKETS.clear();
   return draws2;
+}
+function collapsePanel(p) {
+  for (const r of p.ranges) {
+    const pos = r.mesh.geometry.attributes.position, a = pos.array, i0 = r.start * 3;
+    const x = a[i0], y = a[i0 + 1], z = a[i0 + 2];
+    for (let i = i0; i < (r.start + r.count) * 3; i += 3) {
+      a[i] = x;
+      a[i + 1] = y;
+      a[i + 2] = z;
+    }
+    pos.addUpdateRange(i0, r.count * 3);
+    pos.needsUpdate = true;
+  }
 }
 var THREE14 = ctx.THREE;
 var LAMPS = [];
@@ -4812,7 +4879,24 @@ function finishLamps() {
     POINTS.push(pl);
   }
 }
-var FX = { add: null, alpha: null, dirt: null };
+var FX = __deepNoop;
+var FLAME = { list: [], mesh: null, max: 220, P: null, S: null, L: null };
+function flameAdd(o) {
+  const f = { x: o.x, y: o.y, z: o.z, w: o.w, h: o.h, h0: o.h, i: o.i ?? 1, lean: o.lean ?? 0.4, lx: o.lx ?? 0, lz: o.lz ?? 0, soot: o.soot ?? 0.35, seed: o.seed ?? srnd(), dead: false };
+  FLAME.list.push(f);
+  return f;
+}
+var FSND = { heat: 0, x: 0, nextPop: 0, acc: 0, px: 0, pz: 0, best: 1e9 };
+function fireNear(pos, power) {
+  const d = Math.max(0.6, camera.position.distanceTo(pos));
+  const k = power / (1 + d * d / 9);
+  FSND.acc += k;
+  if (d < FSND.best) {
+    FSND.best = d;
+    FSND.px = pos.x;
+    FSND.pz = pos.z;
+  }
+}
 var AUDIO = { ctx: null, master: null, on: true, t: 0, nextBird: 3, nextCricket: 0, nextShell: 20, nextOwl: 30 };
 var noiseBuf;
 function burst(t, { type = "bandpass", f = 1e3, f1 = null, q = 1, vol = 0.3, a = 2e-3, dec = 0.3, x = 0, len = 1 }) {
@@ -4835,6 +4919,8 @@ function burst(t, { type = "bandpass", f = 1e3, f1 = null, q = 1, vol = 0.3, a =
   src.stop(t + a + dec + len * 0.1 + 0.05);
 }
 var ready = () => AUDIO.ctx && AUDIO.on;
+var glassSound = function(){};
+var woodCrack = function(){};
 function env(g, t0, a, peak, dec) {
   g.gain.cancelScheduledValues(t0);
   g.gain.setValueAtTime(1e-4, t0);
@@ -4846,21 +4932,87 @@ function pan(ctx, x) {
   if (p.pan) p.pan.value = clamp(x, -1, 1);
   return p;
 }
-function sparkSound(dist, big = 1) {
-  if (!ready()) return;
-  const t = AUDIO.ctx.currentTime + dist / 343, v = clamp(big * 0.9 / (1 + dist / 10), 0.02, 0.6);
-  for (let i = 0; i < 6 + big * 8; i++) burst(t + Math.random() * 0.5 * big, { type: "highpass", f: 2e3 + Math.random() * 4e3, vol: v * Math.random(), a: 1e-3, dec: 0.03 });
-  const o = AUDIO.ctx.createOscillator(), g = AUDIO.ctx.createGain();
-  o.type = "sawtooth";
-  o.frequency.setValueAtTime(100, t);
-  o.frequency.exponentialRampToValueAtTime(30, t + 0.8);
-  env(g, t, 0.01, v * 0.25, 0.8);
-  o.connect(g);
-  g.connect(AUDIO.sfx || AUDIO.master);
+function boom(dist, size = 1, x = 0, occl = 0, lake = false) {
+  const ctx = AUDIO.ctx;
+  if (!ctx || !AUDIO.on) return;
+  const t = ctx.currentTime + dist / 343;
+  // за препятствием (стена, бруствер, холм) — глуше и тише
+  const vol = clamp(size * 1.6 / (1 + dist / 25), 0.02, 1.4) * (1 - occl * 0.45);
+  const src = ctx.createBufferSource();
+  src.buffer = noiseBuf;
+  const f = ctx.createBiquadFilter();
+  f.type = "lowpass";
+  f.frequency.setValueAtTime(lerp(5e3, 700, clamp(dist / 250, 0, 1)) * (1 - occl * 0.65), t);
+  if (lake) {
+    // эхо над озером: отражение от дальнего берега, глухое и запаздывающее
+    for (const [dl, k] of [[0.55 + dist / 900, 0.32], [1.25 + dist / 700, 0.16]]) {
+      const e = ctx.createBufferSource(), ef = ctx.createBiquadFilter(), eg = ctx.createGain();
+      e.buffer = noiseBuf;
+      ef.type = "lowpass";
+      ef.frequency.value = 650;
+      env(eg, t + dl, 0.03, vol * k, 1.6);
+      e.connect(ef);
+      ef.connect(eg);
+      eg.connect(pan(ctx, -x * 0.6)).connect(AUDIO.sfx || AUDIO.master);
+      e.start(t + dl, Math.random() * 2);
+      e.stop(t + dl + 2.2);
+    }
+  }
+  f.frequency.exponentialRampToValueAtTime(120, t + 1.8);
+  const g = ctx.createGain();
+  env(g, t, 5e-3, vol, 1.6 + size * 0.6);
+  const p = pan(ctx, x);
+  src.connect(f);
+  f.connect(g);
+  g.connect(p);
+  p.connect(AUDIO.sfx || AUDIO.master);
+  src.start(t, Math.random() * 2);
+  src.stop(t + 3);
+  const o = ctx.createOscillator(), og = ctx.createGain();
+  o.type = "sine";
+  o.frequency.setValueAtTime(70, t);
+  o.frequency.exponentialRampToValueAtTime(28, t + 0.6);
+  env(og, t, 4e-3, vol * 0.9, 0.7);
+  o.connect(og);
+  og.connect(AUDIO.sfx || AUDIO.master);
   o.start(t);
   o.stop(t + 1);
 }
+function click() {
+  const ctx = AUDIO.ctx;
+  if (!ctx) return;
+  const t = ctx.currentTime, o = ctx.createOscillator(), g = ctx.createGain();
+  o.type = "square";
+  o.frequency.setValueAtTime(1800, t);
+  o.frequency.exponentialRampToValueAtTime(400, t + 0.03);
+  env(g, t, 1e-3, 0.2, 0.05);
+  o.connect(g);
+  g.connect(AUDIO.sfx || AUDIO.master);
+  o.start(t);
+  o.stop(t + 0.1);
+}
+function tinnitus(k) {
+  const ctx = AUDIO.ctx;
+  if (!ctx || k < 0.1) return;
+  const t = ctx.currentTime, o = ctx.createOscillator(), g = ctx.createGain();
+  o.type = "sine";
+  o.frequency.value = 3900;
+  g.gain.setValueAtTime(1e-4, t);
+  g.gain.linearRampToValueAtTime(0.05 * k, t + 0.1);
+  g.gain.exponentialRampToValueAtTime(1e-4, t + 4 * k);
+  o.connect(g);
+  g.connect(AUDIO.sfx || AUDIO.master);
+  o.start(t);
+  o.stop(t + 4.5);
+  AUDIO.master.gain.setValueAtTime(0.25, t);
+  AUDIO.master.gain.linearRampToValueAtTime(0.8, t + 3 * k);
+}
+var creakSound = function(){};
+var wireSnap = function(){};
+var sparkSound = function(){};
 var THREE27 = ctx.THREE;
+var BGU2 = ctx.BGU;
+var THREE26 = ctx.THREE;
 var THREE18 = ctx.THREE;
 var THREE17 = ctx.THREE;
 var THREE16 = ctx.THREE;
@@ -4870,6 +5022,7 @@ var shardMat = null;
 var SHARDS = { im: null, free: [], cap: 320 };
 var _ZERO_M = new THREE16.Matrix4().makeScale(0, 0, 0);
 var _m4 = new THREE16.Matrix4();
+var _p2 = new THREE16.Vector3();
 var _s3 = new THREE16.Vector3();
 var _e2 = new THREE16.Euler();
 function addPane(x, y, z, rot, w, h, o = {}) {
@@ -4932,6 +5085,77 @@ function paneBody(p) {
   PHYS.world.addRigidBody(b, 2, -1);
   return b;
 }
+function breakPane(p, dir2, force = 4, hit = null) {
+  if (!p.alive) return;
+  p.alive = false;
+  writePane(p);
+  if (p.col) p.col.dead = true;
+  if (p.body) {
+    PHYS.world.removeRigidBody(p.body);
+    PHYS.A.destroy(p.body.__ms);
+    PHYS.A.destroy(p.body.__shape);
+    PHYS.A.destroy(p.body);
+    p.body = null;
+  }
+  const right2 = new THREE16.Vector3(1, 0, 0).applyQuaternion(p.q), up = new THREE16.Vector3(0, 1, 0).applyQuaternion(p.q);
+  const n2 = Math.min(16, 5 + Math.round(p.w * p.h * 14));
+  for (let i = 0; i < n2; i++) {
+    const u = sr(-0.5, 0.5), v = sr(-0.5, 0.5), s = sr(0.04, 0.22) * Math.min(1, p.w + p.h);
+    const pos = p.pos.clone().addScaledVector(right2, u * p.w).addScaledVector(up, v * p.h);
+    if (hit) pos.lerp(hit, 0.2);
+    const vel = dir2.clone().multiplyScalar(force * sr(0.4, 1.2)).add(new THREE16.Vector3(sr(-1, 1), sr(-0.3, 1.2), sr(-1, 1)));
+    const q = new THREE16.Quaternion().setFromEuler(new THREE16.Euler(srnd() * TAU, srnd() * TAU, srnd() * TAU));
+    if (!SHARDS.free.length) break;
+    const slot = SHARDS.free.pop(), sx = s * sr(0.5, 1), sy = s * sr(0.5, 1);
+    const put2 = (pp, qq, f) => {
+      _s3.set(sx * f, sy * f, 1);
+      SHARDS.im.setMatrixAt(slot, _m4.compose(pp, qq, _s3));
+      SHARDS.im.instanceMatrix.needsUpdate = true;
+    };
+    const release = () => {
+      SHARDS.im.setMatrixAt(slot, _ZERO_M);
+      SHARDS.im.instanceMatrix.needsUpdate = true;
+      SHARDS.free.push(slot);
+    };
+    put2(pos, q, 1);
+    const b = addBody({
+      shape: "box",
+      size: [s, s * 0.8, 0.03],
+      mass: 0.08,
+      pos,
+      quat: q,
+      vel,
+      ang: new THREE16.Vector3(sr(-15, 15), sr(-15, 15), sr(-15, 15)),
+      life: sr(14, 24),
+      friction: 0.5,
+      restitution: 0.35,
+      ccd: 0.02,
+      float: 0,
+      rad: 0.02,
+      sync: (pp, qq, f) => put2(pp, qq, Math.max(0.01, f)),
+      onDone: release
+    });
+    if (!b) release();
+  }
+  for (let i = 0; i < 14; i++) FX.add.spawn({ x: p.pos.x + sr(-p.w, p.w) * 0.5, y: p.pos.y + sr(-p.h, p.h) * 0.5, z: p.pos.z + sr(-0.2, 0.2), vx: dir2.x * force * 0.5 + sr(-1, 1), vy: sr(-0.5, 2), vz: dir2.z * force * 0.5 + sr(-1, 1), size: 0.03, life: sr(0.4, 1.2), col: [1.6, 1.7, 1.8], a: 0.8, grav: 9.8, drag: 0.5 });
+  const d = camera.position.distanceTo(p.pos);
+  const rightC = new THREE16.Vector3(1, 0, 0).applyQuaternion(camera.quaternion);
+  glassSound(0, rightC.dot(p.pos.clone().sub(camera.position).normalize()) * (d > 1 ? 1 : 0));
+}
+var PENDING = [];
+function blastGlass(x, y, z, size) {
+  const R2 = 16 * size + 6;
+  for (const p of PANES) {
+    if (!p.alive) continue;
+    const d = p.pos.distanceTo(_p2.set(x, y, z));
+    if (d > R2) continue;
+    const chance = d < R2 * 0.45 ? 1 : 1 - (d - R2 * 0.45) / (R2 * 0.55);
+    if (Math.random() > chance) continue;
+    const dir2 = p.pos.clone().sub(_p2).normalize();
+    PENDING.push({ p, t: FRAME.t + d / 343, dir: dir2, force: Math.max(1.5, 9 * size / (1 + d * 0.3)) });
+  }
+}
+var breakPaneRef = (p, dir2, force) => breakPane(p, dir2, force);
 var TYPES = {
   sedan: {
     L: 4.1,
@@ -5181,6 +5405,19 @@ function writeBarrel(b) {
   b.im.setMatrixAt(b.k, _m5.compose(b.pos, b.q, _one));
   b.im.instanceMatrix.needsUpdate = true;
 }
+function blastBarrels(x, y, z, power) {
+  if (PHYS.ready) return;
+  for (const b of BARRELS) {
+    const dx = b.pos.x - x, dy = b.pos.y - y, dz = b.pos.z - z, d = Math.hypot(dx, dy, dz);
+    if (d > 9) continue;
+    const f = power * (1 - d / 9) * (1 - d / 9) * 14;
+    b.vel.x += dx / (d + 0.3) * f;
+    b.vel.z += dz / (d + 0.3) * f;
+    b.vel.y += f * 0.7 + 1.5;
+    b.w.set((Math.random() - 0.5) * f * 2, (Math.random() - 0.5) * f, (Math.random() - 0.5) * f * 2);
+    b.rest = 0;
+  }
+}
 function fallenLog(x, z, rot, L, r, R2) {
   const y = hFast(x, z);
   const a = Math.cos(rot), s = Math.sin(rot);
@@ -5376,6 +5613,333 @@ function makeCloth({ nx, ny, place: place2, pinFn, material, drag = 0.985, wind 
   CLOTHS.push(c);
   return c;
 }
+function nudgeCloth(x, y, z, r, power) {
+  for (const c of CLOTHS) {
+    if (c.center.distanceTo({ x, y, z }) > r + 8) continue;
+    for (let k = 0; k < c.N; k++) {
+      if (c.pin[k]) continue;
+      const i3 = k * 3, dx = c.P[i3] - x, dy = c.P[i3 + 1] - y, dz = c.P[i3 + 2] - z, d = Math.hypot(dx, dy, dz);
+      if (d > r) continue;
+      const f = (1 - d / r) * power;
+      c.O[i3] -= dx / (d + 0.1) * f * 0.02;
+      c.O[i3 + 1] -= dy / (d + 0.1) * f * 0.02;
+      c.O[i3 + 2] -= dz / (d + 0.1) * f * 0.02;
+    }
+  }
+}
+var THREE21 = ctx.THREE;
+var N = BURN.N;
+var fuel = new Float32Array(N * N);
+var heat = new Float32Array(N * N);
+var state = new Uint8Array(N * N);
+var active = [];
+var FIRE = { cells: 0, trees: [], brands: [], lights: [], near: 0, structs: [] };
+var MAXC = () => Math.round(500 + 900 * Q.tex);
+var idx = (x, z) => {
+  const i = Math.floor(x - BURN.X0), j = Math.floor(z - BURN.X0);
+  return i < 0 || j < 0 || i >= N || j >= N ? -1 : j * N + i;
+};
+function lightCell(k, h) {
+  if (state[k] !== 0 || fuel[k] < 0.12 || active.length >= MAXC()) return false;
+  state[k] = 1;
+  heat[k] = h;
+  active.push(k);
+  return true;
+}
+function ignite(x, z, r, strength = 1) {
+  const wet = WEATHER.wet;
+  let n2 = 0;
+  for (let dz = -r; dz <= r; dz++) for (let dx = -r; dx <= r; dx++) {
+    if (dx * dx + dz * dz > r * r) continue;
+    const k = idx(x + dx, z + dz);
+    if (k < 0) continue;
+    if (Math.random() < strength * (1 - wet * 0.85) && lightCell(k, 0.3 + Math.random() * 0.5)) n2++;
+  }
+  return n2;
+}
+var scorch = function(){};
+var markPuddle = function(){};
+var heatAt = (x, z) => {
+  const k = idx(x, z);
+  return k < 0 ? 0 : heat[k];
+};
+var igniteTree = function(){};
+var attachFire = function(){};
+var _d2 = new THREE21.Vector3();
+var FALLING = [];
+var deformCrater = function(){};
+var clods = function(){};
+var splinters = function(){};
+var BRANCH_GEO = {};
+function branchGeo(sp) {
+  if (BRANCH_GEO[sp]) return BRANCH_GEO[sp];
+  const stick = new THREE21.CylinderGeometry(0.018, 0.032, 1, 5, 1).rotateZ(Math.PI / 2).toNonIndexed();
+  const cards = [];
+  for (let k = 0; k < 4; k++) {
+    const c = new THREE21.PlaneGeometry(0.5, 0.36).toNonIndexed();
+    const uv2 = c.attributes.uv;
+    for (let i = 0; i < uv2.count; i++) uv2.setXY(i, uv2.getX(i) * 0.5 + k % 2 * 0.5, uv2.getY(i) * 0.5 + (k > 1 ? 0.5 : 0));
+    c.rotateX(-Math.PI / 2 + (k % 2 ? 0.5 : -0.5));
+    c.translate(-0.1 + k * 0.18, 0.02, 0);
+    cards.push(c);
+  }
+  const g = new THREE21.BufferGeometry();
+  const parts = [stick, ...cards];
+  let n2 = 0;
+  for (const p of parts) n2 += p.attributes.position.count;
+  const pos = new Float32Array(n2 * 3), nrm = new Float32Array(n2 * 3), uv = new Float32Array(n2 * 2), col = new Float32Array(n2 * 3).fill(0.85);
+  let o = 0;
+  for (const p of parts) {
+    pos.set(p.attributes.position.array, o * 3);
+    nrm.set(p.attributes.normal.array, o * 3);
+    uv.set(p.attributes.uv.array, o * 2);
+    o += p.attributes.position.count;
+  }
+  g.setAttribute("position", new THREE21.BufferAttribute(pos, 3));
+  g.setAttribute("normal", new THREE21.BufferAttribute(nrm, 3));
+  g.setAttribute("uv", new THREE21.BufferAttribute(uv, 2));
+  g.setAttribute("color", new THREE21.BufferAttribute(col, 3));
+  g.addGroup(0, stick.attributes.position.count, 0);
+  g.addGroup(stick.attributes.position.count, n2 - stick.attributes.position.count, 1);
+  return BRANCH_GEO[sp] = g;
+}
+function dropBranches(t, dir2, n2, hot) {
+  const G2 = treeGeo(t);
+  for (let i = 0; i < n2; i++) {
+    const L = sr(0.6, 1.7) * (t.h / 16), y = t.y + t.h * sr(0.35, 0.85), a = Math.atan2(dir2.z, dir2.x) + sr(-1.3, 1.3), r = sr(0.3, 1) * t.h * 0.1;
+    const pos = new THREE21.Vector3(t.x + Math.cos(a) * r, y, t.z + Math.sin(a) * r);
+    const mesh = new THREE21.Mesh(branchGeo(G2.sp), [M.deadwood, G2.foliage]);
+    mesh.scale.setScalar(L);
+    scene.add(mesh);
+    const vel = new THREE21.Vector3(dir2.x * sr(1, 5) + sr(-1, 1), sr(-0.5, 2.5), dir2.z * sr(1, 5) + sr(-1, 1));
+    const b = addBody({
+      shape: "box",
+      size: [L, 0.1 * L, 0.3 * L],
+      mass: 3 * L,
+      pos,
+      quat: new THREE21.Quaternion().setFromEuler(new THREE21.Euler(sr(-0.4, 0.4), srnd() * TAU, sr(-0.4, 0.4))),
+      vel,
+      ang: new THREE21.Vector3(sr(-4, 4), sr(-4, 4), sr(-4, 4)),
+      life: sr(25, 45),
+      friction: 0.9,
+      restitution: 0.05,
+      damp: [0.35, 0.6],
+      float: 1.6,
+      rad: 0.06 * L,
+      onDone: () => scene.remove(mesh)
+    });
+    if (!b) {
+      scene.remove(mesh);
+      continue;
+    }
+    b.sync = (p, q, f) => {
+      mesh.position.copy(p);
+      mesh.quaternion.copy(q);
+      mesh.scale.setScalar(L * f);
+    };
+    if (hot && Math.random() < 0.45 * (1 - WEATHER.wet)) attachFire(b, sr(5, 12));
+  }
+  for (let i = 0; i < 26; i++) FX.alpha.spawn({
+    x: t.x + sr(-1.5, 1.5),
+    y: t.y + t.h * sr(0.4, 0.9),
+    z: t.z + sr(-1.5, 1.5),
+    vx: dir2.x * sr(0.5, 3),
+    vy: sr(-0.5, 0.5),
+    vz: dir2.z * sr(0.5, 3),
+    size: sr(0.06, 0.16),
+    life: sr(2.5, 5),
+    col: [0.22, 0.2, 0.1],
+    a: 0.9,
+    grav: 1.4,
+    drag: 1.2,
+    windK: 1,
+    floor: hFast(t.x, t.z)
+  });
+}
+function colorize(g, c) {
+  const n2 = g.attributes.position.count, col = g.attributes.color ? g.attributes.color.array : new Float32Array(n2 * 3).fill(1);
+  for (let i = 0; i < n2; i++) {
+    col[i * 3] *= c.r;
+    col[i * 3 + 1] *= c.g;
+    col[i * 3 + 2] *= c.b;
+  }
+  g.setAttribute("color", new THREE21.BufferAttribute(col, 3));
+  return g;
+}
+function breakTree(t, dir2, k) {
+  const G2 = treeGeo(t);
+  hideTree(t);
+  const hb = clamp(sr(0.5, 2.4) / (1 + k * 0.12), 0.35, t.h * 0.3), L = t.h - hb;
+  const tint = new THREE21.Color(t.tint, t.tint, t.tint).multiplyScalar(1 - (t.char || 0) * 0.7);
+  const rBase = t.r * 1.05, rB = t.r * (1 - 0.6 * hb / t.h);
+  const sg = new THREE21.CylinderGeometry(rB, rBase, hb, 10, 1, false);
+  const sp = sg.attributes.position;
+  for (let i = 0; i < sp.count; i++) if (sp.getY(i) > hb / 2 - 1e-3 && Math.abs(sp.getX(i)) + Math.abs(sp.getZ(i)) > 1e-4) sp.setY(i, hb / 2 + sr(-0.05, 0.25));
+  sg.computeVertexNormals();
+  const stump2 = new THREE21.Mesh(colorize(sg, tint), G2.bark);
+  stump2.position.set(t.x, t.y + hb / 2, t.z);
+  stump2.castShadow = stump2.receiveShadow = true;
+  scene.add(stump2);
+  const cap = new THREE21.Mesh(new THREE21.CircleGeometry(rB * 0.9, 10), M.logEnd);
+  cap.rotation.x = -Math.PI / 2;
+  cap.position.set(t.x, t.y + hb + 0.04, t.z);
+  scene.add(cap);
+  if (t.col) {
+    removeStaticCollider(t.col);
+    t.col.y1 = t.y + hb;
+    addStaticCollider(t.col);
+  }
+  splinters(t.x, t.y + hb, t.z, dir2, 7);
+  const yc = L * 0.4;
+  const tg = colorize(new THREE21.CylinderGeometry(t.r * 0.15, rB * 0.97, L, 8, 3).translate(0, L / 2 - yc, 0), tint);
+  let cg = G2.crown.index ? G2.crown.toNonIndexed() : G2.crown.clone();
+  cg.scale(t.h, t.h, t.h);
+  cg.rotateY(t.rot);
+  cg.translate(0, -hb, 0);
+  {
+    const p = cg.attributes.position, keep2 = [];
+    for (let i = 0; i < p.count; i += 3) if (Math.min(p.getY(i), p.getY(i + 1), p.getY(i + 2)) > 0.05) keep2.push(i);
+    const out = new THREE21.BufferGeometry();
+    for (const name of ["position", "normal", "uv", "color"]) {
+      const a = cg.attributes[name];
+      if (!a) continue;
+      const arr = new Float32Array(keep2.length * 3 * a.itemSize);
+      keep2.forEach((i, n2) => {
+        for (let v = 0; v < 3; v++) for (let c = 0; c < a.itemSize; c++) arr[(n2 * 3 + v) * a.itemSize + c] = a.array[(i + v) * a.itemSize + c];
+      });
+      out.setAttribute(name, new THREE21.BufferAttribute(arr, a.itemSize));
+    }
+    cg = colorize(out, t.color);
+    cg.translate(0, -yc, 0);
+  }
+  const group = new THREE21.Group();
+  const trunkM = new THREE21.Mesh(tg, G2.bark), crownM = new THREE21.Mesh(cg, G2.foliage);
+  trunkM.castShadow = crownM.castShadow = true;
+  trunkM.receiveShadow = crownM.receiveShadow = true;
+  crownM.customDepthMaterial = t.L.hiIM.customDepthMaterial;
+  group.add(trunkM, crownM);
+  scene.add(group);
+  const start = new THREE21.Vector3(t.x, t.y + hb + yc + 0.02, t.z);
+  group.position.copy(start);
+  const axis = new THREE21.Vector3(dir2.z, 0, -dir2.x).normalize();
+  const tilt = new THREE21.Quaternion().setFromAxisAngle(axis, 0.04 + k * 0.02);
+  const crownR = t.h * (t.sp === "birch" ? 0.1 : 0.12);
+  const fall = { t, group, age: 0, L, hb, yc, frozen: false, axis, ang: 0.04, w: 0.35 + k * 0.4 };
+  fall.b = addBody({
+    shape: "compound",
+    mass: 120 + 900 * t.r * t.r * t.h,
+    pos: start,
+    quat: tilt,
+    keep: true,
+    friction: 1,
+    restitution: 0.05,
+    damp: [0.08, 0.35],
+    float: 1.3,
+    rad: Math.max(0.1, rB),
+    parts: [{ type: "cyl", size: [Math.max(0.08, rB * 0.8), L], pos: [0, L / 2 - yc, 0] }, { type: "cyl", size: [crownR, L * 0.5], pos: [0, L * 0.68 - yc, 0] }],
+    vel: new THREE21.Vector3(dir2.x * (0.6 + k * 0.5), 0.2, dir2.z * (0.6 + k * 0.5)),
+    ang: axis.clone().multiplyScalar(0.35 + k * 0.45),
+    sync: (p, q) => {
+      group.position.copy(p);
+      group.quaternion.copy(q);
+    }
+  });
+  if (!fall.b) group.quaternion.copy(tilt);
+  FALLING.push(fall);
+  const d = camera.position.distanceTo(start);
+  woodCrack(d, 0, 1);
+  if (t.char > 0.3 || Math.random() < 0.2) igniteTree({ ...t, h: L, y: t.y + hb, x: t.x + dir2.x * L * 0.6, z: t.z + dir2.z * L * 0.6 }, 6 + k * 4);
+}
+function updateFalling(dt) {
+  for (const f of FALLING) {
+    if (f.frozen) continue;
+    f.age += dt;
+    if (!f.b) {
+      f.w += dt * 1.4 * Math.sin(f.ang) * 9.8 / f.L;
+      f.ang = Math.min(1.45, f.ang + f.w * dt);
+      const q = new THREE21.Quaternion().setFromAxisAngle(f.axis, f.ang);
+      const base2 = new THREE21.Vector3(f.t.x, f.t.y + f.hb, f.t.z);
+      f.group.quaternion.copy(q);
+      f.group.position.copy(base2).add(new THREE21.Vector3(0, f.yc, 0).applyQuaternion(q));
+      if (f.ang >= 1.45) settle(f);
+      continue;
+    }
+    if (f.age > 1.5 && !f.b.wet && (isSleeping(f.b) || f.age > 16)) settle(f);
+  }
+}
+function settle(f) {
+  f.frozen = true;
+  if (f.b) freezeBody(f.b);
+  const up = new THREE21.Vector3(0, 1, 0).applyQuaternion(f.group.quaternion);
+  const base2 = f.group.position.clone().addScaledVector(up, -f.yc);
+  const r = Math.max(0.15, f.t.r * 0.8);
+  for (let s = 0.3; s < f.L * 0.75; s += 0.8) {
+    const p = base2.clone().addScaledVector(up, s);
+    addCircle(p.x, p.z, r, p.y - r, p.y + r).dyn = true;
+  }
+}
+var WAVES = [];
+var shockwave = function(){};
+function updateWaves(dt) {
+  for (let i = WAVES.length - 1; i >= 0; i--) {
+    const w = WAVES[i];
+    w.age += dt;
+    const k = w.age / 0.32;
+    if (k >= 1) {
+      w.m.visible = false;
+      WAVES.splice(i, 1);
+      continue;
+    }
+    w.m.scale.setScalar(0.6 + k * 8 * w.size);
+    w.m.material.uniforms.uA.value = (1 - k) * (1 - k) * 0.55;
+  }
+}
+function onBlast(x, gy, z, size, water, opt = {}) {
+  if (!water && !opt.deck) {
+    const r = 0.85 + 0.75 * size;
+    deformCrater(x, z, r);
+    scorch(x, z, Math.ceil(r * 1.7), 1);
+    markPuddle(x, z, Math.ceil(r));
+    clods(x, gy, z, size, Math.round((5 + 5 * size) * (0.5 + Q.tex * 0.5)));
+    const dry = 1 - WEATHER.wet;
+    if (Math.random() < 0.25 + 0.7 * dry) ignite(x, z, Math.ceil(r * 1.2 + size), 0.25 + 0.5 * dry);
+  }
+  const wet = WEATHER.wet;
+  let leafBudget = 260;
+  for (const t of treesNear(x, z, 9 * size + 3)) {
+    const d = Math.max(0.45, Math.hypot(t.x - x, t.z - z) - t.r);
+    const k = size * 2.2 / Math.pow(d, 1.15);
+    const strength = Math.max(0.5, t.r / 0.3);
+    _d2.set(t.x - x, 0, t.z - z).normalize();
+    if (k > 1.15 * strength && Math.random() < 0.92) {
+      breakTree(t, _d2.clone(), k);
+      continue;
+    }
+    if (!t.dead && k > 0.08 && leafBudget > 0) {
+      const nl = Math.min(leafBudget, 8 + k * 40);
+      leafBudget -= nl;
+      leafBurst(t.x, t.y + t.h * sr(0.45, 0.85), t.z, nl, t.sp, _d2, t.h * 0.12);
+    }
+    if (!t.dead && k > 0.22) {
+      dropBranches(t, _d2, Math.min(9, Math.round(1 + k * 5 * (0.6 + Q.tex * 0.4))), d < 3 * size);
+      thinTree(t, Math.min(0.5, k * 0.25));
+    }
+    if (!t.dead && d < 3.5 * size && Math.random() < 0.5 * (1 - wet)) {
+      igniteTree(t, 8 + k * 10);
+      charTree(t, 0.55);
+    } else if (d < 3 * size) charTree(t, 0.25);
+  }
+  blastGlass(x, gy, z, size);
+  blastStructs(x, gy, z, size);
+  blastImpulse(x, gy, z, 9 * size + 4, 9 * size);
+  shockwave(x, gy, z, size, water);
+  return true;
+}
+function updateDestruction(dt) {
+  updateFalling(dt);
+  updateWaves(dt);
+}
+var THREE25 = ctx.THREE;
 var THREE24 = ctx.THREE;
 var THREE23 = ctx.THREE;
 var THREE22 = ctx.THREE;
@@ -6243,7 +6807,1589 @@ function buildMilitary() {
   for (const B of BASE) buildBase(B, R2);
   buildZone(R2);
 }
+var PL = {pos:ctx.camera.position,vel:new THREE.Vector3(),mode:"walk",yaw:0,pitch:0,dead:0,agl:2};
+function die(msg, kind, at) {
+  if (PL.dead > 0) return;
+  PL.dead = 3.2;
+  PL.deathMsg = msg;
+  if (kind === "mine") click();
+  const x = at?.x ?? PL.pos.x, z = at?.z ?? PL.pos.z;
+  if (kind === "mine") setTimeout(() => explode(x, terrainH(x, z), z, at?.type || "pmn"), 180);
+}
+var _oa = new THREE25.Vector3();
+var _ob = new THREE25.Vector3();
+function losClear(ax, ay, az, bx, by, bz) {
+  const L = Math.hypot(bx - ax, by - ay, bz - az), n2 = Math.max(2, Math.ceil(L / 0.3));
+  for (let i = 1; i < n2; i++) {
+    const t = i / n2, x = ax + (bx - ax) * t, y = ay + (by - ay) * t, z = az + (bz - az) * t;
+    if (y < hFast(x, z) - 0.04) return false;
+  }
+  if (!PHYS.ready || L < 0.4) return true;
+  const h = rayCast(_oa.set(ax, ay, az), _ob.set(bx, by, bz));
+  if (!h || h.dist > L - 0.25) return true;
+  if (h.idx === -1) return false;
+  if (h.idx < 0 || h.idx >= BODY_IDX0) return true;
+  const c = COLLIDERS[h.idx];
+  return !c || c.dead || !!c.tree || !!c.wire || !!c.pane;
+}
+function blastExposure(x, y, z, drone) {
+  const px = PL.pos.x, py = PL.pos.y, pz = PL.pos.z, oy = y + 0.35;
+  if (drone) return losClear(x, oy, z, px, py, pz) ? 1 : 0.15;
+  let v = 0;
+  for (const hy of [0.25, 0.95, 1.55]) v += losClear(x, oy, z, px, py + hy * lerp(1, 0.62, PL.crouch), pz) ? 1 : 0;
+  return v / 3;
+}
+function blastKnock(x, y, z, size) {
+  if (PL.dead > 0 || PL.cine) return;
+  const dx = PL.pos.x - x, dy = PL.pos.y + 0.9 - y, dz = PL.pos.z - z, d = Math.hypot(dx, dy, dz);
+  if (d > 14 * size) return;
+  const ex = blastExposure(x, y, z, PL.mode === "drone");
+  PL.lastExposure = ex;
+  if (PL.mode === "walk") {
+    if (d < 1.9 * size * (0.3 + 0.7 * ex)) {
+      die("ПОГИБ ОТ РАЗРЫВА", "blast");
+      return;
+    }
+    if (d < 12 * size) {
+      const k = 9 * size / (1 + d * 0.9) * (0.12 + 0.88 * ex);
+      PL.vel.x += dx / d * k;
+      PL.vel.z += dz / d * k;
+      PL.vel.y += k * 0.35;
+      PL.onGround = false;
+    }
+  } else if (d < 9 * size) {
+    const k = 14 * size / (1 + d) * (0.2 + 0.8 * ex);
+    PL.vel.x += dx / d * k;
+    PL.vel.y += dy / d * k;
+    PL.vel.z += dz / d * k;
+    if (d < 1.6 * size * (0.3 + 0.7 * ex)) die("ДРОН УНИЧТОЖЕН ВЗРЫВОМ", "blast");
+  }
+}
+var BLAST = { shake: 0, flash: null, craters: [], debris: null, chunks: [], last: null, hooks: [] };
+var craterI = 0;
+function crater(x, z, r) {
+  const m = BLAST.craters[craterI++ % BLAST.craters.length];
+  const p = m.geometry.attributes.position;
+  if (!m.userData.base) m.userData.base = p.array.slice();
+  const b = m.userData.base;
+  for (let i = 0; i < p.count; i++) {
+    const lx = b[i * 3] * r * 2, lz = b[i * 3 + 2] * r * 2;
+    p.setXYZ(i, lx, hFast(x + lx, z + lz) + 0.05, lz);
+  }
+  p.needsUpdate = true;
+  m.geometry.computeVertexNormals();
+  m.geometry.computeBoundingSphere();
+  m.position.set(x, 0, z);
+  m.rotation.y = srnd() * TAU;
+  m.visible = true;
+}
+function explode(x, y, z, kind = "pmn") {
+  const size = kind === "tm" ? 2.2 : kind === "shell" ? 1.8 : kind === "ozm" ? 1.3 : kind === "vog" ? 0.8 : 1;
+  const ground0 = terrainH(x, z);
+  // взрыв на настиле (мост, мостки, крыша): без воронки в грунте, осколки дерева вместо земли
+  const deck = y > Math.max(ground0, MAP.WATER_Y) + 0.3;
+  const water = !deck && lakeRho(x, z) < 0.98 && y < MAP.WATER_Y + 0.6;
+  const gy = water ? MAP.WATER_Y : deck ? y : ground0;
+  BLAST.last = { x, y: gy, z, t: FRAME.t, size };
+  for (const f of BLAST.hooks) f(x, gy, z, size);
+  BLAST.flash.position.set(x, gy + 1.5, z);
+  BLAST.flash.intensity = 520 * size;
+  BLAST.flash.userData.t = 0;
+  for (let i = 0; i < 12 * size; i++) {
+    const a = srnd() * TAU, u = srnd();
+    FX.add.spawn({
+      x: x + Math.cos(a) * 0.3,
+      y: gy + 0.4 + u,
+      z: z + Math.sin(a) * 0.3,
+      vx: Math.cos(a) * sr(1, 5) * size,
+      vy: sr(2, 8) * size,
+      vz: Math.sin(a) * sr(1, 5) * size,
+      size: sr(0.8, 1.8) * size,
+      grow: 3 * size,
+      life: sr(0.18, 0.4),
+      col: [3.2, 1.9, 0.8],
+      a: 1,
+      cool: 0.35,
+      drag: 3
+    });
+  }
+  for (let i = 0; i < 18 * size; i++) {
+    const a = srnd() * TAU, e = sr(0.3, 1.3);
+    FX.add.spawn({
+      x,
+      y: gy + 0.3,
+      z,
+      vx: Math.cos(a) * Math.cos(e) * sr(8, 22),
+      vy: Math.sin(e) * sr(8, 20),
+      vz: Math.sin(a) * Math.cos(e) * sr(8, 22),
+      size: 0.07,
+      life: sr(0.3, 0.9),
+      col: [3, 1.8, 0.7],
+      a: 1,
+      grav: 9,
+      drag: 0.6
+    });
+  }
+  if (water) {
+    for (let i = 0; i < 40 * size; i++) {
+      const a = srnd() * TAU, r = sr(0, 0.8);
+      FX.alpha.spawn({
+        x: x + Math.cos(a) * r,
+        y: gy,
+        z: z + Math.sin(a) * r,
+        vx: Math.cos(a) * sr(0.5, 3),
+        vy: sr(5, 14) * size,
+        vz: Math.sin(a) * sr(0.5, 3),
+        size: sr(0.5, 1.2),
+        grow: 1.5,
+        life: sr(1.2, 2.2),
+        col: [0.72, 0.76, 0.78],
+        a: 0.6,
+        grav: 9.8,
+        drag: 0.4,
+        floor: gy
+      });
+    }
+    addRipple(x, z, 1.2 * size);
+    onBlast(x, gy, z, size, true);
+  } else {
+    for (let i = 0; i < 46 * size; i++) {
+      const a = srnd() * TAU, e = sr(0.9, 1.5);
+      const sp = sr(4, 13) * size;
+      FX.dirt.spawn({
+        x: x + sr(-0.3, 0.3),
+        y: gy + 0.2,
+        z: z + sr(-0.3, 0.3),
+        vx: Math.cos(a) * Math.cos(e) * sp,
+        vy: Math.sin(e) * sp,
+        vz: Math.sin(a) * Math.cos(e) * sp,
+        size: sr(0.25, 0.8) * size,
+        grow: 0.6,
+        life: sr(1.2, 2.4),
+        col: [0.16, 0.12, 0.09],
+        a: 0.95,
+        grav: 9.8,
+        drag: 0.35,
+        floor: gy - 0.2,
+        fade: 2
+      });
+    }
+    for (let i = 0; i < 26 * size; i++) {
+      const a = srnd() * TAU, e = sr(0.5, 1.4), sp = sr(4, 12) * size;
+      BLAST.chunks.push({ p: new THREE26.Vector3(x, gy + 0.2, z), v: new THREE26.Vector3(Math.cos(a) * Math.cos(e) * sp, Math.sin(e) * sp, Math.sin(a) * Math.cos(e) * sp), life: sr(2.5, 4.5), s: sr(0.6, 1.6), r: new THREE26.Euler(srnd() * 6, srnd() * 6, 0) });
+    }
+    if (BLAST.chunks.length > 220) BLAST.chunks.splice(0, BLAST.chunks.length - 220);
+    onBlast(x, gy, z, size, false, { deck });
+    if (!deck) crater(x, z, 1.4 * size);
+    else splinters(x, gy + 0.2, z, new THREE26.Vector3(0, 1, 0), Math.round(8 * size), M.logEnd, 0.5);
+  }
+  blastKnock(x, gy, z, size);
+  for (let i = 0; i < 14 * size; i++) {
+    FX.alpha.spawn({
+      x: x + sr(-1, 1),
+      y: gy + sr(0.3, 2.5),
+      z: z + sr(-1, 1),
+      vx: sr(-0.8, 0.8),
+      vy: sr(0.6, 2.2),
+      vz: sr(-0.8, 0.8),
+      size: sr(1.4, 2.6) * size,
+      grow: 1.1,
+      life: sr(5, 9),
+      col: water ? [0.7, 0.72, 0.74] : [0.13, 0.11, 0.09],
+      col2: water ? [0.8, 0.82, 0.84] : [0.44, 0.41, 0.37],
+      glow: water ? 0 : 0.5,
+      a: 0.5,
+      fadeIn: 0.25,
+      windK: 1.5,
+      drag: 0.5
+    });
+  }
+  windUniforms.uBlast.value.set(x, gy, z, 0);
+  windUniforms.uBlastStr.value = 1.6 * size;
+  blastBarrels(x, gy, z, size);
+  nudgeCloth(x, gy, z, 16, 30 * size);
+  const d = camera.position.distanceTo(new THREE26.Vector3(x, gy, z));
+  BLAST.shake = Math.max(BLAST.shake, clamp(2.4 * size / (1 + d / 6), 0, 1.6));
+  const right2 = new THREE26.Vector3(1, 0, 0).applyQuaternion(camera.quaternion);
+  const panX = right2.dot(new THREE26.Vector3(x - camera.position.x, 0, z - camera.position.z).normalize());
+  const cp0 = camera.position, occl = d > 1.5 && !losClear(x, gy + 0.6, z, cp0.x, cp0.y, cp0.z) ? 1 : 0;
+  boom(d, size, panX, occl, lakeRho(x, z) < 1.5 || lakeRho(cp0.x, cp0.z) < 1.4);
+  if (d < 9) tinnitus(clamp(1 - d / 9, 0, 1));
+  return d;
+}
+var QUEUE = [];
+var BUDGET = () => Math.round(Q.bodies * 0.38 * (1 - PERF.load * 0.6));
+var bodiesThisBlast = 0;
+var bodiesThisFrame = 0;
+var _v4 = new THREE27.Vector3();
+var _q7 = new THREE27.Quaternion();
+var _up4 = new THREE27.Vector3(0, 1, 0);
+var LOG_GEO = new THREE27.CylinderGeometry(0.11, 0.11, 1, 7).rotateZ(Math.PI / 2);
+function blastStructs(x, y, z, size) {
+  bodiesThisBlast = 0;
+  _v4.set(x, y, z);
+  const R2 = 5 + 7 * size;
+  for (const s of STRUCTS) {
+    if (!s.center || s.center.distanceTo(_v4) > R2 + s.radius) continue;
+    let any = false;
+    for (const p of s.panels) {
+      if (p.dead || !p.box) continue;
+      const d = p.box.distanceToPoint(_v4);
+      if (d > R2) continue;
+      // граната выбивает кусок стены вплотную, снаряд/ТМ — несколько секций и крышу над ними
+      const dmg = size * 2.6 / Math.pow(0.5 + d, 1.5);
+      if (p.mode === "sag") {
+        sagPanel(p, dmg * 0.9, _v4);
+        continue;
+      }
+      if (p.onBlast) {
+        p.onBlast(p, _v4, size, d);
+        continue;
+      }
+      if (p === s.towerTop) continue;
+      // стойка вышки: граната отнимает не больше половины — ломают две, снаряд/ТМ — сразу
+      p.hp -= p.maxBlast && size < 1.3 ? Math.min(dmg * sr(0.8, 1.2), p.maxBlast) : dmg * sr(0.8, 1.2);
+      if (p.pole) p.hitY = Math.min(p.pole.b.y - 0.3, Math.max(p.pole.a.y + 0.25, y + sr(0.2, 1.2)));
+      if (p.hp <= 0) {
+        kill(p, _v4, Math.min(14, 7 * size / (0.8 + d * 0.5)), 0);
+        any = true;
+      }
+    }
+    if (any) s.shake = 1;
+    // взрывом вышку не просто лишает опор, а толкает прочь от взрыва: падает быстрее и в сторону от воронки
+    if (any && s.towerTop) {
+      s.blastW = Math.min(0.9, 0.25 + size * 0.35);
+      s.blastDir = new THREE27.Vector3(s.x - x, 0, s.z - z).normalize();
+      s.blastT = FRAME.t;
+    }
+    if (!s.quiet && s.center.distanceTo(_v4) < R2) dustFrom(s, 10);
+    if (Math.random() < 0.6 * (1 - WEATHER.wet) && s.center.distanceTo(_v4) < 3.5 + 2.5 * size + s.radius * 0.5 && size >= 0.8) igniteStruct(s, 0.3);
+  }
+}
+function hitPanel(p, point, dir2, dmg = 0.08) {
+  if (!p || p.dead) return;
+  if (p.mode === "sag") {
+    sagPanel(p, 0.24, point, dir2);
+    return;
+  }
+  if (p.onHit) p.onHit(p, point, dir2);
+  p.hp -= dmg;
+  splinterPuff(point, dir2);
+  if (p.hp <= 0) kill(p, point.clone().addScaledVector(dir2, -1), 3, 0);
+}
+function kill(p, from, force, delay) {
+  if (p.dead) return;
+  p.dead = true;
+  QUEUE.push({ p, from: from.clone(), force, t: FRAME.t + delay });
+}
+function boardAt(p, point, pad = 0.06) {
+  if (!p.boards) return null;
+  let best = null, bd = pad;
+  for (const bd2 of p.boards) {
+    if (!bd2.alive) continue;
+    const d = bd2.box.distanceToPoint(point);
+    if (d < bd) {
+      bd = d;
+      best = bd2;
+    }
+  }
+  return best;
+}
+function knockBoard(p, bd, dir2, force = 4) {
+  if (!bd.alive || p.dead) return;
+  bd.alive = false;
+  p.boardsLeft--;
+  for (const r of p.ranges) {
+    if (r.tag !== bd.tag) continue;
+    const pos = r.mesh.geometry.attributes.position, a = pos.array, i0 = r.start * 3;
+    for (let i = i0; i < (r.start + r.count) * 3; i += 3) {
+      a[i] = a[i0];
+      a[i + 1] = a[i0 + 1];
+      a[i + 2] = a[i0 + 2];
+    }
+    pos.addUpdateRange(i0, r.count * 3);
+    pos.needsUpdate = true;
+  }
+  const mine = p.parts.filter((q) => q.tag === bd.tag);
+  p.parts = p.parts.filter((q) => q.tag !== bd.tag);
+  const c = bd.box.getCenter(new THREE27.Vector3());
+  if (!p.quiet) dustAt(c, bd.box, 3, false);
+  splinterPuff(c, dir2);
+  if (!PHYS.ready || !mine.length || bodiesThisFrame > 6) return;
+  const rot = p.dims?.rot ?? p.s.rot ?? 0, qInv = new THREE27.Quaternion().setFromAxisAngle(_up4, -rot);
+  const group = new THREE27.Group(), lb = new THREE27.Box3();
+  for (const part of mine) {
+    const g = part.geo.clone().translate(-c.x, -c.y, -c.z).applyQuaternion(qInv);
+    g.computeBoundingBox();
+    lb.union(g.boundingBox);
+    const m = new THREE27.Mesh(g, part.mat);
+    m.castShadow = true;
+    group.add(m);
+  }
+  const ls = lb.getSize(new THREE27.Vector3()), lm = lb.getCenter(new THREE27.Vector3());
+  for (const m of group.children) m.geometry.translate(-lm.x, -lm.y, -lm.z);
+  const qa = new THREE27.Quaternion().setFromAxisAngle(_up4, rot);
+  const pos = c.clone().add(lm.applyQuaternion(qa));
+  group.position.copy(pos);
+  group.quaternion.copy(qa);
+  scene.add(group);
+  const size = [Math.max(0.03, ls.x), Math.max(0.03, ls.y), Math.max(0.03, ls.z)];
+  const b = addBody({
+    shape: "box", size, pos, quat: qa,
+    mass: clamp(size[0] * size[1] * size[2] * 550, 1, 80),
+    vel: dir2.clone().multiplyScalar(force * sr(0.4, 1)).add(new THREE27.Vector3(sr(-0.6, 0.6), sr(0.2, 1.5), sr(-0.6, 0.6))),
+    ang: new THREE27.Vector3(sr(-4, 4), sr(-4, 4), sr(-4, 4)),
+    life: sr(30, 50), friction: 0.9, restitution: 0.08, damp: [0.1, 0.35], float: 1.7, rad: Math.min(...size) / 2, ccd: 0.05,
+    onDone: () => { scene.remove(group); group.traverse((o) => o.geometry?.dispose()); },
+    sync: (q, r, f) => { group.position.copy(q); group.quaternion.copy(r); if (f < 1) group.scale.setScalar(Math.max(0.01, f)); }
+  });
+  if (!b) {
+    scene.remove(group);
+    return;
+  }
+  bodiesThisFrame++;
+  if (p.s.burn > 0.3 && Math.random() < 0.4) attachFire(b, sr(4, 9));
+}
+var onGone = null;
+function removePanel(p) {
+  if (p.mesh) {
+    p.mesh.parent?.updateMatrixWorld(true);
+    const g = p.mesh.geometry.clone().applyMatrix4(p.mesh.matrixWorld);
+    g.computeBoundingBox();
+    p.parts = [{ mat: p.mesh.material, geo: g }];
+    p.box = g.boundingBox.clone();
+    p.center = p.box.getCenter(new THREE27.Vector3());
+    p.mesh.parent?.remove(p.mesh);
+  }
+  collapsePanel(p);
+  if (onGone) onGone(p);
+  for (const c of p.cols) {
+    c.dead = true;
+    removeStaticCollider(c);
+  }
+  for (const pane of PANES) if (pane.panel === p && pane.alive) breakPane(pane, new THREE27.Vector3(sr(-1, 1), 0.3, sr(-1, 1)).normalize(), 2);
+}
+function processQueue() {
+  let n2 = 0;
+  bodiesThisFrame = 0;
+  const perFrame = Math.max(4, Math.round(Q.bodies * 0.1));
+  for (let i = 0; i < QUEUE.length && n2 < 6 && bodiesThisFrame < perFrame; i++) {
+    const e = QUEUE[i];
+    if (FRAME.t < e.t) continue;
+    QUEUE.splice(i--, 1);
+    n2++;
+    // сбой в обломках не должен оставить висящими опиравшиеся на панель части
+    try {
+      removePanel(e.p);
+      debris(e.p, e.from, e.force, e.fire);
+      if (e.p.onKill) e.p.onKill(e.p);
+    } catch (err) {
+      console.warn("[struct] debris", err);
+    }
+    e.p.s.supDirty = true;
+    supportPass(e.p.s);
+  }
+}
+function supLost(p) {
+  const S3 = p.sup, groups = S3.groups || [S3.list];
+  for (const L of groups) {
+    if (!L || !L.length) continue;
+    let alive = 0;
+    for (const q of L) if (!q.dead) alive++;
+    if (alive / L.length < S3.frac) return L;
+  }
+  return null;
+}
+function supportPass(s) {
+  let any = false;
+  for (const p of s.panels) {
+    if (p.dead || !p.sup) continue;
+    // связи и настил вышки держатся за каркас, пока он цел: падают вместе с ним одной группой
+    if (p.hingeKeep && s.towerTop && !s.towerTop.dead) continue;
+    if (p === s.towerTop) {
+      towerSupport(p, p.sup.list, !!supLost(p));
+      continue;
+    }
+    const L = supLost(p);
+    if (L) {
+      any = true;
+      if (p.big) {
+        const d = new THREE27.Vector3();
+        for (const q of L) if (q.dead) d.add(q.center);
+        d.divideScalar(Math.max(1, L.filter((q) => q.dead).length)).sub(p.center);
+        d.y = 0;
+        p.topple = d.lengthSq() > 1e-4 ? d.normalize() : new THREE27.Vector3(1, 0, 0);
+        if (p.onTopple) p.onTopple(p, p.topple);
+      }
+      kill(p, _v4.copy(p.center).add(new THREE27.Vector3(0, 2, 0)), 0.5, p.big ? 0.12 : sr(0.05, 0.45));
+    }
+  }
+  s.supDirty = any;
+}
+function localBox(p, rot) {
+  const q = _q7.setFromAxisAngle(_up4, -rot), b = new THREE27.Box3();
+  for (const part of p.parts) {
+    const pos = part.geo.attributes.position;
+    for (let i = 0; i < pos.count; i += 3) b.expandByPoint(_v4.fromBufferAttribute(pos, i).sub(p.center).applyQuaternion(q));
+  }
+  return b;
+}
+function debris(p, from, force, fire) {
+  const s = p.s, canBody = PHYS.ready && (bodiesThisBlast < BUDGET() || p.big);
+  const dir2 = new THREE27.Vector3().subVectors(p.center, from);
+  dir2.y = Math.max(dir2.y, 0.2);
+  dir2.normalize();
+  if (!p.quiet) dustAt(p.center, p.box, p.big ? 30 : p.kind === "roof" ? 6 : 10, fire);
+  if (p.mode === "none" || p.mode === "dust") return;
+  if (p.pole && PHYS.ready) return poleDebris(p, dir2, force, fire);
+  if (p.mode === "shatter" && p.dims) return shatter(p, dir2, force, fire, canBody);
+  if (!canBody || !p.parts.length) return;
+  const rot = s.rot ?? 0, lb = localBox(p, rot), size = lb.getSize(new THREE27.Vector3()), mid = lb.getCenter(new THREE27.Vector3());
+  if (size.x * size.y * size.z > 60 && !p.big) return;
+  const qInv = new THREE27.Quaternion().setFromAxisAngle(_up4, -rot);
+  const group = new THREE27.Group();
+  const byMat = /* @__PURE__ */ new Map();
+  for (const part of p.parts) {
+    if (!byMat.has(part.mat)) byMat.set(part.mat, []);
+    byMat.get(part.mat).push(part.geo);
+  }
+  for (const [mat, geos] of byMat) {
+    const list = geos.length > 6 ? [BGU2.mergeGeometries(geos, false) || geos[0]] : geos;
+    for (const g0 of list) {
+      const g = g0.clone().translate(-p.center.x, -p.center.y, -p.center.z).applyQuaternion(qInv).translate(-mid.x, -mid.y, -mid.z);
+      const m = new THREE27.Mesh(g, mat);
+      m.castShadow = true;
+      m.receiveShadow = true;
+      group.add(m);
+    }
+  }
+  const pos = p.center.clone().add(mid.clone().applyQuaternion(_q7.setFromAxisAngle(_up4, rot)));
+  group.position.copy(pos);
+  group.quaternion.setFromAxisAngle(_up4, rot);
+  scene.add(group);
+  const hs = [Math.max(0.04, size.x), Math.max(0.04, size.y), Math.max(0.04, size.z)];
+  const mass = p.big ? 2500 : clamp(hs[0] * hs[1] * hs[2] * p.density * 0.5, 2, 400);
+  const tp = p.topple;
+  const vel = p.big ? new THREE27.Vector3(tp.x * 0.6, -0.2, tp.z * 0.6) : dir2.clone().multiplyScalar(force * sr(0.5, 1.1)).add(new THREE27.Vector3(0, force * 0.2, 0));
+  const ang = p.big ? new THREE27.Vector3(tp.z, 0, -tp.x).multiplyScalar(0.28) : new THREE27.Vector3(sr(-2, 2), sr(-2, 2), sr(-2, 2)).multiplyScalar(Math.min(3, force * 0.3));
+  const b = addBody({
+    shape: "box",
+    size: hs,
+    mass,
+    pos,
+    quat: group.quaternion,
+    vel,
+    keep: !!p.big,
+    ang,
+    life: p.kind === "prop" ? 40 : 60,
+    friction: 0.8,
+    restitution: 0.1,
+    damp: [0.1, 0.3],
+    float: p.float,
+    rad: Math.min(hs[0], hs[1], hs[2]) / 2,
+    onDone: () => {
+      scene.remove(group);
+      group.traverse((o) => o.geometry?.dispose());
+    },
+    sync: (q, r, f) => {
+      group.position.copy(q);
+      group.quaternion.copy(r);
+      if (f < 1) group.scale.setScalar(Math.max(0.01, f));
+    }
+  });
+  if (b) {
+    bodiesThisBlast++;
+    bodiesThisFrame++;
+    if (fire && p.burnable) attachFire(b, sr(5, 10));
+    if (p.big) {
+      TOPPLED.push({ b, group, p, age: 0, hs, m0: new THREE27.Matrix4().compose(pos, group.quaternion, new THREE27.Vector3(1, 1, 1)), vy: 0 });
+      woodCrack(camera.position.distanceTo(pos), 0, 1.5);
+    }
+  } else {
+    scene.remove(group);
+  }
+}
+function shatter(p, dir2, force, fire, canBody) {
+  const D = p.dims, c = Math.cos(D.rot), s = Math.sin(D.rot);
+  const ux = c, uz = -s;
+  const pieces = [];
+  if (D.log) {
+    const rows = Math.max(1, Math.round(D.sy / 0.225)), segs = Math.max(1, Math.round(D.sx / 1.6));
+    for (let r = 0; r < rows; r++) for (let k = 0; k < segs; k++) {
+      const L = D.sx / segs, t = -D.sx / 2 + L * (k + 0.5), y = D.y - D.sy / 2 + (r + 0.5) * (D.sy / rows);
+      pieces.push({ x: D.x + ux * t, y, z: D.z + uz * t, L: L * sr(0.8, 1), log: true, bi: r });
+    }
+  } else {
+    const n2 = Math.max(1, Math.round(D.sx / 0.2));
+    for (let k = 0; k < n2; k++) {
+      const t = -D.sx / 2 + (k + 0.5) * (D.sx / n2), cut = D.sy > 1.2 && Math.random() < 0.6 ? 2 : 1;
+      for (let q = 0; q < cut; q++) pieces.push({ x: D.x + ux * t, y: D.y - D.sy / 2 + (q + 0.5) * D.sy / cut, z: D.z + uz * t, L: D.sy / cut * sr(0.7, 1), log: false, w: D.sx / n2, bi: k });
+    }
+  }
+  // кирпичная кладка рассыпается кусками в несколько кирпичей
+  if (D.brick) {
+    pieces.length = 0;
+    const cols = Math.max(1, Math.round(D.sx / 0.5)), rows = Math.max(1, Math.round(D.sy / 0.42));
+    for (let r = 0; r < rows; r++) for (let k = 0; k < cols; k++) {
+      const w = D.sx / cols, t = -D.sx / 2 + (k + 0.5) * w + sr(-0.04, 0.04), y = D.y - D.sy / 2 + (r + 0.5) * (D.sy / rows);
+      pieces.push({ x: D.x + ux * t, y, z: D.z + uz * t, L: D.sy / rows * sr(0.7, 0.95), log: false, w: w * sr(0.75, 1), bi: k, brick: true });
+    }
+  }
+  // уже выбитые пулями доски не появляются второй раз
+  if (p.boards && p.boards.length === (D.log ? Math.max(1, Math.round(D.sy / 0.225)) : Math.max(1, Math.round(D.sx / 0.2)))) {
+    for (let i = pieces.length - 1; i >= 0; i--) if (!p.boards[pieces[i].bi].alive) pieces.splice(i, 1);
+  }
+  const maxBodies = Math.min(pieces.length, Math.round(3 + Q.bodies / 18));
+  pieces.sort(() => Math.random() - 0.5);
+  pieces.forEach((pc, i) => {
+    if (i >= maxBodies || !canBody || bodiesThisBlast >= BUDGET()) {
+      if (i < 12) (pc.brick ? hgBrickChip : splinterPuff)(_v4.set(pc.x, pc.y, pc.z), dir2);
+      return;
+    }
+    let mesh, size, qa;
+    if (pc.log) {
+      mesh = new THREE27.Mesh(LOG_GEO, M.logEnd === D.mat ? M.logEnd : M.barkLog || M.logEnd);
+      mesh.scale.set(pc.L, 1, 1);
+      qa = new THREE27.Quaternion().setFromAxisAngle(_up4, D.rot);
+      size = [pc.L, 0.22, 0.22];
+    } else {
+      const g = uvBox(new THREE27.BoxGeometry(pc.w * 0.9, pc.L, D.sz * 0.8), pc.w * 0.9, pc.L, D.sz * 0.8, 1.5, false);
+      mesh = new THREE27.Mesh(g, D.mat ?? p.mat ?? M.planks);
+      qa = new THREE27.Quaternion().setFromEuler(new THREE27.Euler(sr(-0.1, 0.1), D.rot, sr(-0.15, 0.15)));
+      size = [pc.w * 0.9, pc.L, D.sz * 0.8];
+    }
+    mesh.castShadow = true;
+    mesh.receiveShadow = true;
+    scene.add(mesh);
+    const pos = new THREE27.Vector3(pc.x, pc.y, pc.z);
+    const sc = mesh.scale.clone();
+    const b = addBody({
+      shape: "box",
+      size,
+      mass: size[0] * size[1] * size[2] * (pc.brick ? 1500 : 550) + 1,
+      pos,
+      quat: qa,
+      vel: dir2.clone().multiplyScalar(force * sr(0.3, 1.1)).add(new THREE27.Vector3(sr(-1, 1), sr(0, 2) * Math.min(1, force / 4), sr(-1, 1))),
+      ang: new THREE27.Vector3(sr(-3, 3), sr(-3, 3), sr(-3, 3)),
+      life: sr(35, 60),
+      friction: 0.9,
+      restitution: 0.05,
+      damp: [0.1, 0.35],
+      float: 1.7,
+      rad: 0.1,
+      ccd: 0.08,
+      onDone: () => {
+        scene.remove(mesh);
+        if (!pc.log) mesh.geometry.dispose();
+      },
+      sync: (q, r, f) => {
+        mesh.position.copy(q);
+        mesh.quaternion.copy(r);
+        mesh.scale.copy(sc).multiplyScalar(clamp(f, 0.01, 1));
+      }
+    });
+    if (!b) {
+      scene.remove(mesh);
+      return;
+    }
+    bodiesThisBlast++;
+    bodiesThisFrame++;
+    if (fire && Math.random() < 0.3) attachFire(b, sr(5, 10));
+  });
+  const d = camera.position.distanceTo(_v4.set(D.x, D.y, D.z));
+  if (D.brick) {
+    hgBrickDust(D);
+    if (d < 220) impactSound("stone", d);
+  } else if (d < 120) woodCrack(d, 0, 0.6);
+}
+function hgBrickChip(p, dir2) {
+  for (let i = 0; i < 4; i++) FX.dirt.spawn({ x: p.x, y: p.y, z: p.z, vx: dir2.x * sr(1, 4) + sr(-1, 1), vy: sr(0.5, 3), vz: dir2.z * sr(1, 4) + sr(-1, 1), size: sr(0.05, 0.11), life: 1.4, col: [0.46, 0.25, 0.18], a: 0.95, grav: 9.8, floor: hFast(p.x, p.z) });
+  FX.alpha.spawn({ x: p.x, y: p.y, z: p.z, vx: dir2.x, vy: 0.3, vz: dir2.z, size: 0.4, grow: 1, life: 1.6, col: [0.56, 0.46, 0.4], a: 0.4, drag: 2 });
+}
+function hgBrickDust(D) {
+  const c = Math.cos(D.rot), s = Math.sin(D.rot);
+  for (let i = 0; i < 12; i++) {
+    const t = sr(-0.5, 0.5) * D.sx, y = D.y + sr(-0.5, 0.5) * D.sy;
+    FX.alpha.spawn({ x: D.x + c * t, y, z: D.z - s * t, vx: sr(-0.6, 0.6), vy: sr(0, 0.7), vz: sr(-0.6, 0.6), size: sr(0.5, 1.1), grow: 1.2, life: sr(2, 4), col: [0.55, 0.43, 0.37], a: 0.42, drag: 1.5 });
+  }
+}
+var splinterPuff = function(){};
+var dustAt = function(){};
+var dustFrom = function(){};
+var TOPPLED = [];
+function updateToppled(dt) {
+  for (let i = TOPPLED.length - 1; i >= 0; i--) {
+    const t = TOPPLED[i];
+    t.age += dt;
+    if (!t.b.body) {
+      TOPPLED.splice(i, 1);
+      continue;
+    }
+    // вышка разваливается от удара о землю: резкая потеря скорости после падения
+    if (t.p.breakOnImpact) {
+      const lv = t.b.body.getLinearVelocity(), sp = Math.hypot(lv.x(), lv.y(), lv.z());
+      const hitNow = t.age > 0.5 && t.sp0 !== void 0 && t.sp0 - sp > 2.2 && t.sp0 > 3;
+      t.sp0 = Math.max(sp, (t.sp0 ?? 0) * 0.9);
+      if (hitNow || t.age > 6) {
+        breakApart(t);
+        TOPPLED.splice(i, 1);
+        continue;
+      }
+    }
+    if (!t.hit && t.age > 0.6 && t.b.pos.y < hFast(t.b.pos.x, t.b.pos.z) + Math.min(t.hs[0], t.hs[2]) * 0.8) {
+      t.hit = true;
+      BLAST.shake = Math.max(BLAST.shake, 0.5 / (1 + camera.position.distanceTo(t.b.pos) / 40));
+      for (let k = 0; k < 30; k++) {
+        const s2 = sr(-0.5, 0.5) * t.hs[1];
+        const up = new THREE27.Vector3(0, 1, 0).applyQuaternion(t.b.quat);
+        FX.alpha.spawn({ x: t.b.pos.x + up.x * s2 + sr(-1, 1), y: hFast(t.b.pos.x, t.b.pos.z) + 0.3, z: t.b.pos.z + up.z * s2 + sr(-1, 1), vx: sr(-1.5, 1.5), vy: sr(0.3, 1.2), vz: sr(-1.5, 1.5), size: sr(1, 2.2), grow: 1.4, life: sr(3, 6), col: [0.44, 0.4, 0.34], a: 0.4, drag: 1.2, windK: 0.8 });
+      }
+      woodCrack(camera.position.distanceTo(t.b.pos), 0, 2);
+    }
+    if (t.age > 2 && (isSleeping(t.b) || t.age > 18)) {
+      freezeBody(t.b);
+      const up = new THREE27.Vector3(0, 1, 0).applyQuaternion(t.b.quat);
+      const yaw = Math.atan2(up.x, up.z), L = t.hs[1], w = Math.max(t.hs[0], t.hs[2]);
+      const c = addBox(t.b.pos.x, t.b.pos.y, t.b.pos.z, w * 0.8, Math.min(t.hs[0], t.hs[2]) * 0.9, L * Math.hypot(up.x, up.z) + w * 0.5, yaw, { walk: true });
+      c.dyn = true;
+      TOPPLED.splice(i, 1);
+    }
+  }
+}
+function poleDebris(p, dir2, force, fire) {
+  const P3 = p.pole, a = P3.a, b = P3.b, H3 = b.y - a.y;
+  const f = clamp(p.hitY !== void 0 ? (p.hitY - a.y) / H3 : sr(0.2, 0.75), 0.12, 0.85);
+  const m = a.clone().lerp(b, f);
+  // стойка вышки: пенёк остаётся стоять, верх остаётся прибит к каркасу и уходит в крен/падение вместе с ним
+  if (p.s.towerTop && !p.s.towerTop.dead) {
+    const mk = (s0, s1, r0, r1) => {
+      const d = new THREE27.Vector3().subVectors(s1, s0), L = d.length();
+      const g = new THREE27.CylinderGeometry(r1, r0, L, 7).applyQuaternion(new THREE27.Quaternion().setFromUnitVectors(_up4, d.normalize()));
+      const c = s0.clone().add(s1).multiplyScalar(0.5);
+      return g.translate(c.x, c.y, c.z);
+    };
+    const rm = lerp(P3.r, P3.r1, f);
+    const stump = new THREE27.Mesh(mk(a, m.clone().add(new THREE27.Vector3(0, -0.04, 0)), P3.r, rm), P3.mat);
+    stump.castShadow = true;
+    stump.receiveShadow = true;
+    scene.add(stump);
+    p.s.breakY = m.y;
+    if (p.hinged) return;
+    // излом: верхний обломок чуть сдвинут от пенька — видно, что стойка перебита
+    const off = new THREE27.Vector3(dir2.x, 0, dir2.z).normalize().multiplyScalar(0.06);
+    (p.s.hingeExtra ??= []).push({ geo: mk(m.clone().add(off).add(new THREE27.Vector3(0, 0.05, 0)), b, rm, P3.r1), mat: P3.mat });
+    splinters(m.x, m.y, m.z, dir2, 8, M.logEnd, 0.3);
+    woodCrack(camera.position.distanceTo(m), panOf(m), 1.1);
+    if (fire) for (let k = 0; k < 6; k++) FX.add.spawn({ x: m.x, y: m.y, z: m.z, vx: sr(-1.5, 1.5), vy: sr(1, 3), vz: sr(-1.5, 1.5), size: 0.05, life: sr(0.8, 1.6), col: [3, 1.3, 0.4], a: 1, grav: 3 });
+    return;
+  }
+  const segs = [[a.clone().add(new THREE27.Vector3(0, 0.02, 0)), m, P3.r, lerp(P3.r, P3.r1, f), 0.05], [m.clone(), b, lerp(P3.r, P3.r1, f), P3.r1, 1]];
+  for (const [s0, s1, r0, r1, k] of segs) {
+    const d = new THREE27.Vector3().subVectors(s1, s0), L = d.length();
+    if (L < 0.15) continue;
+    const g = new THREE27.CylinderGeometry(r1, r0, L, 7);
+    const mesh = new THREE27.Mesh(g, P3.mat);
+    mesh.castShadow = true;
+    scene.add(mesh);
+    const q = new THREE27.Quaternion().setFromUnitVectors(_up4, d.clone().normalize());
+    const pos = s0.clone().add(s1).multiplyScalar(0.5);
+    const tp = p.topple || dir2;
+    const bb = addBody({
+      shape: "cyl", size: [Math.max(r0, r1), L], mass: 30 * L, pos, quat: q,
+      vel: new THREE27.Vector3(tp.x, 0, tp.z).multiplyScalar(force * 0.5 * k),
+      ang: new THREE27.Vector3(tp.z, 0, -tp.x).multiplyScalar(1.2 * k + sr(-0.2, 0.2)),
+      life: sr(40, 70), friction: 0.9, restitution: 0.05, damp: [0.1, 0.3], float: 1.5, rad: r0,
+      onDone: () => { scene.remove(mesh); g.dispose(); },
+      sync: (pp, r, fd) => { mesh.position.copy(pp); mesh.quaternion.copy(r); if (fd < 1) mesh.scale.setScalar(Math.max(0.01, fd)); }
+    });
+    if (!bb) { scene.remove(mesh); g.dispose(); continue; }
+    if (fire && Math.random() < 0.5) attachFire(bb, sr(4, 9));
+  }
+  splinters(m.x, m.y, m.z, dir2, 6, M.logEnd, 0.3);
+  woodCrack(camera.position.distanceTo(m), 0, 1);
+}
 var _one = new THREE27.Vector3(1, 1, 1);
+function breakApart(t) {
+  const b = t.b, p = t.p;
+  const lv = b.body.getLinearVelocity(), vx = lv.x(), vy = lv.y(), vz = lv.z();
+  const M1 = new THREE27.Matrix4().compose(b.pos.clone(), b.quat.clone(), _one), q = b.quat.clone();
+  const inv0 = t.m0.clone().invert();
+  const burning = p.s.burn > 0.2;
+  killBody(b);
+  BLAST.shake = Math.max(BLAST.shake, 0.45 / (1 + camera.position.distanceTo(_v4.setFromMatrixPosition(M1)) / 40));
+  const items = [];
+  for (const part of p.parts) {
+    const g = part.geo.clone().applyMatrix4(inv0);
+    g.computeBoundingBox();
+    const sz = g.boundingBox.getSize(new THREE27.Vector3());
+    items.push({ g, mat: part.mat, sz, vol: Math.max(sz.x, 0.03) * Math.max(sz.y, 0.03) * Math.max(sz.z, 0.03) });
+  }
+  items.sort((a, c) => c.vol - a.vol);
+  const N = Math.min(items.length, Math.round(8 + Q.bodies / 5));
+  const rest = [];
+  items.forEach((it, i) => {
+    if (i >= N || Math.max(it.sz.x, it.sz.y, it.sz.z) < 0.15) {
+      if (Math.max(it.sz.x, it.sz.y, it.sz.z) >= 0.15) rest.push(it);
+      it.g.dispose();
+      return;
+    }
+    const c = it.g.boundingBox.getCenter(new THREE27.Vector3());
+    it.g.translate(-c.x, -c.y, -c.z);
+    const mesh = new THREE27.Mesh(it.g, it.mat);
+    mesh.castShadow = true;
+    mesh.receiveShadow = true;
+    scene.add(mesh);
+    const pos = c.applyMatrix4(M1), size = [Math.max(0.04, it.sz.x), Math.max(0.04, it.sz.y), Math.max(0.04, it.sz.z)];
+    const bb = addBody({
+      shape: "box", size, pos, quat: q,
+      mass: clamp(size[0] * size[1] * size[2] * 600, 2, 250),
+      vel: new THREE27.Vector3(vx * 0.5 + sr(-2, 2), Math.abs(vy) * 0.25 + sr(0.5, 3), vz * 0.5 + sr(-2, 2)),
+      ang: new THREE27.Vector3(sr(-4, 4), sr(-4, 4), sr(-4, 4)),
+      life: sr(40, 70), friction: 0.85, restitution: 0.12, damp: [0.1, 0.3], float: 1.6,
+      rad: Math.min(...size) / 2, ccd: 0.06,
+      onDone: () => { scene.remove(mesh); it.g.dispose(); },
+      sync: (pp, r, f) => { mesh.position.copy(pp); mesh.quaternion.copy(r); if (f < 1) mesh.scale.setScalar(Math.max(0.01, f)); }
+    });
+    if (!bb) { scene.remove(mesh); it.g.dispose(); return; }
+    if (burning && Math.random() < 0.35) attachFire(bb, sr(5, 12));
+  });
+  const cp = _v4.setFromMatrixPosition(M1);
+  dustAt(cp, new THREE27.Box3().setFromCenterAndSize(cp.clone(), new THREE27.Vector3(4, 1.5, 4)), 26, burning);
+  woodCrack(camera.position.distanceTo(cp), 0, 2.2);
+}
+function sagPanel(p, amt, point, dir2) {
+  if (p.dead) return;
+  p.sag = Math.min(1, (p.sag || 0) + amt * sr(0.7, 1.2));
+  if (point) for (let i = 0; i < 6; i++) FX.dirt.spawn({ x: point.x, y: point.y, z: point.z, vx: (dir2 ? -dir2.x : 0) * sr(0.3, 1.2) + sr(-0.4, 0.4), vy: sr(-0.5, 0.6), vz: (dir2 ? -dir2.z : 0) * sr(0.3, 1.2) + sr(-0.4, 0.4), size: sr(0.02, 0.05), life: 1.4, col: [0.5, 0.44, 0.3], a: 0.95, grav: 9.8, floor: hFast(point.x, point.z) });
+  if (point) FX.alpha.spawn({ x: point.x, y: point.y, z: point.z, vx: 0, vy: 0.2, vz: 0, size: 0.25, grow: 0.8, life: 1.2, col: [0.55, 0.5, 0.38], a: 0.35, drag: 2 });
+  if (p.sag >= 1 && amt > 0.5) {
+    kill(p, point || p.center, 1, 0);
+    p.wall && updateWall(p.wall);
+    return;
+  }
+  for (const r of p.ranges) {
+    const pos = r.mesh.geometry.attributes.position, a = pos.array, i0 = r.start * 3, n2 = r.count * 3;
+    if (!r.orig) {
+      r.orig = a.slice(i0, i0 + n2);
+      let lo = 1e9, cx = 0, cz = 0;
+      for (let i = 0; i < n2; i += 3) {
+        lo = Math.min(lo, r.orig[i + 1]);
+        cx += r.orig[i];
+        cz += r.orig[i + 2];
+      }
+      r.lo = lo;
+      r.cx = cx / (n2 / 3);
+      r.cz = cz / (n2 / 3);
+    }
+    const ky = 1 - 0.58 * p.sag, kx = 1 + 0.28 * p.sag;
+    for (let i = 0; i < n2; i += 3) {
+      a[i0 + i] = r.cx + (r.orig[i] - r.cx) * kx;
+      a[i0 + i + 1] = r.lo + (r.orig[i + 1] - r.lo) * ky;
+      a[i0 + i + 2] = r.cz + (r.orig[i + 2] - r.cz) * kx;
+    }
+    pos.addUpdateRange(i0, n2);
+    pos.needsUpdate = true;
+  }
+  if (p.wall) updateWall(p.wall);
+}
+function updateWall(w) {
+  let top = w.base;
+  for (const q of w.bags) if (!q.dead) top = Math.max(top, q.top0 - (q.top0 - q.base0) * 0.58 * (q.sag || 0));
+  const c = w.col;
+  w.y1max ??= c.y1;
+  top = Math.min(top, w.y1max);
+  if (Math.abs(c.y1 - top) < 0.02) return;
+  removeStaticCollider(c);
+  c.y1 = Math.max(c.y0 + 0.05, top);
+  addStaticCollider(c);
+}
+var BURNING = [];
+var igniteStruct = function(){};
+var charCell = (x, z, amt, glow) => {
+  const i = Math.floor(x - BURN.X0), j = Math.floor(z - BURN.X0);
+  if (i < 0 || j < 0 || i >= BURN.N || j >= BURN.N) return;
+  const k = (j * BURN.N + i) * 4;
+  charData[k] = Math.min(255, charData[k] + Math.floor(amt * 255 + Math.random()));
+  if (glow >= 0) charData[k + 1] = Math.min(255, Math.max(0, glow * 255));
+};
+var acc2 = 0;
+function updateBurning(dt) {
+  acc2 += dt;
+  const step = acc2 >= 0.25;
+  const st = acc2;
+  if (step) acc2 = 0;
+  const cp = camera.position;
+  FIRE.structs = [];
+  for (let i = BURNING.length - 1; i >= 0; i--) {
+    const s = BURNING[i];
+    const alive = s.panels.filter((p) => !p.dead && p.burnable && p.parts.length);
+    if (step) {
+      const rain = WEATHER.rain;
+      // дождь: рост огня почти останавливается, а гашение сильнее — открытый огонь (мост, навес) гаснет быстрее дома
+      const open = s.kind === "bridge" || s.kind === "stand" || s.kind === "porch" ? 1.6 : 1;
+      s.burn = clamp(s.burn + st * (0.035 * (s.thin ?? 1) * (1 - rain * 0.9) - rain * open * (s.burn < 0.5 ? 0.07 : 0.035)), 0, 1);
+      s.fuel -= st * s.burn * 9e-3 * (s.thin ?? 1);
+      s.burnT += st;
+      s.dose = (s.dose ?? 0) + st * s.burn;
+      if (s.fuel <= 0 || s.burn <= 0.01 || !alive.length) {
+        // прогорело: тонкие деревянные постройки (лабазы, мост, столбы, навесы) не остаются стоять на обугленных опорах
+        if (s.burnT > 12 && THIN_BURN.has(s.kind)) {
+          for (const p of alive) if (p !== s.towerTop && !p.dead) burnThrough(s, p);
+        }
+        if (s.burnT > 20 && WEATHER.rain < 0.5) {
+          s.smolder = sr(70, 130);
+          s.smolder0 = s.smolder;
+          if (!SMOLDER.includes(s)) SMOLDER.push(s);
+        }
+        s.charred = 1;
+        structFlamesOff(s);
+        if (s.kind === "house") burnItems(s);
+        if (s.kind === "house" || s.kind === "shed" || s.kind === "porch") charPile(s);
+        s.burn = 0;
+        BURNING.splice(i, 1);
+        for (const p of s.panels) if (p.box) forFootprint(p, (x, z) => charCell(x, z, 0.1, 0));
+        markCharDirty();
+        continue;
+      }
+      for (const p of s.panels) if (p.box && !p.dead && Math.random() < 0.5) forFootprint(p, p.burnable ? (x, z) => charCell(x, z, st * 0.05 * s.burn, s.burn * sr(0.6, 1)) : (x, z) => charCell(x, z, st * 0.012 * s.burn, -1));
+      markCharDirty();
+      for (const p of alive) {
+        const k = p.kind === "roof" ? 1.6 : p.kind === "wall" ? 0.5 : 1;
+        p.hp -= st * s.burn * 0.012 * k * sr(0.3, 1.7) * (s.log ? 0.7 : 1) * (s.thin ?? 1);
+        // «доза» огня: каждая деталь прогорает на своём пороге — стойки раньше, толстые стены сруба позже
+        p.burnAt ??= burnThreshold(s, p);
+        if (p === s.towerTop || p.dead) continue;
+        if (p.hp <= 0 || s.dose > p.burnAt) burnThrough(s, p);
+      }
+      // стёкла лопаются от жара (~через минуту прогрева у настоящего пожара): осколки падают наружу, проём начинает «дышать»
+      if (s.burn > 0.3 && Math.random() < st * 0.6) {
+        s.panes ??= PANES.filter((q) => q.alive && Math.hypot(q.pos.x - s.center.x, q.pos.z - s.center.z) < (s.radius ?? 5) + 0.6);
+        const q = s.panes.find((q2) => q2.alive);
+        if (q) breakPaneRef(q, q.pos.clone().sub(s.center).setY(0.2).normalize(), 1.2);
+      }
+      if (s.burn > 0.5 && Math.random() < st * 0.8) ignite(s.x + sr(-1, 1) * ((s.w ?? 3) / 2 + 1.5), s.z + sr(-1, 1) * ((s.d ?? 3) / 2 + 1.5), 1, 0.8);
+      if (s.burn > 0.7 && Math.random() < st * 0.02) {
+        for (const o of STRUCTS) if (o !== s && o.center && o.center.distanceTo(s.center) < 7 + o.radius) igniteStruct(o, 0.1);
+      }
+    }
+    const d2 = (s.x - cp.x) ** 2 + (s.z - cp.z) ** 2;
+    FIRE.structs.push({ x: s.center.x, z: s.center.z, y: s.fy + 1.2, p: s.burn * 8 });
+    structFlames(s, alive, dt);
+    fireNear(s.center, s.burn * 7);
+    if (d2 > 170 * 170) continue;
+    // искры и угольки: летят из самих языков пламени, а не из центра постройки
+    if (s.fl && s.fl.length && Math.random() < dt * s.burn * 6 * (0.5 + Q.fx * 0.5)) {
+      const f = s.fl[Math.random() * s.fl.length | 0];
+      if (f.i > 0.2 && f.y > -900) FX.add.spawn({ x: f.x + sr(-0.2, 0.2), y: f.y + f.h * sr(0.4, 0.9), z: f.z + sr(-0.2, 0.2), vx: sr(-0.6, 0.6) + f.lx * 2, vy: sr(2, 5), vz: sr(-0.6, 0.6) + f.lz * 2, size: sr(0.025, 0.055), life: sr(1.2, 2.8), col: [2.6, 1.2, 0.4], a: 1, grav: -0.2, windK: 1.3, drag: 0.6, cool: 0.25 });
+    }
+    // дым. Начальная стадия: серый, струится из проёмов и из-под карниза (дом «дымит», огня снаружи нет).
+    // После вспышки — густой бурый, почти чёрный у основания, подсвеченный снизу огнём столб над кровлей
+    const smokeRate = (4 + s.burn * 18) * (0.6 + Q.fx * 0.4);
+    const vents = s.vents, early = s.burn < 0.35, roofY = s.fy + (s.h ?? 2.5) + (s.hr ?? 0) * 0.6;
+    let sk = dt * smokeRate;
+    while (sk > 0) {
+      if (Math.random() < sk) {
+        const steam = WEATHER.rain > 0.3 && Math.random() < WEATHER.rain * 0.6;
+        const dark = early ? 0.16 : 0.05 + (1 - s.burn) * 0.08;
+        let x, y, z, vx = sr(-0.3, 0.3), vz = sr(-0.3, 0.3), size = sr(1.6, 3.2) * (0.6 + s.burn * 0.7), vy = sr(2, 3.6) * (0.6 + s.burn * 0.6);
+        if (vents && vents.length && (early || Math.random() < 0.3)) {
+          const v = vents[Math.random() * vents.length | 0];
+          x = v.x + v.nx * 0.25;
+          z = v.z + v.nz * 0.25;
+          y = v.y1 - 0.12;
+          vx = v.nx * sr(0.5, 1.1);
+          vz = v.nz * sr(0.5, 1.1);
+          vy = sr(0.8, 1.6);
+          size = sr(0.5, 1) * (0.7 + s.burn);
+        } else {
+          x = s.center.x + sr(-1.2, 1.2) * ((s.w ?? 3) / 3);
+          y = (vents ? roofY : s.fy + (s.h ?? 2.5)) * 1 + sr(0, 1) * (vents ? 1 : 1);
+          z = s.center.z + sr(-1.2, 1.2) * ((s.d ?? 3) / 3);
+        }
+        FX.alpha.spawn({
+          x,
+          y,
+          z,
+          vx,
+          vy,
+          vz,
+          size,
+          grow: sr(1.8, 2.8),
+          life: sr(8, 16),
+          col: steam ? [0.62, 0.62, 0.63] : [dark * 1.1, dark, dark * 0.9],
+          col2: steam ? [0.78, 0.78, 0.8] : early ? [0.5, 0.49, 0.47] : [0.34, 0.32, 0.3],
+          shift: 1.1,
+          a: steam ? 0.35 : early ? 0.38 + s.burn : 0.55 + s.burn * 0.2,
+          fadeIn: 0.5,
+          windK: 2.6,
+          drag: 0.22,
+          glow: steam || early ? 0.1 * s.burn : 0.55 * s.burn
+        });
+      }
+      sk -= 1;
+    }
+    if (alive.length && Math.random() < dt * 6 * s.burn) {
+      const p = alive[Math.random() * alive.length | 0], b = p.box;
+      FX.alpha.spawn({ x: sr(b.min.x, b.max.x), y: sr(b.min.y, b.max.y), z: sr(b.min.z, b.max.z), vx: 0, vy: sr(0.4, 0.9), vz: 0, size: sr(0.3, 0.6), grow: 0.8, life: sr(2, 4), col: [0.18, 0.17, 0.16], a: 0.3, fadeIn: 0.3, windK: 1.2, drag: 0.4, glow: 0.2 });
+    }
+  }
+}
+function placeStructFlame(s, alive, f) {
+  const b = s.burn, house = s.kind === "house" && s.hr !== void 0;
+  const c = Math.cos(s.rot || 0), sn = Math.sin(s.rot || 0), W = s.w ?? 3, D = s.d ?? 3, H = s.h ?? 2.5;
+  const toW = (lx, lz) => [s.x + lx * c + lz * sn, s.z - lx * sn + lz * c];
+  const roofGone = house && s.panels.some((p) => p.kind === "roof" && p.dead);
+  const vents = house ? s.vents || [] : [];
+  const wIn = house ? (b < 0.3 ? 3 : 0.8) : 0;
+  const wVent = vents.length && b > 0.3 ? (b > 0.45 ? 5 : 2.5) : 0;
+  const wRoof = house && b > 0.5 ? (s.roofBurn || roofGone ? 4.5 : b > 0.75 ? 1.2 : 0) : 0;
+  const walls = house ? alive.filter((p) => p.kind !== "roof" && p.kind !== "prop") : alive;
+  const wPan = walls.length ? house ? b > 0.42 ? 3 : 0 : 5 : 0;
+  const tot = wIn + wVent + wRoof + wPan;
+  if (tot <= 0) return false;
+  let r = Math.random() * tot;
+  f.p = null;
+  f.lx = 0;
+  f.lz = 0;
+  f.lean = 0.35;
+  if (s.name === "стог") {
+    // стог горит по всей поверхности, сильнее у верха
+    const a = Math.random() * TAU, u = Math.sqrt(Math.random()) * 0.85, R0 = W / 2, rr = R0 * (1 - u * u * 0.75) * 1.02;
+    f.x = s.x + Math.cos(a) * rr;
+    f.z = s.z + Math.sin(a) * rr;
+    f.y = s.fy + H * u - 0.1;
+    f.w = sr(0.8, 1.5) * (0.6 + b * 0.6);
+    f.h0 = sr(1.2, 2.6) * (0.5 + b);
+    f.lx = Math.cos(a) * 0.12;
+    f.lz = Math.sin(a) * 0.12;
+    f.soot = 0.55;
+    f.k = 1.05;
+    f.p = alive[0];
+  } else if ((r -= wIn) < 0) {
+    // очаг внутри: на полу, у мебели — виден в окнах
+    const [x, z] = toW(sr(-1, 1) * (W / 2 - 0.9), sr(-1, 1) * (D / 2 - 0.9));
+    f.x = x;
+    f.z = z;
+    f.y = s.fy + 0.02;
+    f.w = sr(0.6, 1.2) * (0.6 + b);
+    f.h0 = Math.min(H * 0.95, sr(0.7, 1.5) * (0.6 + b * 1.6));
+    f.soot = 0.6;
+    f.k = 1;
+  } else if ((r -= wVent) < 0) {
+    // выброс пламени из проёма: из верхней трети окна наружу и вверх по стене
+    const v = vents[Math.random() * vents.length | 0], hv = v.y1 - v.y0, o = sr(0.02, 0.14);
+    const along = sr(-0.3, 0.3) * v.w, tx = -v.nz, tz = v.nx;
+    f.x = v.x + v.nx * o + tx * along;
+    f.z = v.z + v.nz * o + tz * along;
+    f.y = v.y1 - Math.min(0.55, hv * 0.38) * sr(0.5, 1);
+    f.w = v.w * sr(0.6, 1.05) * (0.8 + b * 0.6);
+    f.h0 = sr(1.3, 2.6) * (0.45 + b * 1.25);
+    f.lx = v.nx * sr(0.18, 0.45);
+    f.lz = v.nz * sr(0.18, 0.45);
+    f.soot = 0.7;
+    f.k = 1.1;
+  } else if ((r -= wRoof) < 0) {
+    // кровля: по скатам и коньку; прогоревшая — языки из-под обрешётки и изнутри
+    const lz = sr(-1, 1) * D / 2 * 0.85, [x, z] = toW(sr(-1, 1) * W / 2 * 0.9, lz);
+    f.x = x;
+    f.z = z;
+    f.y = roofGone ? s.fy + H * sr(0.35, 0.95) : s.fy + H + s.hr * (1 - Math.abs(lz) / (D / 2)) - 0.12;
+    f.w = sr(1.3, 2.5) * (0.6 + b * 0.8);
+    f.h0 = sr(2.2, 4.4) * (0.45 + b) * (s.roofBurn || roofGone ? 1 : 0.6);
+    f.soot = 0.8;
+    f.k = 1.2;
+  } else {
+    // горит сама деталь: язык с верхней кромки, вынесен наружу по нормали
+    const p = walls[Math.random() * walls.length | 0], bx = p?.box;
+    if (!bx) return false;
+    let x = sr(bx.min.x, bx.max.x), z = sr(bx.min.z, bx.max.z);
+    const top = p.kind === "roof" || Math.random() < 0.7;
+    const y = top ? lerp(bx.min.y, bx.max.y, sr(0.55, 0.95)) : sr(bx.min.y, lerp(bx.min.y, bx.max.y, 0.6));
+    if (p.dims) {
+      const nx = Math.sin(p.dims.rot), nz = Math.cos(p.dims.rot), sg = (x - s.center.x) * nx + (z - s.center.z) * nz > 0 ? 1 : -1;
+      x += nx * sg * sr(0.12, 0.3);
+      z += nz * sg * sr(0.12, 0.3);
+      f.lx = nx * sg * 0.15;
+      f.lz = nz * sg * 0.15;
+    }
+    f.p = p;
+    f.x = x;
+    f.y = y - 0.15;
+    f.z = z;
+    f.w = sr(0.6, 1.3) * (0.55 + b * 0.7);
+    f.h0 = f.w * sr(1.6, 2.6);
+    f.soot = 0.5;
+    f.k = 1;
+  }
+  f.h = f.h0;
+  return true;
+}
+function structFlames(s, alive, dt) {
+  const wet = 1 - WEATHER.rain * 0.55;
+  const area = Math.min(1.8, (s.w ?? 3) * (s.d ?? 3) / 18 + 0.35);
+  const want = alive.length ? Math.min(Q.fx >= 1 ? 20 : 14, Math.round((1 + s.burn * 13) * area * (0.6 + 0.4 * Math.min(1, Q.fx)))) : 0;
+  s.fl ??= [];
+  while (s.fl.length < want) s.fl.push(Object.assign(flameAdd({ x: 0, y: -999, z: 0, w: 1, h: 1, i: 0 }), { age: 9, life: 0, k: 1 }));
+  while (s.fl.length > want) s.fl.pop().dead = true;
+  for (const f of s.fl) {
+    f.age += dt;
+    if (f.age >= f.life || f.p?.dead) {
+      f.age = 0;
+      if (!placeStructFlame(s, alive, f)) {
+        f.i = 0;
+        f.y = -999;
+        f.life = 0.4;
+        continue;
+      }
+      f.seed = Math.random();
+      f.life = sr(1.6, 4.2);
+    }
+    const u = f.age / Math.max(0.01, f.life);
+    // разгорается за доли секунды, гаснет плавно; «дышит» вместе с тягой
+    const puls = 0.85 + 0.15 * Math.sin(FRAME.t * (5 + f.seed * 4) + f.seed * 20);
+    f.i = (f.k ?? 1) * Math.min(1, 0.35 + s.burn) * wet * Math.min(1, u * 4) * Math.min(1, (1 - u) * 2.5) * puls;
+    f.h = f.h0 * (0.82 + 0.22 * puls);
+  }
+}
+function structFlamesOff(s) {
+  if (s.fl) for (const f of s.fl) f.dead = true;
+  s.fl = null;
+}
+var THIN_BURN = /* @__PURE__ */ new Set(["stand", "bridge", "lamppost", "porch", "roofnest", "shed", "fence", "bench"]);
+function burnThreshold(s, p) {
+  if (p.pole) return sr(12, 26);
+  if (p.kind === "roof") return sr(14, 28);
+  if (p.kind === "prop" || p.kind === "trim") return sr(8, 18);
+  if (p.kind === "wall") return s.kind === "house" ? (s.log ? sr(55, 95) : sr(38, 70)) * (p.y0 > 0.4 ? 0.8 : 1.15) : sr(18, 34);
+  return sr(16, 32);
+}
+function burnThrough(s, p) {
+  if (p.dead) return;
+  p.fireKill = true;
+  if (p.kind === "wall" && p.dims && s.kind === "house" && (!p.sup || p.sup.list.every((q) => q.dead)) && HINGES.length < 10) {
+    const D = p.dims, nx = Math.sin(D.rot), nz = Math.cos(D.rot);
+    const out = (D.x - s.x) * nx + (D.z - s.z) * nz > 0 ? 1 : -1, sg = Math.random() < 0.55 ? out : -out;
+    const above = s.panels.filter((q) => !q.dead && q.sup?.list?.length === 1 && q.sup.list[0] === p);
+    const H = hingeStart({ s: null, panels: [p, ...above], pivot: new THREE27.Vector3(D.x - nx * sg * D.sz * 0.5, D.y - D.sy / 2, D.z - nz * sg * D.sz * 0.5), dir: new THREE27.Vector3(nx * sg, 0, nz * sg), mode: "fall", th: 0.03, burning: true, len: D.sy + above.reduce((a, q) => a + (q.dims?.sy ?? 0), 0), kind: "wall", maxTh: 1.62 });
+    H.onBreak = () => {
+      s.supDirty = true;
+    };
+    hingeFall(H);
+    removeGone(p);
+    for (const q of above) removeGone(q);
+    s.supDirty = true;
+    supportPass(s);
+    return;
+  }
+  kill(p, _v4.copy(p.center).add(new THREE27.Vector3(sr(-1, 1), 3, sr(-1, 1))), 0.6, 0);
+  QUEUE[QUEUE.length - 1].fire = true;
+  // рухнувшая кровля выбрасывает сноп искр и пламени
+  if (p.kind === "roof" && s.kind === "house") {
+    const c = p.center;
+    for (let k = 0; k < 40; k++) FX.add.spawn({ x: c.x + sr(-1.5, 1.5), y: c.y, z: c.z + sr(-1.5, 1.5), vx: sr(-2, 2), vy: sr(4, 10), vz: sr(-2, 2), size: sr(0.03, 0.07), life: sr(1.2, 3), col: [3, 1.35, 0.4], a: 1, grav: 1.5, windK: 1.2, drag: 0.5 });
+    s.burn = Math.min(1, s.burn + 0.15);
+    woodCrack(camera.position.distanceTo(c), panOf(c), 1.6);
+  }
+}
+function removeGone(p) {
+  p.dead = true;
+  if (onGone) onGone(p);
+  for (const c of p.cols) {
+    c.dead = true;
+    removeStaticCollider(c);
+  }
+}
+function forFootprint(p, fn) {
+  const b = p.box;
+  for (let x = Math.floor(b.min.x); x <= Math.ceil(b.max.x); x++) for (let z = Math.floor(b.min.z); z <= Math.ceil(b.max.z); z++) fn(x + 0.5, z + 0.5);
+}
+function grassToStruct() {
+  for (const s of STRUCTS) {
+    if (!s.center || s.burn > 0 || s.fuel <= 0.05 || s.kind === "bench" && Math.random() < 0.5) continue;
+    const r = Math.max(s.w ?? 1, s.d ?? 1) / 2 + 0.8;
+    for (let k = 0; k < 4; k++) {
+      const a = Math.random() * TAU;
+      if (heatAt(s.center.x + Math.cos(a) * r, s.center.z + Math.sin(a) * r) > 0.5 && Math.random() < 0.15 * (1 - WEATHER.wet)) {
+        igniteStruct(s, 0.15);
+        break;
+      }
+    }
+  }
+}
+var PILE = null;
+function charPile(s) {
+  if (!PILE) {
+    const mat = new THREE27.MeshStandardMaterial({ color: 1511951, roughness: 1, metalness: 0 });
+    injectStructFX(mat);
+    PILE = new THREE27.InstancedMesh(new THREE27.BoxGeometry(1, 1, 1), mat, 400);
+    PILE.count = 0;
+    PILE.castShadow = true;
+    PILE.receiveShadow = true;
+    PILE.frustumCulled = false;
+    scene.add(PILE);
+  }
+  const n2 = Math.round(6 + (s.w ?? 3) * (s.d ?? 3) * 0.35), c = Math.cos(s.rot || 0), sn = Math.sin(s.rot || 0);
+  const m = new THREE27.Matrix4(), q = new THREE27.Quaternion(), e = new THREE27.Euler(), p = new THREE27.Vector3(), sc = new THREE27.Vector3();
+  for (let k = 0; k < n2 && PILE.count < 400; k++) {
+    const lx = sr(-0.42, 0.42) * (s.w ?? 3), lz = sr(-0.42, 0.42) * (s.d ?? 3), L = sr(0.8, 2.6), log = s.log || Math.random() < 0.3;
+    const x = s.x + lx * c + lz * sn, z = s.z - lx * sn + lz * c;
+    e.set(sr(-0.25, 0.25), Math.random() * TAU, sr(-0.35, 0.35) * (k % 3 === 0 ? 1.6 : 1));
+    sc.set(L, log ? 0.2 : 0.06, log ? 0.2 : sr(0.12, 0.2));
+    p.set(x, (s.fy ?? hFast(x, z)) + sc.y / 2 + Math.random() * 0.12, z);
+    PILE.setMatrixAt(PILE.count++, m.compose(p, q.setFromEuler(e), sc));
+  }
+  PILE.instanceMatrix.needsUpdate = true;
+}
+var SMOLDER = [];
+function updateSmolder(dt, step) {
+  const cp = camera.position;
+  for (let i = SMOLDER.length - 1; i >= 0; i--) {
+    const s = SMOLDER[i];
+    s.smolder -= dt * (1 + WEATHER.rain * 6);
+    if (s.smolder <= 0 || s.burn > 0) {
+      SMOLDER.splice(i, 1);
+      continue;
+    }
+    const k = s.smolder / s.smolder0;
+    if (step) {
+      for (const p of s.panels) if (p.box && p.burnable && Math.random() < 0.25) forFootprint(p, (x, z) => charCell(x, z, 0, k * sr(0.15, 0.5)));
+      markCharDirty();
+    }
+    if ((s.x - cp.x) ** 2 + (s.z - cp.z) ** 2 > 140 * 140) continue;
+    const w2 = (s.w ?? 3) * 0.45, d2 = (s.d ?? 3) * 0.45, c = Math.cos(s.rot || 0), sn = Math.sin(s.rot || 0);
+    const at = () => {
+      const lx = sr(-w2, w2), lz = sr(-d2, d2);
+      return [s.x + lx * c + lz * sn, s.z - lx * sn + lz * c];
+    };
+    if (Math.random() < dt * 5 * k) {
+      const [x, z] = at();
+      FX.alpha.spawn({ x, y: s.fy + 0.2, z, vx: 0, vy: sr(0.5, 1.1), vz: 0, size: sr(0.4, 0.9), grow: 0.9, life: sr(4, 8), col: [0.3, 0.29, 0.28], a: 0.22 * (0.4 + k), fadeIn: 0.8, windK: 1.6, drag: 0.3, glow: 0.12 * k });
+    }
+    if (Math.random() < dt * 2.5 * k) {
+      const [x, z] = at();
+      FX.add.spawn({ x, y: s.fy + 0.1, z, vx: sr(-0.4, 0.4), vy: sr(1, 2.5), vz: sr(-0.4, 0.4), size: 0.05, life: sr(0.8, 1.6), col: [2.6, 1.1, 0.35], a: 1, grav: 1, windK: 0.9, drag: 0.4 });
+    }
+    if (k > 0.65 && Math.random() < dt * 3 * (k - 0.5)) {
+      const [x, z] = at();
+      FX.add.spawn({ flame: true, x, y: s.fy + 0.05, z, vx: 0, vy: sr(0.4, 0.9), vz: 0, size: sr(0.25, 0.5), grow: -0.2, life: sr(0.4, 0.8), col: [1.7, 0.75, 0.28], a: 0.8, cool: 0.4, windK: 0.5 });
+    }
+    FIRE.structs.push({ x: s.center.x, z: s.center.z, y: s.fy + 0.4, p: k * 1.5 });
+  }
+}
+var gT = 0;
+var sT = 0;
+function updateStructs(dt) {
+  processQueue();
+  updateToppled(dt);
+  updateHinges(dt);
+  updateLdeb(dt);
+  updateBurning(dt);
+  sT += dt;
+  // страховка: повторная проверка опор у построек с разрушениями (раз в 0.5 с)
+  if (sT > 0.5) for (const s of STRUCTS) if (s.supDirty && !QUEUE.some((e) => e.p.s === s)) supportPass(s);
+  updateSmolder(dt, sT > 0.5);
+  if (sT > 0.5) sT = 0;
+  gT += dt;
+  if (gT > 1) {
+    gT = 0;
+    if (FIRE.cells > 0) grassToStruct();
+  }
+}
+var structAt = (x, z, r = 2) => STRUCTS.filter((s) => s.center && Math.hypot(s.center.x - x, s.center.z - z) < s.radius + r);
+var LDEB = { list: [], max: 420 };
+var _lq = new THREE27.Quaternion();
+var _lq2 = new THREE27.Quaternion();
+var _lv = new THREE27.Vector3();
+var _lu = new THREE27.Vector3();
+var _lax = [new THREE27.Vector3(), new THREE27.Vector3(), new THREE27.Vector3()];
+var _lup = new THREE27.Vector3(0, 1, 0);
+function ldebAdd(mesh, o) {
+  if (LDEB.list.length >= LDEB.max) ldebKill(LDEB.list[0], 0);
+  if (!mesh.parent) scene.add(mesh);
+  mesh.castShadow = o.cast ?? true;
+  mesh.receiveShadow = true;
+  const d = { mesh, v: o.vel ? o.vel.clone() : new THREE27.Vector3(), w: o.ang ? o.ang.clone() : new THREE27.Vector3(), he: o.he || [0.05, 0.05, 0.05], floor: o.floor || null, onHit: o.onHit || null, life: o.life ?? sr(35, 60), age: 0, rest: 0, bounce: o.bounce ?? 0.28, dispose: o.dispose ?? true, sleep: false, sc: mesh.scale.clone() };
+  LDEB.list.push(d);
+  return d;
+}
+function ldebKill(d, i = LDEB.list.indexOf(d)) {
+  if (i >= 0) LDEB.list.splice(i, 1);
+  d.mesh.parent?.remove(d.mesh);
+  if (d.dispose) d.mesh.geometry?.dispose();
+}
+function ldebFloor(d) {
+  const p = d.mesh.position;
+  return d.floor ? d.floor(p.x, p.z, p.y) : hFast(p.x, p.z);
+}
+function updateLdeb(dt) {
+  const L = LDEB.list;
+  for (let i = L.length - 1; i >= 0; i--) {
+    const d = L[i], m = d.mesh, p = m.position;
+    d.age += dt;
+    if (d.age > d.life) {
+      // исчезает, «врастая» в землю, а не пропадая разом
+      const k = 1 - (d.age - d.life) / 1.5;
+      if (k <= 0) {
+        ldebKill(d, i);
+        continue;
+      }
+      p.y -= dt * 0.05;
+      m.scale.copy(d.sc).multiplyScalar(Math.max(0.01, k));
+      continue;
+    }
+    if (d.sleep) continue;
+    d.v.y -= 9.8 * dt;
+    p.addScaledVector(d.v, dt);
+    const wl = d.w.length();
+    if (wl > 1e-4) {
+      _lq.setFromAxisAngle(_lv.copy(d.w).divideScalar(wl), wl * dt);
+      m.quaternion.premultiply(_lq);
+    }
+    // опорная функция бокса: насколько низ куска ниже центра при текущем повороте
+    _lax[0].set(1, 0, 0).applyQuaternion(m.quaternion);
+    _lax[1].set(0, 1, 0).applyQuaternion(m.quaternion);
+    _lax[2].set(0, 0, 1).applyQuaternion(m.quaternion);
+    const s = m.scale.x / (d.sc.x || 1);
+    const r = (Math.abs(_lax[0].y) * d.he[0] + Math.abs(_lax[1].y) * d.he[1] + Math.abs(_lax[2].y) * d.he[2]) * s;
+    const fl = ldebFloor(d);
+    if (p.y - r < fl) {
+      p.y = fl + r;
+      const sp = -d.v.y;
+      if (sp > 0) {
+        if (d.onHit && sp > 1.2) d.onHit(d, sp);
+        if (!d.mesh.parent) {
+          ldebKill(d, L.indexOf(d));
+          continue;
+        }
+        d.v.y = sp > 0.9 ? sp * d.bounce : 0;
+        d.v.x *= 0.62;
+        d.v.z *= 0.62;
+        d.w.multiplyScalar(0.55);
+      }
+      // трение скольжения и укладка на самую плоскую грань
+      const fr = Math.exp(-dt * 6);
+      d.v.x *= fr;
+      d.v.z *= fr;
+      let best = 0, bv = 0;
+      for (let k = 0; k < 3; k++) if (Math.abs(_lax[k].y) > bv) {
+        bv = Math.abs(_lax[k].y);
+        best = k;
+      }
+      _lu.copy(_lax[best]).multiplyScalar(Math.sign(_lax[best].y) || 1);
+      _lq.setFromUnitVectors(_lu, _lup);
+      m.quaternion.premultiply(_lq2.identity().slerp(_lq, Math.min(1, dt * 7)));
+      d.w.multiplyScalar(Math.exp(-dt * 5));
+      if (d.v.lengthSq() < 0.02 && d.w.lengthSq() < 0.05 && bv > 0.995) {
+        d.rest += dt;
+        if (d.rest > 0.4) {
+          d.sleep = true;
+          d.v.set(0, 0, 0);
+          d.w.set(0, 0, 0);
+        }
+      } else d.rest = 0;
+    }
+  }
+}
+var HINGES = [];
+var _hq = new THREE27.Quaternion();
+var _hq2 = new THREE27.Quaternion();
+var _hv = new THREE27.Vector3();
+var _hw = new THREE27.Vector3();
+var _hy = new THREE27.Vector3(0, 1, 0);
+function hingeStart(o) {
+  const pivot = o.pivot.clone(), group = new THREE27.Group();
+  group.position.copy(pivot);
+  const list = [];
+  for (const p of o.panels) {
+    if (p.hinged) continue;
+    p.hinged = true;
+    for (const q of p.parts) list.push({ geo: q.geo, mat: q.mat });
+    collapsePanel(p);
+    if (p.mesh) p.mesh.parent?.remove(p.mesh);
+  }
+  for (const e of o.extra || []) list.push(e);
+  const H = { s: o.s, panels: o.panels.slice(), group, pivot, parts: [], bb: new THREE27.Box3(), dir: o.dir.clone().setY(0).normalize(), th: o.th ?? 0, w: o.w ?? 0, mode: o.mode, lean: o.lean ?? 0, age: 0, vy: 0, tw: o.tw ?? 0, twist: 0, burning: !!o.burning, onSettle: o.onSettle || null, onBreak: o.onBreak || null, maxTh: o.maxTh ?? 1.72, kind: o.kind || "tower", creakT: 0 };
+  H.axis = new THREE27.Vector3(H.dir.z, 0, -H.dir.x);
+  hingeAdd(H, list);
+  scene.add(group);
+  // корпус падает как стержень, закреплённый нижним концом
+  H.L = Math.max(1, o.len ?? H.bb.max.y);
+  H.G = 1.5 * 9.8 / H.L;
+  HINGES.push(H);
+  if (o.s) o.s.hinge = H;
+  return H;
+}
+function hingeAdd(H, list) {
+  if (!list.length) return;
+  H.group.updateMatrixWorld(true);
+  const inv = H.group.matrixWorld.clone().invert();
+  const byMat = /* @__PURE__ */ new Map();
+  for (const it of list) {
+    let g = it.geo.clone().applyMatrix4(inv);
+    g = normalize(g, it.mat);
+    g.computeBoundingBox();
+    H.bb.union(g.boundingBox);
+    H.parts.push({ geo: g, mat: it.mat });
+    if (!byMat.has(it.mat)) byMat.set(it.mat, []);
+    byMat.get(it.mat).push(g);
+  }
+  for (const [mat, geos] of byMat) {
+    const merged = geos.length > 1 ? BGU2.mergeGeometries(geos, false) : geos[0].clone();
+    for (const g of merged ? [merged] : geos.map((q) => q.clone())) {
+      const m = new THREE27.Mesh(g, mat);
+      m.castShadow = true;
+      m.receiveShadow = true;
+      m.userData.hingeMerged = true;
+      H.group.add(m);
+    }
+  }
+  // точки для проверки касания земли — дальние от оси углы габарита
+  const b = H.bb, pts = [];
+  for (const x of [b.min.x, b.max.x]) for (const y of [b.min.y, b.max.y]) for (const z of [b.min.z, b.max.z]) pts.push(new THREE27.Vector3(x, y, z));
+  const far = Math.max(...pts.map((q) => q.length()));
+  H.corners = pts.filter((q) => q.length() > far * 0.55);
+  H.far = far;
+}
+function hingeFall(H, o = {}) {
+  if (o.dir && H.mode === "lean" && H.th < 0.02) {
+    H.dir.copy(o.dir).setY(0).normalize();
+    H.axis.set(H.dir.z, 0, -H.dir.x);
+  }
+  H.mode = o.mode ?? "fall";
+  H.w = Math.max(H.w, o.w ?? 0);
+  if (H.mode === "drop") {
+    H.tw = sr(-0.6, 0.6);
+    H.w = sr(0.15, 0.35);
+  }
+  for (const p of H.panels) {
+    if (!p.dead) {
+      p.dead = true;
+      for (const c of p.cols) {
+        c.dead = true;
+        removeStaticCollider(c);
+      }
+    }
+    for (const pane of PANES) if (pane.panel === p && pane.alive) breakPane(pane, H.dir.clone().setY(0.3), 3);
+  }
+  const d = camera.position.distanceTo(H.pivot);
+  woodCrack(d, 0, H.kind === "wall" ? 1.2 : 2);
+  if (H.kind !== "wall") creakSound(d, false);
+}
+function updateHinges(dt) {
+  for (let i = HINGES.length - 1; i >= 0; i--) {
+    const H = HINGES[i];
+    H.age += dt;
+    if (H.mode === "lean") {
+      // пружинит к углу крена с затуханием; пока качается — скрипит
+      H.w += ((H.lean - H.th) * 26 - H.w * 5) * dt;
+      H.th += H.w * dt;
+      H.creakT -= dt;
+      if (Math.abs(H.w) > 0.015 && H.creakT <= 0) {
+        creakSound(camera.position.distanceTo(H.pivot), Math.random() < 0.5);
+        H.creakT = sr(0.5, 1.3);
+      }
+    } else if (H.mode === "fall") {
+      H.w += H.G * Math.sin(Math.max(0.015, H.th)) * dt;
+      H.th += H.w * dt;
+    } else if (H.mode === "drop") {
+      H.vy -= 9.8 * dt;
+      H.group.position.y += H.vy * dt;
+      H.th += H.w * dt;
+      H.twist += H.tw * dt;
+    } else if (H.mode === "swing") {
+      // балка на одном конце: момент тяжести ∝ cosθ, затухание — трение в изломе
+      H.w += (H.G * Math.cos(H.th) - H.w * 0.6) * dt;
+      H.th += H.w * dt;
+    }
+    _hq.setFromAxisAngle(H.axis, H.th);
+    if (H.twist) _hq.multiply(_hq2.setFromAxisAngle(_hy, H.twist));
+    H.group.quaternion.copy(_hq);
+    H.group.updateMatrixWorld(true);
+    if (H.burning && H.mode !== "lean" && Math.random() < dt * 14) {
+      const c = H.corners[Math.random() * H.corners.length | 0];
+      _hv.copy(c).multiplyScalar(sr(0.3, 1)).applyMatrix4(H.group.matrixWorld);
+      FX.add.spawn({ flame: true, x: _hv.x, y: _hv.y, z: _hv.z, vx: 0, vy: sr(1, 2), vz: 0, size: sr(0.6, 1.2), grow: -0.4, life: sr(0.4, 0.8), col: [1.8, 0.8, 0.28], a: 0.9, cool: 0.4, windK: 1 });
+      if (Math.random() < 0.4) FX.alpha.spawn({ x: _hv.x, y: _hv.y + 0.5, z: _hv.z, vx: 0, vy: sr(1, 2), vz: 0, size: sr(0.8, 1.4), grow: 1.4, life: sr(4, 7), col: [0.08, 0.075, 0.07], col2: [0.3, 0.29, 0.28], a: 0.5, glow: 0.4, windK: 2, drag: 0.3 });
+    }
+    if (H.mode === "lean") continue;
+    let hit = H.th >= H.maxTh || H.age > 14;
+    if (!hit && (H.th > 0.2 || H.mode === "drop" || H.mode === "swing")) {
+      for (const c of H.corners) {
+        _hv.copy(c).applyMatrix4(H.group.matrixWorld);
+        const g = Math.max(hFast(_hv.x, _hv.z), H.water ?? -1e9);
+        if (_hv.y < g + 0.04) {
+          hit = true;
+          break;
+        }
+      }
+    }
+    if (!hit) continue;
+    if (H.mode === "swing") {
+      // провисший пролёт остаётся висеть концом в воде
+      H.mode = "hang";
+      HINGES.splice(i, 1);
+      if (H.onSettle) H.onSettle(H);
+      continue;
+    }
+    HINGES.splice(i, 1);
+    hingeBreak(H);
+  }
+}
+function hingeBreak(H) {
+  const M1 = H.group.matrixWorld.clone(), q = H.group.quaternion.clone(), piv = H.group.position.clone();
+  // чужие объекты в группе (прожектор с вышки) падают дальше сами по себе
+  for (const ch of H.group.children.slice()) {
+    if (ch.userData.hingeMerged) continue;
+    scene.attach(ch);
+    ldebAdd(ch, { he: [0.25, 0.25, 0.25], vel: new THREE27.Vector3(sr(-1, 1), 1.5, sr(-1, 1)), ang: new THREE27.Vector3(sr(-3, 3), sr(-3, 3), sr(-3, 3)), dispose: false, life: 90 });
+  }
+  scene.remove(H.group);
+  H.group.traverse((o) => {
+    if (o.userData.hingeMerged) o.geometry.dispose();
+  });
+  _hw.copy(H.axis).multiplyScalar(H.w);
+  const items = H.parts.map((it) => {
+    const sz = it.geo.boundingBox.getSize(new THREE27.Vector3());
+    return { ...it, sz, vol: Math.max(sz.x, 0.03) * Math.max(sz.y, 0.03) * Math.max(sz.z, 0.03) };
+  }).sort((a, c) => c.vol - a.vol);
+  const nBody = Math.min(items.length, Math.round(6 + Q.bodies / 6));
+  const burning = H.burning || (H.s?.burn ?? 0) > 0.2;
+  const tip = new THREE27.Vector3();
+  let tipD = -1;
+  items.forEach((it, idx) => {
+    const c = it.geo.boundingBox.getCenter(new THREE27.Vector3());
+    const g = it.geo.clone().translate(-c.x, -c.y, -c.z);
+    const pos = c.clone().applyMatrix4(M1);
+    const r = pos.clone().sub(piv), dd = r.length();
+    if (dd > tipD) {
+      tipD = dd;
+      tip.copy(pos);
+    }
+    const vel = new THREE27.Vector3().crossVectors(_hw, r).multiplyScalar(0.55).add(new THREE27.Vector3(sr(-1.2, 1.2), sr(0.4, 2.2) + H.vy * 0.4, sr(-1.2, 1.2)));
+    const ang = new THREE27.Vector3(sr(-4, 4), sr(-4, 4), sr(-4, 4));
+    const mesh = new THREE27.Mesh(g, it.mat);
+    mesh.position.copy(pos);
+    mesh.quaternion.copy(q);
+    const size = [Math.max(0.04, it.sz.x), Math.max(0.04, it.sz.y), Math.max(0.04, it.sz.z)];
+    if (idx < nBody && Math.max(...size) > 0.25 && PHYS.ready) {
+      mesh.castShadow = true;
+      mesh.receiveShadow = true;
+      scene.add(mesh);
+      const bb = addBody({
+        shape: "box", size, pos, quat: q, mass: clamp(size[0] * size[1] * size[2] * 600, 2, 250), vel, ang,
+        life: sr(45, 80), friction: 0.85, restitution: 0.1, damp: [0.1, 0.3], float: 1.6, rad: Math.min(...size) / 2, ccd: 0.06,
+        onDone: () => { scene.remove(mesh); g.dispose(); },
+        sync: (pp, rr, f) => { mesh.position.copy(pp); mesh.quaternion.copy(rr); if (f < 1) mesh.scale.setScalar(Math.max(0.01, f)); }
+      });
+      if (!bb) {
+        scene.remove(mesh);
+        ldebAdd(mesh, { he: size.map((v) => v / 2), vel, ang });
+      } else if (burning && Math.random() < 0.45) attachFire(bb, sr(6, 14));
+    } else ldebAdd(mesh, { he: size.map((v) => v / 2), vel, ang, cast: Math.max(...size) > 0.3 });
+  });
+  const dist = camera.position.distanceTo(tip);
+  BLAST.shake = Math.max(BLAST.shake, (H.kind === "wall" ? 0.25 : 0.6) / (1 + dist / 30));
+  woodCrack(dist, panOf(tip), H.kind === "wall" ? 1.4 : 2.4);
+  boom(dist, H.kind === "wall" ? 0.25 : 0.55, panOf(tip), 0.6);
+  // пыль и пепел вдоль всей упавшей длины; у горящих — сноп искр и разлёт головней
+  const nD = H.kind === "wall" ? 14 : 34;
+  for (let k = 0; k < nD; k++) {
+    _hv.lerpVectors(piv, tip, Math.random());
+    const gy = hFast(_hv.x, _hv.z);
+    FX.alpha.spawn({ x: _hv.x + sr(-0.8, 0.8), y: gy + 0.3, z: _hv.z + sr(-0.8, 0.8), vx: sr(-2, 2), vy: sr(0.3, 1.4), vz: sr(-2, 2), size: sr(0.8, 2), grow: 1.5, life: sr(3, 6), col: burning ? [0.14, 0.13, 0.12] : [0.46, 0.42, 0.36], a: 0.45, drag: 1.3, windK: 0.8 });
+  }
+  if (burning) {
+    for (let k = 0; k < 70; k++) {
+      _hv.lerpVectors(piv, tip, Math.random());
+      FX.add.spawn({ x: _hv.x, y: hFast(_hv.x, _hv.z) + 0.3, z: _hv.z, vx: sr(-3, 3), vy: sr(3, 9), vz: sr(-3, 3), size: sr(0.03, 0.07), life: sr(1, 2.8), col: [3, 1.4, 0.4], a: 1, grav: 2, windK: 1, drag: 0.5 });
+    }
+    for (let k = 0; k < 3; k++) {
+      _hv.lerpVectors(piv, tip, Math.random());
+      ignite(_hv.x, _hv.z, 1, 0.9);
+    }
+  }
+  // деревья на линии падения ломаются, стрелка под вышкой — насмерть
+  if (H.kind !== "wall") {
+    for (const t of treesNear(tip.x, tip.z, 2.2)) if (t.r < 0.35) breakTree(t, H.dir.clone(), 1);
+  }
+  if (PL.mode === "walk" && PL.dead <= 0) {
+    _hv.subVectors(tip, piv).setY(0);
+    const L = _hv.length(), px = PL.pos.x - piv.x, pz = PL.pos.z - piv.z;
+    const u = clamp((px * _hv.x + pz * _hv.z) / (L * L || 1), 0, 1), ex = px - _hv.x * u, ez = pz - _hv.z * u;
+    if (Math.hypot(ex, ez) < (H.kind === "wall" ? 0.7 : 1.3) && u > 0.25 && PL.pos.y < tip.y + 2.5) die(H.kind === "wall" ? "ПРИДАВИЛО СТЕНОЙ" : "РАЗДАВЛЕН РУХНУВШЕЙ ВЫШКОЙ", "crush");
+  }
+  if (H.onBreak) H.onBreak(H, tip);
+}
+function leanDir(s, supports) {
+  const d = new THREE27.Vector3();
+  let n2 = 0;
+  for (const q of supports) if (q.dead) {
+    const c = q.pole ? q.pole.a : q.center;
+    d.x += c.x - s.x;
+    d.z += c.z - s.z;
+    n2++;
+  }
+  if (!n2) return null;
+  d.divideScalar(n2);
+  return d.length() < 0.25 * (s.w ?? 2) / 2 ? null : d.normalize();
+}
+function hingePivot(s, dir, half) {
+  return new THREE27.Vector3(s.x + dir.x * half, s.fy, s.z + dir.z * half);
+}
+function towerSupport(top, supports, lost) {
+  const s = top.s, dead = supports.filter((q) => q.dead).length;
+  if (!dead || top.dead) return;
+  const others = s.panels.filter((p) => !p.dead && p !== top && !supports.includes(p));
+  const alive = supports.filter((q) => !q.dead);
+  const half = (top.hingeHalf ?? (s.w ?? 2) / 2);
+  const burning = s.burn > 0.2;
+  let dir = leanDir(s, supports);
+  if (s.blastT !== void 0 && FRAME.t - s.blastT < 1.5) dir = s.blastDir;
+  else if (!dir && supports.length === 1) dir = new THREE27.Vector3(sr(-1, 1), 0, sr(-1, 1)).normalize();
+  if (!s.hinge) {
+    const d0 = dir || new THREE27.Vector3(sr(-1, 1), 0, sr(-1, 1)).normalize();
+    const lean = lost ? 0 : clamp(0.045 + 0.07 * dead / supports.length, 0.03, 0.12) * (top.leanK ?? 1);
+    const pv = hingePivot(s, d0, half);
+    if (top.pivotAtBreak && s.breakY !== void 0) pv.y = s.breakY;
+    hingeStart({ s, panels: [top, ...others, ...alive], extra: s.hingeExtra || [], pivot: pv, dir: d0, mode: "lean", lean, th: 0, burning, len: top.hingeLen, kind: "tower" });
+    s.hingeExtra = [];
+  } else if (s.hingeExtra?.length) {
+    hingeAdd(s.hinge, s.hingeExtra);
+    s.hingeExtra = [];
+  }
+  const H = s.hinge;
+  H.burning ||= burning;
+  if (!lost) {
+    // ещё стоит: с каждой выбитой опорой крен сильнее
+    H.lean = Math.max(H.lean, clamp(0.045 + 0.07 * dead / supports.length, 0.03, 0.14) * (top.leanK ?? 1));
+    return;
+  }
+  top.dead = true;
+  for (const m of s.carry || []) H.group.attach(m);
+  // провода рвутся: хлопок, искры с конца
+  for (const t of s.post?.wires || []) if (t.parent) {
+    t.parent.remove(t);
+    const d = camera.position.distanceTo(H.pivot);
+    wireSnap(d);
+    sparkSound(d, 1);
+    const hy = s.fy + (s.h ?? 4);
+    for (let k = 0; k < 24; k++) FX.add.spawn({ x: s.x, y: hy, z: s.z, vx: sr(-3, 3), vy: sr(-1, 3), vz: sr(-3, 3), size: 0.03, life: sr(0.3, 0.9), col: [2.6, 2.4, 1.8], a: 1, grav: 9.8 });
+  }
+  // прожектор в будке падает вместе с ней
+  for (const sl of SL) if (sl.panel === top && sl.group && !sl.falling) {
+    sl.falling = true;
+    sl.on = false;
+    if (SLOP.cur === sl) releaseSearchlight();
+    if (sl.beam) sl.beam.visible = false;
+    if (sl.glare) sl.glare.visible = false;
+    H.group.attach(sl.group);
+  }
+  if (!dir && H.th < 0.05) hingeFall(H, { mode: "drop" });
+  else hingeFall(H, { dir: dir || H.dir, w: s.blastW || 0 });
+  s.blastW = 0;
+  for (const q of alive) q.dead = true;
+  if (top.onKill) top.onKill(top);
+}
 var V5 = (x, y, z) => new THREE28.Vector3(x, y, z);
 var DOORS = [];
 function addDoor({ hx: hx2, hz, y, closed, openBy, w = 0.9, h = 2, t = 0.05, mat = M.planksDark, startOpen = true }) {
@@ -6733,6 +8879,7 @@ var _ipq = new THREE29.Quaternion();
 var _ipv = new THREE29.Vector3();
 var _ips = new THREE29.Vector3(1, 1, 1);
 var _ipe = new THREE29.Euler();
+var _ipZ = new THREE29.Matrix4().makeScale(0, 0, 0);
 var _ipUp = new THREE29.Vector3(0, 1, 0);
 function houseRec(o, fy) {
   if (o.__ip) return o.__ip;
@@ -6750,6 +8897,7 @@ function ipTop(H, lx, lz, hw, hd, y, panel2 = null, item = null) {
   H.tops.push(t);
   return t;
 }
+var topAlive = (t) => !(t.panel?.dead || t.item && !t.item.alive);
 function ipAdd(H, type, lx, lz, rot) {
   const it = { H, type, lx, lz, rot, alive: true, hp: IPT_HP[type], top: null, y: H.fy, idx: -1 };
   H.items.push(it);
@@ -6874,6 +9022,76 @@ function buildInteriorProps() {
   }
   IP.built = true;
   console.info(`[interior] предметов: ${IP.list.length}, домов: ${IP.houses.length}`);
+}
+function ipHide(it) {
+  it.alive = false;
+  it.im.setMatrixAt(it.idx, _ipZ);
+  it.im.instanceMatrix.needsUpdate = true;
+  if (it.col && !it.col.dead) {
+    it.col.dead = true;
+    removeStaticCollider(it.col);
+  }
+}
+function ipFloor(H) {
+  return (x, z, y) => {
+    const [lx, lz] = H.L(x, z);
+    let f = Math.abs(lx) < H.w / 2 && Math.abs(lz) < H.d / 2 ? H.fy : hFast(x, z);
+    for (const t of H.tops) {
+      if (!topAlive(t) || t.y > y + 0.05 || t.y <= f) continue;
+      let u = lx - t.lx, v = lz - t.lz;
+      if (t.rot) {
+        const c = Math.cos(t.rot), s = Math.sin(t.rot);
+        [u, v] = [u * c - v * s, u * s + v * c];
+      }
+      if (Math.abs(u) < t.hw && Math.abs(v) < t.hd) f = t.y;
+    }
+    return f;
+  };
+}
+function ceramicSound(dist, x, glass) {
+  if (!ready() || dist > 70) return;
+  const ctx = AUDIO.ctx, t = ctx.currentTime + dist / 343, v = clamp(0.9 / (1 + dist / 5), 0.01, 0.5);
+  for (let i = 0; i < 5; i++) burst(t + i * sr(4e-3, 0.03), { type: "bandpass", f: (glass ? 5200 : 3200) * sr(0.7, 1.4), q: glass ? 12 : 7, vol: v * sr(0.4, 1), a: 1e-3, dec: sr(0.03, glass ? 0.2 : 0.09), x, len: 0.3 });
+  burst(t, { type: "lowpass", f: 900, q: 1, vol: v * 0.5, a: 1e-3, dec: 0.05, x, len: 0.2 });
+}
+function ipLoose(it, vel, ang) {
+  if (!it.alive) return null;
+  const D = IPT[it.type];
+  ipHide(it);
+  const m = new THREE29.Mesh(D.geo.clone().translate(0, -D.cy, 0), D.mat);
+  ipMatrix(it, _ipm).decompose(m.position, m.quaternion, _ipv);
+  m.position.add(new THREE29.Vector3(0, D.cy, 0).applyQuaternion(m.quaternion));
+  return ldebAdd(m, { he: D.he, vel, ang, floor: ipFloor(it.H), bounce: D.frag ? 0.2 : 0.3, life: 150, cast: !D.frag, onHit: (d, sp) => {
+    const p = d.mesh.position;
+    if (D.frag && sp > 2.1) {
+      ipShards(p.clone(), D, it.H, _ipUp, sp * 0.3);
+      ldebKill(d);
+    } else if (sp > 1.6) {
+      if (D.wood) woodCrack(camera.position.distanceTo(p), panOf(p), 0.25);
+      else ceramicSound(camera.position.distanceTo(p) + 8, panOf(p), false);
+    }
+  } });
+}
+function ipShards(p, D, H, dir2, k = 1) {
+  const n2 = Math.round(sr(7, 12) * (0.6 + Q.fx * 0.4)), floor = ipFloor(H), col = D.parts[D.parts.length > 1 && D.hangs ? 1 : 0].col;
+  for (let i = 0; i < n2; i++) {
+    const g = IP.shard.clone(), cl = g.attributes.color.array;
+    for (let j = 0; j < cl.length; j += 3) cl.set(col, j);
+    const m = new THREE29.Mesh(g, D.mat === M.planks ? IP.cer : D.mat);
+    m.position.set(p.x + sr(-0.04, 0.04), p.y + sr(0, 0.06), p.z + sr(-0.04, 0.04));
+    m.scale.set(sr(0.5, 1.5), 1, sr(0.5, 1.5));
+    m.rotation.set(sr(0, 6), sr(0, 6), sr(0, 6));
+    ldebAdd(m, { he: [0.018 * m.scale.x, 3e-3, 0.011 * m.scale.z], vel: new THREE29.Vector3(dir2.x * sr(0.5, 2) * k + sr(-1.4, 1.4), sr(0.5, 2.6), dir2.z * sr(0.5, 2) * k + sr(-1.4, 1.4)), ang: new THREE29.Vector3(sr(-20, 20), sr(-20, 20), sr(-20, 20)), floor, bounce: 0.15, life: sr(40, 80), cast: false });
+  }
+  for (let i = 0; i < 3; i++) FX.alpha.spawn({ x: p.x, y: p.y + 0.05, z: p.z, vx: sr(-0.3, 0.3), vy: sr(0.1, 0.4), vz: sr(-0.3, 0.3), size: 0.12, grow: 0.4, life: 0.8, col: [0.8, 0.8, 0.78], a: 0.25, drag: 2 });
+  ceramicSound(camera.position.distanceTo(p), panOf(p), !!D.glass);
+}
+function burnItems(s) {
+  for (const H of IP.houses) if (H.s === s) for (const it of H.items) {
+    if (!it.alive) continue;
+    if (IPT[it.type].wood) ipHide(it);
+    else ipLoose(it, new THREE29.Vector3(), new THREE29.Vector3(sr(-1, 1), 0, sr(-1, 1)));
+  }
 }
 function furnish(o, R2, F, fy, B) {
   const { w, d } = o;
@@ -7295,7 +9513,33 @@ function graffitiOn(o, name, lx, lz, fy, piece, P2) {
   const w = Math.min(1.35, (u1 - u0) * 0.92);
   place(GRAF.mats[GRAF.n % 3], GRAF.geo, gx, fy + y0 + 0.62, gz, ang, [w, w, 1], { cast: false });
 }
+var LEAVES = { im: null, list: [], cap: 640 };
+var _lq = new THREE35.Quaternion();
+function leafBurst(x, y, z, n2, sp, dir2, spread = 1.2) {
+  if (!LEAVES.im) return;
+  n2 = Math.round(n2 * (0.5 + Q.fx * 0.5));
+  for (let i = 0; i < n2; i++) {
+    if (LEAVES.list.length >= LEAVES.cap) LEAVES.list.shift();
+    const needle = sp !== "birch", k = srnd();
+    const col = needle ? k < 0.25 ? [0.36, 0.25, 0.12] : [0.16 + k * 0.06, 0.24 + k * 0.08, 0.1] : k < 0.3 ? [0.62, 0.52, 0.18] : [0.32, 0.42, 0.14];
+    LEAVES.list.push({
+      p: new THREE35.Vector3(x + sr(-spread, spread), y + sr(-spread, spread) * 0.6, z + sr(-spread, spread)),
+      v: new THREE35.Vector3((dir2?.x ?? 0) * sr(0, 2.2) + sr(-0.7, 0.7), sr(-0.2, 1.4), (dir2?.z ?? 0) * sr(0, 2.2) + sr(-0.7, 0.7)),
+      r: [srnd() * TAU, srnd() * TAU, srnd() * TAU],
+      w: [sr(-7, 7), sr(-5, 5), sr(-7, 7)],
+      sx: needle ? 0.016 : sr(0.05, 0.075),
+      sy: needle ? sr(0.08, 0.13) : sr(0.045, 0.07),
+      fall: needle ? sr(1.6, 2.4) : sr(0.6, 1),
+      life: sr(20, 34),
+      col,
+      ph: srnd() * 10,
+      landed: false
+    });
+  }
+}
+var THREE40 = ctx.THREE;
 var MG = { nests: [], plan: [], protoN: null, protoF: null, cur: null, bags: null, bagN: 0, bagList: [], aim: 0, fire: false, lastShot: -9, towers: [] };
+var _v42 = new THREE40.Vector3();
 var REED = { im: null, pts: null, grid: null, cut: null };
 function indexReeds(im3, pts) {
   REED.im = im3;
@@ -7307,6 +9551,26 @@ function indexReeds(im3, pts) {
     if (!REED.grid.has(k)) REED.grid.set(k, []);
     REED.grid.get(k).push(i);
   });
+}
+var _sv = new THREE40.Vector3();
+function panOf(p) {
+  if (!p) return 0;
+  _sv.subVectors(p, camera.position).normalize();
+  const r = _v42.set(1, 0, 0).applyQuaternion(camera.quaternion);
+  return clamp(_sv.dot(r), -1, 1) * 0.8;
+}
+var impactSound = function(){};
+var SL = [];
+var SLOP = { cur: null, zoom: 0, zoomHeld: false, fov0: 72 };
+function releaseSearchlight() {
+  if (!SLOP.cur) return;
+  SLOP.cur = null;
+  SLOP.zoomHeld = false;
+  SLOP.zoom = 0;
+  camera.fov = SLOP.fov0 || 72;
+  camera.updateProjectionMatrix();
+  PL.pitch = clamp(PL.pitch, -0.6, 0.6);
+  PL.onGround = true;
 }
 var THREEH = ctx.THREE;
 var HGX = { shafts: [], beacons: [], jib: null, hook: null, load: null, motes: null, t: 0, yaw: 0.9, swing: 0, swingV: 0, beaconMat: null, holes: [], skylights: [] };
@@ -11014,5 +13278,86 @@ await ctx.stage('buildGlass');buildGlass();
 await ctx.stage('buildLamps');buildLamps();
 await ctx.stage('finishLamps');finishLamps();
 await ctx.stage('flushStatic');flushStatic();
-const bases={alpha:{x:SPAWNS.A.x,z:SPAWNS.A.z},delta:{x:SPAWNS.D.x,z:SPAWNS.D.z}}; GRASS.center.set(1e9,1e9);refreshGrass(true);updateForestLOD(true);return {native:COLLIDERS,heightAt:hFast,bounds:{x0:-MAP.PLAY,x1:MAP.PLAY,z0:-MAP.PLAY,z1:MAP.PLAY},bases,waterY:MAP.WATER_Y,update:(dt,t)=>{FRAME.t=t;FRAME.dt=dt;FRAME.n++;FXU.uFxT.value=t;if(typeof LAKE!=='undefined'&&LAKE.mat){LAKE.mat.uniforms.uTime.value=t;LAKE.mat.uniforms.uFxT.value=t;};updateWind(t);if(FRAME.n%20===0){updateForestLOD(false);refreshGrass();}}};
+
+function __addBody(mesh, o) {
+  o = o || {};
+  if (!mesh.parent) scene.add(mesh);
+  var he = [0.1, 0.1, 0.1];
+  if (mesh.geometry) { mesh.geometry.computeBoundingBox(); var bb = mesh.geometry.boundingBox; he = [Math.max(0.02, (bb.max.x - bb.min.x) * 0.5 * mesh.scale.x), Math.max(0.02, (bb.max.y - bb.min.y) * 0.5 * mesh.scale.y), Math.max(0.02, (bb.max.z - bb.min.z) * 0.5 * mesh.scale.z)]; }
+  var v = o.vel ? o.vel.clone() : new THREE.Vector3(), w = o.spin || o.ang ? (o.spin || o.ang).clone() : new THREE.Vector3();
+  return ldebAdd(mesh, { he: he, vel: v, ang: w, life: Math.min(o.life || 25, 25), bounce: 0.25, cast: false, dispose: true });
+}
+
+var __BC = { mg: { board: 1, panel: 0.2, pole: 0.2, tree: 1, sheet: 0.35 }, rifle: { board: 0.25, panel: 0.05, pole: 0, tree: 0.12, sheet: 0.12 } };
+var __bv = new THREE.Vector3(), __bv2 = new THREE.Vector3();
+function __hitPane(p, dir) {
+  for (var i = 0; i < PANES.length; i++) {
+    var pa = PANES[i];
+    if (!pa.alive) continue;
+    var R = Math.max(pa.w, pa.h);
+    if (Math.abs(p.x - pa.pos.x) > R || Math.abs(p.z - pa.pos.z) > R || Math.abs(p.y - pa.pos.y) > R) continue;
+    __bv.copy(p).sub(pa.pos);
+    if (Math.abs(__bv.dot(pa.normal)) > 0.14) continue;
+    var u = __bv2.set(1, 0, 0).applyQuaternion(pa.q), v = new THREE.Vector3(0, 1, 0).applyQuaternion(pa.q);
+    if (Math.abs(__bv.dot(u)) > pa.w / 2 + 0.05 || Math.abs(__bv.dot(v)) > pa.h / 2 + 0.05) continue;
+    breakPane(pa, dir.clone(), 2);
+    return true;
+  }
+  return false;
+}
+function __bullet(p, dir, power) {
+  var kind = power >= 2 ? "mg" : "rifle", C3 = __BC[kind];
+  if (__hitPane(p, dir)) return { stop: false, cost: 0.05, surf: "glass" };
+  var trees = treesNear(p.x, p.z, 2.2), bt = null, bd = 1e9;
+  for (var i = 0; i < trees.length; i++) {
+    var t = trees[i];
+    if (t.broken || p.y < t.y - 0.2 || p.y > t.y + t.h) continue;
+    var d = Math.hypot(t.x - p.x, t.z - p.z) - t.r;
+    if (d < 0.16 && d < bd) { bd = d; bt = t; }
+  }
+  var best = null, bpd = 0.14;
+  for (var s of structAt(p.x, p.z, 2)) {
+    if (!s.panels) continue;
+    for (var pk of s.panels) {
+      if (pk.dead || !pk.box) continue;
+      var pd = pk.box.distanceToPoint(p);
+      if (pd < bpd) { bpd = pd; best = pk; }
+    }
+  }
+  if (best && (!bt || bpd < bd)) {
+    var pk = best, from = p.clone().addScaledVector(dir, -1);
+    if (pk.boards) {
+      var bdd = boardAt(pk, p);
+      if (!bdd) return { stop: false, cost: 0, surf: "wood" };
+      bdd.hp -= C3.board * (0.8 + Math.random() * 0.4);
+      if (bdd.hp <= 0) knockBoard(pk, bdd, dir, kind === "mg" ? 5 : 2.5);
+      if (!pk.dead) {
+        pk.hp -= C3.panel;
+        if (pk.hp <= 0 || pk.boardsLeft / pk.boards.length < 0.4) kill(pk, from, kind === "mg" ? 4 : 2, 0);
+      }
+    } else if (pk.armor === "pole") {
+      if (C3.pole > 0) { pk.hp -= C3.pole; pk.hitY = p.y; if (pk.hp <= 0.001) kill(pk, from, 3, 0); }
+    } else hitPanel(pk, p, dir.clone(), pk.kind === "wall" ? C3.panel : C3.sheet);
+    return { stop: false, cost: 0.3, surf: "wood" };
+  }
+  if (bt) {
+    bt.chop = (bt.chop || 0) + C3.tree;
+    if (bt.chop >= 2 + bt.r * 18) breakTree(bt, new THREE.Vector3(dir.x, 0, dir.z).normalize(), 1.2);
+    return { stop: true, cost: 1, surf: "wood" };
+  }
+  return null;
+}
+function __extra() {
+  return {
+    hooks: __HK,
+    crates: CRATES.map(function (c, i) { return { id: "depot" + i, kind: "ammo", name: c.name, x: c.x, y: hFast(c.x, c.z), z: c.z, r: 4.6 * (c.s || 1) }; }),
+    bulletHit: function (p, dir, power) { return __bullet(p, dir, power || 1); },
+    explode: function (p, o) { o = o || {}; var size = Math.min(3, Math.max(0.3, (o.power || 1) * (o.radius || 6) / 6)); onBlast(p.x, hFast(p.x, p.z), p.z, size, false, {}); },
+    indoor: function () { return false; },
+    dest: { structs: STRUCTS, panes: PANES, queue: QUEUE, trees: TREES },
+  };
+}
+function __stepGameplay(dt) { updateStructs(dt); updateDestruction(dt); }
+
+const bases={alpha:{x:SPAWNS.A.x,z:SPAWNS.A.z},delta:{x:SPAWNS.D.x,z:SPAWNS.D.z}}; GRASS.center.set(1e9,1e9);refreshGrass(true);updateForestLOD(true);return {...__extra(), native:COLLIDERS,heightAt:hFast,bounds:{x0:-MAP.PLAY,x1:MAP.PLAY,z0:-MAP.PLAY,z1:MAP.PLAY},bases,waterY:MAP.WATER_Y,update:(dt,t)=>{FRAME.t=t;FRAME.dt=dt;FRAME.n++;FXU.uFxT.value=t;if(typeof LAKE!=='undefined'&&LAKE.mat){LAKE.mat.uniforms.uTime.value=t;LAKE.mat.uniforms.uFxT.value=t;};updateWind(t);__stepGameplay(dt);if(FRAME.n%20===0){updateForestLOD(false);refreshGrass();}}};
 };

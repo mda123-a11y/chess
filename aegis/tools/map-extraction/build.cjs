@@ -26,7 +26,7 @@ const ang=id==='angar_map';const overrides={
  setLevel:'function(){}',buildComposer:'function(){}',
 };
 if(ang){overrides.THREE='ctx.THREE';overrides.BGU='ctx.BGU';overrides.DEBUG='new URLSearchParams()';}
-const GPF=path.join(__dirname,'gameplay',id+'.cjs'),GP=fs.existsSync(GPF)?require(GPF):{};Object.assign(overrides,GP.overrides||{});
+const GPF=path.join(__dirname,'gameplay',id+'.cjs'),GP=fs.existsSync(GPF)?require(GPF):{};Object.assign(overrides,GP.overrides||{});for(const n of GP.unoverride||[])delete overrides[n];
 const forestSteps=ang?[]:['buildMaterials',...(id.startsWith('stroyka')?['villageMats','planCompound']:[]),'planBuildings','planMilitary',...(id.startsWith('stroyka')?['planCraters']:[]),'planProps','planLamps','planLandmarks','planWrecks','buildHeightCache','buildTerrain','buildForest','buildUndergrowth','buildGrass',...(id.startsWith('forest')?['buildLake']:['buildCompound']),'buildBuildings','buildMilitary','buildLandmarks',...(id.startsWith('stroyka')?['buildField']:[]),'buildWrecks','buildProps','buildCrates',...(id.startsWith('stroyka')?['buildBases','buildExtraStatic']:[]),'buildBigFlag','buildGlass','buildLamps','finishLamps','flushStatic'];
 const angSteps=['buildAllMaterials','buildFabricMaterials','buildLights','buildHangar','buildRoof','buildLamps','buildDeadLamp','buildServices','buildNightLighting','buildHouse','buildDoors','roomLabels','buildLayout','buildFloor','buildFloorDetails','buildTag','flushBuckets','bakeScene'];
 const steps=ang?angSteps:forestSteps;
