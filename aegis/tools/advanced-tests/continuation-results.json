@@ -1,0 +1,81 @@
+{
+  "tests": [
+    {
+      "test": "vault",
+      "dt": 0.016666666666666666,
+      "result": "landed",
+      "pos": [
+        0,
+        0.01500000836327664,
+        -1.7599999642372128
+      ],
+      "maxStep": 0.1072772741317749
+    },
+    {
+      "test": "vault",
+      "dt": 0.03333333333333333,
+      "result": "landed",
+      "pos": [
+        0,
+        0.015000011157244364,
+        -1.7599999642372128
+      ],
+      "maxStep": 0.2144918292760849
+    },
+    {
+      "test": "vault",
+      "dt": 0.05,
+      "result": "landed",
+      "pos": [
+        0,
+        0.015000011157244364,
+        -1.7599999642372128
+      ],
+      "maxStep": 0.3204064667224884
+    },
+    {
+      "test": "vault low ceiling",
+      "rejected": true
+    },
+    {
+      "test": "dynamic object ground and cleanup",
+      "pos": [
+        2.309601306915283,
+        0.03070666640996933,
+        0
+      ]
+    },
+    {
+      "test": "angular PD convergence and cleanup"
+    },
+    {
+      "test": "medical ally filter, claim and player priority"
+    },
+    {
+      "test": "thin wall between free grid centers is blocked"
+    },
+    {
+      "test": "vault aborts at new obstruction",
+      "pos": [
+        0.000005096840595797403,
+        0.709992247450504,
+        -1.0849205497215735
+      ]
+    },
+    {
+      "test": "treatment distance follows moved casualty"
+    },
+    {
+      "test": "exact endpoint links and fast unreachable result"
+    },
+    {
+      "test": "mid-corridor overhang rejected"
+    },
+    {
+      "test": "destroyed support releases traversal and hand contacts"
+    },
+    {
+      "test": "roof underside and no-ground weapon ray filters"
+    }
+  ]
+}

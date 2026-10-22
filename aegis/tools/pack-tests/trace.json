@@ -1,0 +1,10 @@
+{
+  "tests": 3000,
+  "stats": {
+    "rays": 3000,
+    "tests": 4450,
+    "meshes": 150,
+    "custom": 0,
+    "dynamic": 1
+  }
+}

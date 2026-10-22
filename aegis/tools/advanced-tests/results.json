@@ -1,0 +1,378 @@
+{
+  "checks": 1030832,
+  "physics": {
+    "backend": "Rapier 0.19.3 WASM",
+    "steps": 180,
+    "actors": 1,
+    "liveMotorRigs": 0,
+    "liveAngularMotors": 0,
+    "servoSubsteps": 0,
+    "dynamicObjects": 0,
+    "brassPool": {
+      "allocated": 0,
+      "active": 0
+    },
+    "livingContacts": {
+      "rigs": 0,
+      "segments": 0
+    },
+    "ragdolls": 0,
+    "colliders": 3,
+    "bodies": 1,
+    "droppedSeconds": 0,
+    "terrainMaxResolution": 256
+  },
+  "ai": {
+    "checks": 54,
+    "shots": 12,
+    "decisions": 42,
+    "friendlyBlocks": 0,
+    "hearing": 0,
+    "coverTests": 0,
+    "paths": 6,
+    "expanded": 0,
+    "queued": 0,
+    "cachedNav": 0,
+    "navigation": {
+      "backend": "grid-fallback"
+    },
+    "modes": [
+      {
+        "key": "a",
+        "mode": "investigate",
+        "role": 0
+      },
+      {
+        "key": "b",
+        "mode": "investigate",
+        "role": 0
+      }
+    ]
+  },
+  "corpses": [
+    {
+      "key": "delta_1",
+      "dt": 0.016666666666666666,
+      "slope": 0,
+      "sleep": 0,
+      "max": 8.498895645141602,
+      "maxJointError": 0.0013535824762309079,
+      "maxAngularError": 0.02493587927571861
+    },
+    {
+      "key": "delta_1",
+      "dt": 0.016666666666666666,
+      "slope": -0.12,
+      "sleep": 0,
+      "max": 8.825654029846191,
+      "maxJointError": 0.00651356039177986,
+      "maxAngularError": 0.010679056089112127
+    },
+    {
+      "key": "delta_1",
+      "dt": 0.016666666666666666,
+      "slope": 0.12,
+      "sleep": 0,
+      "max": 8.977422714233398,
+      "maxJointError": 0.01410292822883974,
+      "maxAngularError": 0.023033576682947032
+    },
+    {
+      "key": "delta_1",
+      "dt": 0.03333333333333333,
+      "slope": 0,
+      "sleep": 0,
+      "max": 8.706368446350098,
+      "maxJointError": 0.0011215983924003914,
+      "maxAngularError": 0.003500196688733581
+    },
+    {
+      "key": "delta_1",
+      "dt": 0.03333333333333333,
+      "slope": -0.12,
+      "sleep": 0,
+      "max": 8.566218376159668,
+      "maxJointError": 0.002492141073166365,
+      "maxAngularError": 0.010224320259972774
+    },
+    {
+      "key": "delta_1",
+      "dt": 0.03333333333333333,
+      "slope": 0.12,
+      "sleep": 0,
+      "max": 8.761390686035156,
+      "maxJointError": 0.004490796989304602,
+      "maxAngularError": 0.004639073490736667
+    },
+    {
+      "key": "delta_1",
+      "dt": 0.05,
+      "slope": 0,
+      "sleep": 0,
+      "max": 8.72362995147705,
+      "maxJointError": 0.0013394582264296129,
+      "maxAngularError": 0.0020835749891345845
+    },
+    {
+      "key": "delta_1",
+      "dt": 0.05,
+      "slope": -0.12,
+      "sleep": 0,
+      "max": 8.80339527130127,
+      "maxJointError": 0.00021728116914671025,
+      "maxAngularError": 0.010191306767483699
+    },
+    {
+      "key": "delta_1",
+      "dt": 0.05,
+      "slope": 0.12,
+      "sleep": 0,
+      "max": 8.956502914428711,
+      "maxJointError": 0.0004269711742001525,
+      "maxAngularError": 0.00242015306205845
+    },
+    {
+      "key": "delta_2",
+      "dt": 0.016666666666666666,
+      "slope": 0,
+      "sleep": 0,
+      "max": 6.109447479248047,
+      "maxJointError": 0.001328651830608929,
+      "maxAngularError": 0.06385123886299093
+    },
+    {
+      "key": "delta_2",
+      "dt": 0.016666666666666666,
+      "slope": -0.12,
+      "sleep": 0,
+      "max": 6.415707588195801,
+      "maxJointError": 0.014712164655349275,
+      "maxAngularError": 0.0035600773348578585
+    },
+    {
+      "key": "delta_2",
+      "dt": 0.016666666666666666,
+      "slope": 0.12,
+      "sleep": 0,
+      "max": 6.046063423156738,
+      "maxJointError": 0.0006133155483663555,
+      "maxAngularError": 0.01425591149419514
+    },
+    {
+      "key": "delta_2",
+      "dt": 0.03333333333333333,
+      "slope": 0,
+      "sleep": 0,
+      "max": 6.403847694396973,
+      "maxJointError": 0.004884675873683131,
+      "maxAngularError": 0.0029527808018285917
+    },
+    {
+      "key": "delta_2",
+      "dt": 0.03333333333333333,
+      "slope": -0.12,
+      "sleep": 0,
+      "max": 6.592678546905518,
+      "maxJointError": 0.020330500216689557,
+      "maxAngularError": 0.0264193461495692
+    },
+    {
+      "key": "delta_2",
+      "dt": 0.03333333333333333,
+      "slope": 0.12,
+      "sleep": 0,
+      "max": 6.042110919952393,
+      "maxJointError": 0.0007004067019958371,
+      "maxAngularError": 0.0235311666594315
+    },
+    {
+      "key": "delta_2",
+      "dt": 0.05,
+      "slope": 0,
+      "sleep": 0,
+      "max": 6.409834861755371,
+      "maxJointError": 0.001243652136581841,
+      "maxAngularError": 0.03487065562311864
+    },
+    {
+      "key": "delta_2",
+      "dt": 0.05,
+      "slope": -0.12,
+      "sleep": 0,
+      "max": 6.426612377166748,
+      "maxJointError": 0.0005198884779591961,
+      "maxAngularError": 0.0008211909009437912
+    },
+    {
+      "key": "delta_2",
+      "dt": 0.05,
+      "slope": 0.12,
+      "sleep": 0,
+      "max": 6.041072368621826,
+      "maxJointError": 0.0004886864675141545,
+      "maxAngularError": 0.00944280725591895
+    },
+    {
+      "key": "alpha_1",
+      "dt": 0.016666666666666666,
+      "slope": 0,
+      "sleep": 0,
+      "max": 2.262676954269409,
+      "maxJointError": 0.004914642851798434,
+      "maxAngularError": 0.01671404156540013
+    },
+    {
+      "key": "alpha_1",
+      "dt": 0.016666666666666666,
+      "slope": -0.12,
+      "sleep": 0,
+      "max": 2.1406726837158203,
+      "maxJointError": 0.003736415698119,
+      "maxAngularError": 0.017985332337683513
+    },
+    {
+      "key": "alpha_1",
+      "dt": 0.016666666666666666,
+      "slope": 0.12,
+      "sleep": 0,
+      "max": 2.118680953979492,
+      "maxJointError": 0.002669898544260696,
+      "maxAngularError": 0.027200157861548835
+    },
+    {
+      "key": "alpha_1",
+      "dt": 0.03333333333333333,
+      "slope": 0,
+      "sleep": 0,
+      "max": 2.2103962898254395,
+      "maxJointError": 0.0005157929358723945,
+      "maxAngularError": 0.004658678414313
+    },
+    {
+      "key": "alpha_1",
+      "dt": 0.03333333333333333,
+      "slope": -0.12,
+      "sleep": 0,
+      "max": 2.131741762161255,
+      "maxJointError": 0.00377708553415268,
+      "maxAngularError": 0.01803685357910867
+    },
+    {
+      "key": "alpha_1",
+      "dt": 0.03333333333333333,
+      "slope": 0.12,
+      "sleep": 0,
+      "max": 2.106001377105713,
+      "maxJointError": 0.0026651127865123247,
+      "maxAngularError": 0.0031822876094591557
+    },
+    {
+      "key": "alpha_1",
+      "dt": 0.05,
+      "slope": 0,
+      "sleep": 0,
+      "max": 2.2767891883850098,
+      "maxJointError": 0.0010887264979496658,
+      "maxAngularError": 0.009824673609281742
+    },
+    {
+      "key": "alpha_1",
+      "dt": 0.05,
+      "slope": -0.12,
+      "sleep": 0,
+      "max": 2.1416807174682617,
+      "maxJointError": 0.007586557016508955,
+      "maxAngularError": 0.0003558510704525508
+    },
+    {
+      "key": "alpha_1",
+      "dt": 0.05,
+      "slope": 0.12,
+      "sleep": 0,
+      "max": 2.132038116455078,
+      "maxJointError": 0.00015618234963910016,
+      "maxAngularError": 0.005019934554527428
+    },
+    {
+      "key": "alpha_2",
+      "dt": 0.016666666666666666,
+      "slope": 0,
+      "sleep": 0,
+      "max": 4.737791061401367,
+      "maxJointError": 0.001746178825769551,
+      "maxAngularError": 0.02418118515814882
+    },
+    {
+      "key": "alpha_2",
+      "dt": 0.016666666666666666,
+      "slope": -0.12,
+      "sleep": 0,
+      "max": 4.664770603179932,
+      "maxJointError": 0.006041060137706444,
+      "maxAngularError": 0.02558555101495319
+    },
+    {
+      "key": "alpha_2",
+      "dt": 0.016666666666666666,
+      "slope": 0.12,
+      "sleep": 0,
+      "max": 4.7561936378479,
+      "maxJointError": 0.0006950521312277802,
+      "maxAngularError": 0.01065362390398139
+    },
+    {
+      "key": "alpha_2",
+      "dt": 0.03333333333333333,
+      "slope": 0,
+      "sleep": 0,
+      "max": 4.992645740509033,
+      "maxJointError": 0.0013968598393437892,
+      "maxAngularError": 0.003214046029710982
+    },
+    {
+      "key": "alpha_2",
+      "dt": 0.03333333333333333,
+      "slope": -0.12,
+      "sleep": 0,
+      "max": 4.655757904052734,
+      "maxJointError": 0.003957835289094769,
+      "maxAngularError": 0.026986024794016905
+    },
+    {
+      "key": "alpha_2",
+      "dt": 0.03333333333333333,
+      "slope": 0.12,
+      "sleep": 0,
+      "max": 4.768056392669678,
+      "maxJointError": 0.00036968870937065246,
+      "maxAngularError": 0.00398677916159329
+    },
+    {
+      "key": "alpha_2",
+      "dt": 0.05,
+      "slope": 0,
+      "sleep": 0,
+      "max": 4.907866954803467,
+      "maxJointError": 0.0003559236680802935,
+      "maxAngularError": 0.0212762804792046
+    },
+    {
+      "key": "alpha_2",
+      "dt": 0.05,
+      "slope": -0.12,
+      "sleep": 0,
+      "max": 4.650013446807861,
+      "maxJointError": 0.0006434388213955589,
+      "maxAngularError": 0.0009235073932627458
+    },
+    {
+      "key": "alpha_2",
+      "dt": 0.05,
+      "slope": 0.12,
+      "sleep": 0,
+      "max": 4.770836353302002,
+      "maxJointError": 0.0005272635778742485,
+      "maxAngularError": 0.0026677937646875094
+    }
+  ]
+}
