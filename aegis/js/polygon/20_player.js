@@ -300,6 +300,41 @@
        Толстое препятствие (ящик, помост) — сначала залезть наверх
        (mantle), дальше идти по нему. Корпус при этом сгибается: глаза
        проходят примерно на 0,9–1,0 м над верхом. */
+      /* Лестница (вышки, крыши): вперёд к лестнице — взяться; W/S — вверх/вниз; пробел — спрыгнуть */
+      function ladderStep(dt, active, wish, sinY, cosY, input) {
+        const alive = (L) => !(L.dead || (L.panel && L.panel.dead));
+        if (!active) { P.ladder = null; return; }
+        if (!P.ladder) {
+          if (wish.y > -0.3 || P.vault) return;
+          let best = null, bd = 1e9;
+          for (const L of world.ladders) {
+            if (!alive(L) || P.pos.y < L.y0 - 0.4 || P.pos.y > L.y1 + 0.3) continue;
+            const dx = P.pos.x - L.x, dz = P.pos.z - L.z, front = dx * L.nx + dz * L.nz, along = dx * L.nz - dz * L.nx;
+            if (front < -0.15 || front > 0.8 || Math.abs(along) > L.w / 2 + 0.25) continue;
+            if (-sinY * -L.nx + -cosY * -L.nz < 0.35) continue;
+            const d = Math.abs(front - 0.4) + Math.abs(along);
+            if (d < bd) { bd = d; best = L; }
+          }
+          if (best) { P.ladder = best; P.vel.set(0, 0, 0); P._motorVX = 0; P._motorVZ = 0; P.grounded = false; }
+          return;
+        }
+        const L = P.ladder;
+        if (!alive(L)) { P.ladder = null; return; }
+        const up = -wish.y, sp = P.sprint > 0.5 ? 3.1 : 2.2;
+        if ((input.jump || 0) !== (P._ladJ === undefined ? (input.jump || 0) : P._ladJ) && (input.jump || 0)) {
+          P.ladder = null; P.vel.set(L.nx * 2.6, 2.2, L.nz * 2.6); return;
+        }
+        P._ladJ = input.jump || 0;
+        P.pos.y += up * sp * dt;
+        const dx = P.pos.x - L.x, dz = P.pos.z - L.z, along = Math.max(-L.w / 2, Math.min(L.w / 2, dx * L.nz - dz * L.nx));
+        const k = Math.min(1, dt * 12);
+        P.pos.x += (L.x + L.nx * 0.42 + L.nz * along - P.pos.x) * k;
+        P.pos.z += (L.z + L.nz * 0.42 - L.nx * along - P.pos.z) * k;
+        P.vel.set(0, 0, 0); P._motorVX = 0; P._motorVZ = 0; P.speed = 0; P.grounded = false;
+        if (P.pos.y >= L.y1 - 0.05 && up > 0) { P.pos.set(L.exit[0], L.exit[1], L.exit[2]); P.ladder = null; P.grounded = true; }
+        else if (P.pos.y <= L.y0 && up < 0) { P.pos.y = L.y0; P.ladder = null; }
+      }
+
     function tryVault() { return globalThis.GTraversal.tryStart(P, world, PHYS); }
     P.tryVault = tryVault;
     function updateVault(dt, active) { globalThis.GTraversal.update(P, world, dt); }
@@ -440,8 +475,11 @@
         }
       } else P._jp = undefined;
 
+      if (world.ladders && world.ladders.length) ladderStep(dt, active, wish, sinY, cosY, input);
       if (P.vault) {
         updateVault(dt, active);
+      } else if (P.ladder) {
+        /* лестница: позицию ведёт ladderStep, физика тела не нужна */
       } else if (globalThis.GPhysics) {
         globalThis.GPhysics.get(world).move(P, dt, PHYS.gravity);
       } else {

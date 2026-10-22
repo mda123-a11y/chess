@@ -363,6 +363,42 @@ namespace AegisCombat {
       active: S = null;
     const origin = new T.Vector3(),
       target = new T.Vector3();
+    // Cached roster per team and a coarse bucket grid for local queries (separation, neighbours).
+    const lists: Record<string, S[]> = {},
+      grid = new Map<number, S[]>(),
+      GC = 8,
+      tmp: S[] = [];
+    let gridAt = -1;
+    const ix = (s: S) =>
+        s._ix === undefined ? (s._ix = squad.indexOf(s)) : s._ix,
+      teamOf = (k: string) =>
+        lists[k] || (lists[k] = squad.filter((a: S) => team(a) === k)),
+      foe = (k: string) => (k === "delta" ? "alpha" : "delta"),
+      over = () => !!(globalThis as any).GTeams?.isOver?.();
+    function rebuild(t: number) {
+      if (t - gridAt < 0.2) return;
+      gridAt = t;
+      for (const v of grid.values()) v.length = 0;
+      for (const a of squad) {
+        if (!alive(a)) continue;
+        const p = a.ctrl.pos,
+          key = Math.floor(p.x / GC) * 4096 + Math.floor(p.z / GC);
+        let v = grid.get(key);
+        if (!v) grid.set(key, (v = []));
+        v.push(a);
+      }
+    }
+    function nearby(p: P, r: number) {
+      tmp.length = 0;
+      const x1 = Math.floor((p.x + r) / GC),
+        z1 = Math.floor((p.z + r) / GC);
+      for (let x = Math.floor((p.x - r) / GC); x <= x1; x++)
+        for (let z = Math.floor((p.z - r) / GC); z <= z1; z++) {
+          const v = grid.get(x * 4096 + z);
+          if (v) for (const a of v) tmp.push(a);
+        }
+      return tmp;
+    }
     const board = (s: S) => {
       const k = team(s);
       if (!boards.has(k))
@@ -373,7 +409,7 @@ namespace AegisCombat {
       return (
         s.battle ||
         (s.battle = {
-          next: t + (squad.indexOf(s) % 6) * 0.045,
+          next: t + (ix(s) % 6) * 0.045,
           path: [],
           pathAt: 0,
           shotAt: 0,
@@ -389,10 +425,7 @@ namespace AegisCombat {
           suppression: 0,
           burst: 0,
           role:
-            Math.max(
-              0,
-              squad.filter((a: S) => team(a) === team(s)).indexOf(s),
-            ) % 3,
+            Math.max(0, teamOf(team(s)).indexOf(s)) % 3,
           prevPos: copy(s.ctrl.pos),
           stuck: 0,
           acquired: 0,
@@ -424,8 +457,8 @@ namespace AegisCombat {
     function perception(s: S, b: any, t: number) {
       const p = s.ctrl.pos,
         candidates: { q: S; score: number }[] = [];
-      for (const q of squad) {
-        if (q === s || !alive(q) || team(q) === team(s)) continue;
+      for (const q of teamOf(foe(team(s)))) {
+        if (q === s || !alive(q)) continue;
         const d = dist(p, q.ctrl.pos);
         if (d > 120) continue;
         const dx = q.ctrl.pos.x - p.x,
@@ -545,6 +578,11 @@ namespace AegisCombat {
       }
       return best;
     }
+    // Guards and followers do not chase contacts beyond their leash (set by GTeams orders).
+    const leashed = (s: S, m: P) => {
+      const L = s.order?.leash;
+      return !!L && Math.hypot(m.x - L.x, m.z - L.z) > L.r;
+    };
     const tree = new Selector([
       new Sequence([
         cond(
@@ -601,12 +639,12 @@ namespace AegisCombat {
             p = c.s.ctrl.pos,
             e = b.memory,
             d = dist(p, e),
-            allies = squad.filter(
+            overwatch = teamOf(team(c.s)).some(
               (a: S) =>
-                a !== c.s && alive(a) && team(a) === team(c.s) && a.battle?.los,
-            ),
-            overwatch = allies.some(
-              (a: S) => a.battle.role === 0 || a.battle.mode === "overwatch",
+                a !== c.s &&
+                alive(a) &&
+                a.battle?.los &&
+                (a.battle.role === 0 || a.battle.mode === "overwatch"),
             );
           if (d < 13) {
             const dx = (p.x - e.x) / Math.max(1, d),
@@ -636,7 +674,7 @@ namespace AegisCombat {
         }),
       ]),
       new Sequence([
-        cond((c) => !!c.b.memory),
+        cond((c) => !!c.b.memory && !leashed(c.s, c.b.memory)),
         act((c) => {
           c.b.mode = "investigate";
           c.b.goal = copy(c.b.memory);
@@ -654,6 +692,17 @@ namespace AegisCombat {
       ]),
       act((c) => {
         c.b.mode = "regroup";
+        const o = c.s.order;
+        if (o && c.t < o.until) {
+          const b = c.b;
+          b.mode = o.mode;
+          b.goal = o.goal;
+          b.speed = o.speed || 1;
+          b.sprint = !!o.sprint;
+          if (o.face !== undefined && (!o.goal || dist(c.s.ctrl.pos, o.goal) < 1.2))
+            c.s.idleYaw = o.face;
+          return;
+        }
         const leader =
           c.active && alive(c.active) && team(c.active) === team(c.s)
             ? c.active
@@ -712,7 +761,8 @@ namespace AegisCombat {
       if (clock === t) return;
       clock = t;
       active = a;
-      tokens = 6;
+      tokens = 8 + Math.ceil(squad.length / 10);
+      rebuild(t);
       nav.process(t, 320);
       for (const bb of boards.values())
         for (const [key, claim] of bb.claims)
@@ -748,7 +798,7 @@ namespace AegisCombat {
         return;
       }
       if (t >= b.pathAt && !b.pending) {
-        b.pathAt = t + 1.5 + (squad.indexOf(s) % 4) * 0.13;
+        b.pathAt = t + 1.5 + (ix(s) % 4) * 0.13;
         nav.request(s, b.goal, t);
       }
       while (b.path.length && near(b.path[0], surface?.query ? 0.22 : 0.65))
@@ -772,7 +822,7 @@ namespace AegisCombat {
       const L = Math.hypot(mx, mz) || 1;
       mx /= L;
       mz /= L;
-      for (const q of squad) {
+      for (const q of nearby(c.pos, 1.2)) {
         if (q === s || !alive(q)) continue;
         const dx = c.pos.x - q.ctrl.pos.x,
           dz = c.pos.z - q.ctrl.pos.z,
@@ -783,7 +833,7 @@ namespace AegisCombat {
           mz += (dz / d) * w;
           // Deterministic passing side breaks symmetric head-on deadlocks.
           if (d < 0.95 && team(q) === team(s)) {
-            const side = squad.indexOf(s) < squad.indexOf(q) ? 1 : -1;
+            const side = ix(s) < ix(q) ? 1 : -1;
             mx += (-dz / d) * w * 0.65 * side;
             mz += (dx / d) * w * 0.65 * side;
           }
@@ -793,13 +843,15 @@ namespace AegisCombat {
       mx /= len;
       mz /= len;
       // Brake before tight corners rather than overshooting a portal at full speed.
-      const speed = surface ? Math.max(0.22, Math.min(1, L / 1.0)) : 1;
+      const speed =
+        (surface ? Math.max(0.22, Math.min(1, L / 1.0)) : 1) * (b.speed || 1);
       b.wish.set(
         (mx * Math.cos(c.yaw) - mz * Math.sin(c.yaw)) * speed,
         (mx * Math.sin(c.yaw) + mz * Math.cos(c.yaw)) * speed,
       );
       c.aiWish = b.wish;
-      c.aiSprint = b.mode === "regroup" && dist(c.pos, b.goal) > 13;
+      c.aiSprint =
+        (b.mode === "regroup" || b.sprint) && dist(c.pos, b.goal) > 13;
       if (b.mode !== "take-cover") c.aiCrouch = false;
       if (!b.los) s.idleYaw = Math.atan2(-mx, -mz);
       if (dist(c.pos, b.prevPos) < 0.025) b.stuck += dt;
@@ -821,8 +873,18 @@ namespace AegisCombat {
       }
       const c = s.ctrl,
         b = state(s, t);
+      if (over()) {
+        c.aiWish = null;
+        c.aiADS = false;
+        s.combatAim = null;
+        return;
+      }
       if (t >= b.next && tokens > 0) {
-        b.next = t + 0.23 + (squad.indexOf(s) % 3) * 0.017;
+        // Off-screen or distant bots think at a lower rate.
+        b.next =
+          t + (s._lodI > 0.2 ? 0.55 : 0.23) + (ix(s) % 3) * 0.017;
+        b.speed = 1;
+        b.sprint = false;
         perception(s, b, t);
         c.aiWish = null;
         c.aiSprint = false;
@@ -838,8 +900,9 @@ namespace AegisCombat {
         c.reload < 0 &&
         !["medical-or-threat", "take-cover", "disengage"].includes(b.mode)
       );
-      if (b.mode === "medical-or-threat") {
+      if (b.mode === "medical-or-threat" || s.tmBusy > t) {
         c.aiADS = false;
+        if (s.tmBusy > t) c.aiWish = null;
         return;
       }
       if (
@@ -873,8 +936,15 @@ namespace AegisCombat {
         };
       } else s.combatAim = null;
     }
+    let fireStart = 0;
     function fire(t: number) {
-      for (const s of squad) {
+      if (over()) return;
+      let shots = 0;
+      const n = squad.length;
+      fireStart = (fireStart + 1) % n;
+      for (let k = 0; k < n; k++) {
+        const s = squad[(k + fireStart) % n];
+        if (shots >= 6) break; // cap simultaneous bot shots (FX/audio load) per frame
         const b = s.battle,
           c = s.ctrl;
         if (
@@ -901,8 +971,8 @@ namespace AegisCombat {
           error = Math.atan2(Math.sin(yaw - c.yaw), Math.cos(yaw - c.yaw));
         if (Math.abs(error) > 0.055 + b.suppression * 0.025) continue;
         let blocked = false;
-        for (const a of squad) {
-          if (a === s || !alive(a) || team(a) !== team(s)) continue;
+        for (const a of teamOf(team(s))) {
+          if (a === s || !alive(a)) continue;
           const ax = a.ctrl.pos.x - c.pos.x,
             az = a.ctrl.pos.z - c.pos.z,
             u = (ax * dx + az * dz) / L2;
@@ -939,29 +1009,24 @@ namespace AegisCombat {
         if (c.canFire()) {
           c.fire(t);
           stats.shots++;
+          shots++;
           b.burst++;
           b.shotAt =
             t +
             (b.burst >= 3
               ? 0.65 + b.suppression * 0.7
-              : 0.14 + (squad.indexOf(s) % 3) * 0.025);
+              : 0.14 + (ix(s) % 3) * 0.025);
           if (b.burst >= 3) b.burst = 0;
           hear(c.pos, s, t, 65);
         } else if (c.ammo <= 0 && c.reserve > 0) c.startReload();
       }
     }
     function hear(p: P, source: S, t: number, radius = 55) {
-      for (const s of squad) {
-        if (
-          s === source ||
-          !alive(s) ||
-          team(s) === team(source) ||
-          dist(s.ctrl.pos, p) > radius
-        )
-          continue;
+      for (const s of teamOf(foe(team(source)))) {
+        if (s === source || !alive(s) || dist(s.ctrl.pos, p) > radius) continue;
         const b = state(s, t);
         if (t - b.seenAt < 1) continue;
-        const seed = squad.indexOf(s) * 2.399;
+        const seed = ix(s) * 2.399;
         b.memory = {
           x: p.x + Math.cos(seed) * 3,
           y: p.y,

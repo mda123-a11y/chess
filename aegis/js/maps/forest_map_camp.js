@@ -3392,7 +3392,7 @@ var V1 = null;
 var addStaticCollider = function(c){ if(c && !COLLIDERS.includes(c)) COLLIDERS.push(c); };
 var removeStaticCollider = function(c){ if(c) c.dead = true; };
 var BODY_IDX0 = 1e6;
-var addBody = function(mesh, o){ return __addBody(mesh, o); };
+var addBody = function(o){ return __addBody(o); };
 var killBody = function(){};
 function freezeBody(b) {
   if (!b?.body) return;
@@ -11619,15 +11619,19 @@ await ctx.stage('buildLamps');buildLamps();
 await ctx.stage('finishLamps');finishLamps();
 await ctx.stage('flushStatic');flushStatic();
 
-function __addBody(mesh, o) {
+function __addBody(o) {
   o = o || {};
+  var mesh = o.mesh || null, sz = o.size || [0.1, 0.1, 0.1];
+  var rec = { body: __deepNoop, shape: null, children: [], idx: -1, ms: null, mesh: mesh, sync: o.sync || null, life: o.life ?? 8, age: 0, keep: !!o.keep, onDone: o.onDone || null, pos: o.pos ? o.pos.clone() : new THREE.Vector3(), quat: o.quat ? o.quat.clone() : new THREE.Quaternion(), dead: false };
+  if (!mesh) return rec;
+  if (o.pos) mesh.position.copy(o.pos);
+  if (o.quat) mesh.quaternion.copy(o.quat);
   if (!mesh.parent) scene.add(mesh);
-  var he = [0.1, 0.1, 0.1];
-  if (mesh.geometry) { mesh.geometry.computeBoundingBox(); var bb = mesh.geometry.boundingBox; he = [Math.max(0.02, (bb.max.x - bb.min.x) * 0.5 * mesh.scale.x), Math.max(0.02, (bb.max.y - bb.min.y) * 0.5 * mesh.scale.y), Math.max(0.02, (bb.max.z - bb.min.z) * 0.5 * mesh.scale.z)]; }
-  var v = o.vel ? o.vel.clone() : new THREE.Vector3(), w = o.spin || o.ang ? (o.spin || o.ang).clone() : new THREE.Vector3();
-  return ldebAdd(mesh, { he: he, vel: v, ang: w, life: Math.min(o.life || 25, 25), bounce: 0.25, cast: false, dispose: true });
+  if (o.keep) return rec;
+  var he = [Math.max(0.02, (sz[0] || 0.1) * 0.5), Math.max(0.02, (sz[1] || 0.1) * 0.5), Math.max(0.02, (sz[2] || sz[0] || 0.1) * 0.5)];
+  rec.deb = ldebAdd(mesh, { he: he, vel: o.vel ? o.vel.clone() : new THREE.Vector3(), ang: o.ang ? o.ang.clone() : new THREE.Vector3(), life: Math.min(o.life ?? 20, 20), bounce: 0.25, cast: false, dispose: false });
+  return rec;
 }
-
 var __BC = { mg: { board: 1, panel: 0.2, pole: 0.2, tree: 1, sheet: 0.35 }, rifle: { board: 0.25, panel: 0.05, pole: 0, tree: 0.12, sheet: 0.12 } };
 var __bv = new THREE.Vector3(), __bv2 = new THREE.Vector3();
 function __hitPane(p, dir) {
@@ -11690,6 +11694,7 @@ function __bullet(p, dir, power) {
 function __extra() {
   return {
     hooks: __HK,
+    ladders: LADDERS,
     crates: CRATES.map(function (c, i) { return { id: "depot" + i, kind: "ammo", name: c.name, x: c.x, y: hFast(c.x, c.z), z: c.z, r: 4.6 * (c.s || 1) }; }),
     bulletHit: function (p, dir, power) { return __bullet(p, dir, power || 1); },
     explode: function (p, o) { o = o || {}; var size = Math.min(3, Math.max(0.3, (o.power || 1) * (o.radius || 6) / 6)); onBlast(p.x, hFast(p.x, p.z), p.z, size, false, {}); },

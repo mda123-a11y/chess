@@ -57,6 +57,7 @@ namespace AegisTactics {
     const metrics = { stations: 0, replans: 0, stalls: 0, gripBreaks: 0 };
     let now = 0,
       next = 0,
+      cursor = 0,
       voiceAt = -99;
     med.managedAI = true;
     const pos = (s: any) =>
@@ -295,13 +296,12 @@ namespace AegisTactics {
       let best: any = null,
         score = -Infinity;
       for (const q of squad) {
-        if (q === s || team(q) !== team(s) || !alive(q) || med.plan(q, s).none)
-          continue;
+        if (q === s || team(q) !== team(s) || !alive(q)) continue;
+        const d = dist(pos(s), pos(q));
+        if (d > 20 || med.plan(q, s).none) continue;
         if ((unreachable.get(s)?.get(q) || 0) > now) continue;
         const claim = claims.get(q);
         if (claim && claim.s !== s && claim.until > now) continue;
-        const d = dist(pos(s), pos(q));
-        if (d > 20) continue;
         const v =
           bleeding(q) * 20 +
           (q.dead ? 5 : 0) +
@@ -427,8 +427,13 @@ namespace AegisTactics {
       for (const [q, c] of claims)
         if (c.until < t || c.s === active || c.s.dead) claims.delete(q);
       if (t < next) return;
-      next = t + 0.2;
-      for (const s of squad) {
+      const n = squad.length,
+        big = n > 12;
+      // Large squads: a rotating slice per call instead of one 0.2 s spike.
+      next = t + (big ? 0.034 : 0.2);
+      const count = big ? Math.ceil(n / 6) : n;
+      for (let k = 0; k < count; k++) {
+        const s = big ? squad[cursor++ % n] : squad[k];
         if (s === active) {
           if (state(s).mode !== "idle") reset(s);
           continue;
