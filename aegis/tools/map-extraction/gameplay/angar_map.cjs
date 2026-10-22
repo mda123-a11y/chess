@@ -33,6 +33,7 @@ const __api = {
   hooks: __HK,
   crates: AMMO_BOXES.map((b, i) => ({ id: 'ammo' + i, kind: 'ammo', x: b.p.x, y: b.p.y, z: b.p.z, r: 1.9 })),
   doors: DOOR_LEAVES,
+  dest: DEST, owners: PH.owners, live: LIVE,
   bulletHit(p, dir, power) { const r = __bulletAt(p, dir, power || 1); flushDestruction(); return r; },
   explode(p, o) { explode(p, o); },
   toggleDoor(L, fromPos) {
