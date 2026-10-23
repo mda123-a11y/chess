@@ -1115,6 +1115,13 @@
       sh.add(m);
       return m;
     }
+    /* генерал без сохранённого снаряжения не должен стоять «без патронов»: ИИ-генералам — штатный комплект */
+    function aiGeneralLoadout(key, saved) {
+      const has = saved && saved.slots && saved.slots.some(x => x && x.t === 'gun');
+      if (has || !world.mapId || !AE || !AE.GEN[key] || (root.GMaps && root.GMaps.readTransfer && (root.GMaps.readTransfer() || {}).key === key)) return saved;
+      const gun = key.indexOf('alpha') === 0 ? (key.endsWith('2') ? 'scar' : 'm416') : (key.endsWith('2') ? 'akm' : 'ak74');
+      return AE.normLoadout({ slots: [{ t: 'gun', id: gun }, { t: 'ammo', w: 'primary' }, { t: 'ammo', w: 'primary' }, { t: 'grenade', g: 'm67' }, { t: 'grenade', g: 'm84' }, null], cfg: {} });
+    }
     const squad = [];
     for (const sp of ((root.GTeams && world.mapId && root.GTeams.rosterFor(world.mapId, world)) || world.spawns || SPAWN)) {
       const ch = CHAR.build(THREE, sp.preset || sp.key);
@@ -1134,7 +1141,7 @@
       const rig = new RIG.Rig(THREE, ch);
       squad.push({
         key: sp.key, char: ch, rig, gun: null, wspec: null, spawn: sp, gen: GEN, band,
-        L: sp.npc ? AE.normLoadout({slots:[{t:'gun',id:(root.GAudioDist?root.GAudioDist.npcGun(sp.key):'ak74')},{t:'ammo',w:'primary'},{t:'ammo',w:'primary'},null,null,null]}) : LOADOUTS[sp.key] || (AE ? AE.emptyLoadout() : { slots: [], cfg: {} }),
+        L: sp.npc ? AE.normLoadout({slots:[{t:'gun',id:(root.GAudioDist?root.GAudioDist.npcGun(sp.key):'ak74')},{t:'ammo',w:'primary'},{t:'ammo',w:'primary'},null,null,null]}) : aiGeneralLoadout(sp.key, LOADOUTS[sp.key]) || (AE ? AE.emptyLoadout() : { slots: [], cfg: {} }),
         npc: !!sp.npc,
         inv: { primary: null, pistol: null }, slot: -1, used: {},
         ctrl: PLAYER.create(THREE, { world, audio, fx, trait: GEN && GEN.trait }),
