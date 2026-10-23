@@ -1042,6 +1042,7 @@
     await bootYield('post');
     const world = root.GMaps && root.GMaps.id ? await root.GMaps.build(THREE, scene, renderer, camera, SET.quality, async name=>{BOOTMARK('map '+name);await new Promise(r=>setTimeout(r,0));}) : WORLD.build(THREE, scene);
     await bootYield('world');
+    if(root.GTeams&&world.mapId)root.GTeams.prepareWorld(THREE,scene,world);
     if(root.GNavigation){await root.GNavigation.prepare(world);await bootYield('navmesh');}
     QM.world = world;
     try { if (root.AEGIS_TUNE) root.AEGIS_TUNE.tuneTextures(THREE, renderer, scene, QM.tierKey); } catch (e) { console.warn('tune', e && e.message); }
@@ -1115,7 +1116,7 @@
       return m;
     }
     const squad = [];
-    for (const sp of (world.spawns || SPAWN)) {
+    for (const sp of ((root.GTeams && world.mapId && root.GTeams.rosterFor(world.mapId, world)) || world.spawns || SPAWN)) {
       const ch = CHAR.build(THREE, sp.preset || sp.key);
       const GEN = AE ? AE.GEN[sp.key] : null;
       if(sp.npc)ch.preset=Object.assign({},ch.preset,{name:"Боец "+(sp.team==='alpha'?'Альфы':'Дельты'),callsign:sp.key});
@@ -1234,7 +1235,7 @@
         case 'leanR': input.leanR = down; break;
         case 'jump': S.spaceUp = down; if (down && !rep) input.jump++; break;
         case 'prone': if (down && !rep && active()) input.proneTog++; break;
-        case 'use': if (!rep) S.fDown = down; break;
+        case 'use': if (!rep) { if (down) S.fT0 = performance.now(); else if (S.fDown && performance.now() - (S.fT0 || 0) < 250) S.fTap = performance.now(); S.fDown = down; } break;
         case 'menu': if (down && !rep) uiCall('onMenuKey'); break;
         case 'reset': if (down && !rep && C0.reviveAll) C0.reviveAll(); break;
         case 'fps': if (down && !rep) QM.toggleFps(); break;
@@ -1465,7 +1466,10 @@
         sub = 'удерживайте ' + keyLbl;
       }
 
-      if (S.fDown && (showPrompt || canExit)) {
+      /* короткое нажатие F у двери/ящика (js/app/crates.js); подсказка перекрывает «вселиться» */
+      const ex = root.GCrates ? root.GCrates.update(dt, S, world, S.mode === 'embodied' ? active() : null) : null;
+      if (ex) { showPrompt = true; lbl = ex.lbl; sub = ex.sub; }
+      if (S.fDown && (inRange || canExit)) {
         S.holdF += dt;
         if (S.holdF >= HOLD_TIME) {
           S.holdF = 0;
@@ -3685,8 +3689,10 @@
     ARS.rebuild = (s, L) => {
       const wasActive = s.active;
       if (wasActive && BC) { if (BC.throwing) BC.abortThrow(); BC.equip(null, { instant: true }); }
+      const keepSlot = s.slot;
       s.L = L;
       buildInv(s);
+      if (keepSlot >= 0 && itemForSlot(s, keepSlot)) s.slot = keepSlot;
       if (wasActive) ARS.onEmbody(s);
       S.hudDirty = true;
     };
@@ -4654,6 +4660,7 @@
        рэгдолл и поведение сброшены, магазин полный. Кровь и воронки
        остаются там, где всё случилось. */
     function respawn(s) {
+      if(C.teams)C.teams.beforeRespawn(s);
       if(C.tactics)C.tactics.reset(s);
       root.GContacts?.drop(root.GPhysics.get(world),s);
       root.GPhysics.get(world).dropPose(s);
@@ -4784,14 +4791,17 @@
            (AGONY_T); добитый — ещё CORPSE_T после последнего выстрела */
         const agony = /^(wound|blast|neck|para)$/.test(s.deathKind || '') && !s.finished;
         const lim = s.finished ? (s.finT || 0) + CORPSE_T : agony ? AGONY_T : CORPSE_T;
-        if ((s.deadT || 0) >= lim) respawn(s);
+        if ((s.deadT || 0) >= lim && (!C.teams || C.teams.onDeath(s))) respawn(s);
       }
       const D = S.death;
       if (D) {
         D.t += dt;
         const s = squad[D.i];
         if (!s.dead) endDeath();                    // H — подняли на месте
-        else if (D.t >= RESPAWN_T) { respawn(s); endDeath(); }
+        else if (D.t >= RESPAWN_T) {
+          if (!C.teams || C.teams.onDeath(s)) { respawn(s); endDeath(); }
+          else { D.i = C.teams.nextBody(s); endDeath(); }   // no respawns left: another body, or free camera
+        }
         else {
           const t = D.t;
           /* шок: кадр выцветает и темнеет, кромка кровит; затем чёрный */
@@ -4922,6 +4932,8 @@
       if(world.mapId && !C.combat && root.GCombat)C.combat=root.GCombat.create({THREE,world,squad,visible:(from,to)=>C.worldVisible(from,to)});
 
       if(C.combat)C.combat.update(t,a);
+      if(!C.teams&&world.mapId&&root.GTeams&&C.combat)C.teams=root.GTeams.init({THREE,scene,world,squad,camera,audio,F,S,GSIM:C.GSIM,active,visible:(from,to)=>C.worldVisible(from,to)});
+      if(C.teams)C.teams.update(dt,t,a);
       root.GPerf?.record('tactics',performance.now()-perfThink);
       const perfMove=performance.now();
       /* 1. ввод и физика */
@@ -4975,7 +4987,9 @@
         const idleLOD=s._poseGun===s.gun&&!isActive&&!s.hr&&!s._tacHands&&!s.ctrl.treating&&!s.ctrl.dragging&&!s.ctrl.vault&&!root.GContacts?.has(s)&&s.ctrl.reload<0&&(s.ctrl.speed||0)<.12&&!(s.thr&&s.thr.mode)&&(!s.tac||s.tac.mode==='idle')&&!(s.tac&&t<s.tac.until);
         const poseInterval=C.QM.tierKey==='ultra'?1/20:C.QM.tierKey==='low'?1/30:0;
         if(idleLOD&&poseInterval&&s._posed&&s._poseAccum<poseInterval)continue;
-        const poseDt=idleLOD?Math.min(.075,s._poseAccum):dt;s._poseAccum=0;s._posed=true;s._poseGun=s.gun;
+        const lodI=!isActive&&!S.spectate&&s._lodI||0;
+        if(lodI&&s._posed&&s._poseAccum<lodI)continue;
+        const poseDt=lodI?Math.min(.2,s._poseAccum):idleLOD?Math.min(.075,s._poseAccum):dt;s._poseAccum=0;s._posed=true;s._poseGun=s.gun;
         const pose = F.poseSoldier(s, poseDt, isActive, t);
         s.char.root.updateMatrixWorld(true);
         if (!isActive && s.life && GLIFE) GLIFE.aimEyes(s.life, s, dt, t);
@@ -5076,6 +5090,7 @@
       if(!C.zeroHUD){const h=document.createElement('div');h.style.cssText='position:fixed;bottom:125px;right:24px;color:#ddd;font:12px monospace;pointer-events:none;white-space:pre-line';document.body.appendChild(h);C.zeroHUD=h;}
       if(a&&a.gun&&((a.ctrl.ads||0)>.5||S.time<(C.zeroHudUntil||0))){const b=C.ballisticsInfo(a);C.zeroHUD.textContent='Ноль '+b.zero+' м · '+b.ammo+'\n'+b.holds.filter(h=>h&&h.R!==b.zero).map(h=>h.R+' м: '+h.mrad.toFixed(1)+' mil').join(' · ');}else C.zeroHUD.textContent='';
       updateSelfVisibility();
+      if(C.teams)C.teams.lod();
       updateSun();
 
       /* 6. мир и эффекты */
@@ -5248,7 +5263,7 @@
     }
     let selShown = -1;
     function updateSelection() {
-      const idx = SEL.on && S.mode === 'free' && !S.death ? S.selected : -1;
+      const idx = SEL.on && !world.mapId && S.mode === 'free' && !S.death ? S.selected : -1;
       const s = idx >= 0 ? squad[idx] : null;
       const show = s && !s.dead ? idx : -1;
       if (show !== selShown) {

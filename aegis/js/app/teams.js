@@ -349,7 +349,7 @@
     const own = env.flag(team), enemyFlag = env.flag(foe), phase = env.phase(team);
     const mk = (mode, goal, extra) => Object.assign({ mode, goal: goal ? { x: goal.x, z: goal.z, y: env.heightAt(goal.x, goal.z) } : null, speed: 1, sprint: false, until: t + 2.2 }, extra);
     const polar = (c, rad, a) => ({ x: c.x + Math.cos(a) * rad, z: c.z + Math.sin(a) * rad });
-    const idle = (face) => mk('hold', null, { face, speed: 0 });
+    const idle = (face) => mk('hold', null, { face, speed: 0, leash: tm.leash || null });
 
     if (tm.pauseUntil > t) return idle(tm.face);
 
@@ -397,7 +397,7 @@
         }
         tm.off = off;
       }
-      const leash = { x: ld.x, z: ld.z, r: 40 };
+      const leash = tm.leash = { x: ld.x, z: ld.z, r: 40 };
       const g = { x: ld.x + tm.off.x, z: ld.z + tm.off.z };
       const d = Math.hypot(pos.x - g.x, pos.z - g.z), far = Math.hypot(pos.x - ld.x, pos.z - ld.z);
       const face = Math.atan2(-tm.off.x, -tm.off.z); /* outward from the leader */
@@ -409,11 +409,12 @@
     }
 
     /* guard */
+    tm.leash = { x: own.x, z: own.z, r: 30 };
+    const face = yawTo(own.x, own.z, pos.x, pos.z); /* outward from the flag */
     if (tm.next === undefined || t > tm.next) {
       tm.next = t + rr(r, 6, 14); tm.spot = polar(own, rr(r, 1.5, 7), rr(r, 0, TAU));
-      if (r() < 0.5) tm.pauseUntil = t + rr(r, 3, 8);
+      if (r() < 0.5) { tm.pauseUntil = t + rr(r, 3, 8); tm.face = face; }
     }
-    const face = yawTo(own.x, own.z, own.x + (pos.x - own.x), own.z + (pos.z - own.z));
     if (Math.hypot(pos.x - tm.spot.x, pos.z - tm.spot.z) < 1.2) return mk('guard-hold', null, { face, speed: 0, leash: { x: own.x, z: own.z, r: 30 } });
     return mk('guard', tm.spot, { speed: 0.7, leash: { x: own.x, z: own.z, r: 30 } });
   }
@@ -724,7 +725,15 @@
       let hidden = 0, far = 0, near = 0;
       for (let i = 0; i < squad.length; i++) {
         const s = squad[i];
-        if (s === act || s.active || (ctx.S.death && ctx.S.death.i === i)) { s._lodI = 0; continue; }
+        if (s === act || s.active || (ctx.S.death && ctx.S.death.i === i)) {
+          s._lodI = 0;
+          if (s._lodHid) {
+            s._lodHid = false; s.char.root.visible = true;
+            if (s.gun && s.gun.root && s._gunVis !== undefined) s.gun.root.visible = s._gunVis;
+            s._gunVis = undefined;
+          }
+          continue;
+        }
         const p = s.ctrl.pos, d = Math.hypot(p.x - cp.x, p.y - cp.y, p.z - cp.z);
         sph.center.set(p.x, p.y + 1, p.z);
         const vis = d < 22 || fr.intersectsSphere(sph);
@@ -787,12 +796,11 @@
         if (accW >= 0.5) { accW = 0; checkWin(); }
         if (!G.over) { updateOrders(t, active); updateGrenades(t, active); }
       }
-      lod();
       accH += dt;
       if (accH >= 0.25) { accH = 0; drawHud(); }
     }
 
-    inst = { ctx, G, layout, update, state, checkWin, onDeath, beforeRespawn, nextBody, isOver: () => G.over, lodStats: () => lodStats };
+    inst = { ctx, G, layout, update, lod, state, checkWin, onDeath, beforeRespawn, nextBody, isOver: () => G.over, lodStats: () => lodStats };
     drawHud();
     return inst;
   }
@@ -804,6 +812,7 @@
     init, prepareWorld,
     get inst() { return inst; },
     update: (dt, t, a) => (inst ? inst.update(dt, t, a) : undefined),
+    lod: () => { if (inst) inst.lod(); },
     onDeath: (s) => (inst ? inst.onDeath(s) : true),
     beforeRespawn: (s) => { if (inst) inst.beforeRespawn(s); },
     nextBody: (s) => (inst ? inst.nextBody(s) : -1),

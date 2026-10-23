@@ -8906,6 +8906,7 @@ initDestructiblePhysics();
 initDoorPhysics();
 for (const c of COLLIDERS) liveAdd(c);
 
+var __doorT = 0;
 const native = COLLIDERS;
 const __api = {
   native, heightAt: () => 0, bounds: { x0: -HW + .5, x1: HW - .5, z0: -HD + .5, z1: HD - .5 }, bases: { alpha: { x: -34, z: 0 }, delta: { x: 34, z: 0 } },
@@ -8921,7 +8922,18 @@ const __api = {
     if (Math.abs(L.target) > 0.1) L.target = 0; else { L.target = -side * DOOR_OPEN; SND.door(L.c, 'open'); }
   },
   doorNear(x, y, z, r) { let best = null, bd = r; for (const L of DOOR_LEAVES) { if (Math.abs(y - (L.d.y + 1)) > 1.6) continue; const d = Math.hypot(L.c.x - x, L.c.z - z); if (d < bd) { bd = d; best = L; } } return best; },
-  update(dt, t) { updateDoors(dt); __debUpdate(dt); },
+  update(dt, t, squad) {
+    // AI soldiers open doors they walk into; the controlled soldier uses the key
+    if (squad && (__doorT = (__doorT || 0) + dt) > 0.2) {
+      __doorT = 0;
+      for (const s of squad) {
+        if (s.active || !s.ctrl || (s.hp !== undefined && s.hp <= 0)) continue;
+        const L = this.doorNear(s.ctrl.pos.x, s.ctrl.pos.y, s.ctrl.pos.z, 1.5);
+        if (L && Math.abs(L.target) < 0.1 && L.open === L.target) this.toggleDoor(L, s.ctrl.pos);
+      }
+    }
+    updateDoors(dt); __debUpdate(dt);
+  },
   indoor(x, z) { return Math.abs(x) < HW - 0.3 && Math.abs(z) < HD - 0.3; },
   rayLive,
 };

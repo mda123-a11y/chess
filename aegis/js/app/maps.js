@@ -30,7 +30,7 @@
   props.traverse(o=>{if(o.isSprite)o.raycast=function(){};if(!o.isMesh)return;const name=(o.name+' '+(o.material?.name||'')).toLowerCase();o.userData.mat=/wood|osb|ply|plank|tree|log/.test(name)?'wood':/glass/.test(name)?'glass':/sand|bag|hesco/.test(name)?'sand':/concrete|conc|terrain|floor|wall/.test(name)?'rock':'metal'});
   const world={mapId:id,ground,props,targets:[],flags:[],colliders,heightAt:native.heightAt,bounds:native.bounds,bases:native.bases,waterY:native.waterY,
    crates:native.crates||[],doors:native.doors||[],ladders:native.ladders||[],hooks:native.hooks||{},indoor:native.indoor||(()=>false),native,
-   update:(dt,t)=>{if(native.update)native.update(dt,t);world.syncColliders()},
+   update:(dt,t)=>{if(native.update)native.update(dt,t,root.__GAME&&root.__GAME.squad);world.syncColliders()},
    // destruction entry points used by bullets and explosions; no-ops on maps without a destruction runtime
    bulletHit:(p,dir,power)=>native.bulletHit?native.bulletHit(p,dir,power):null,
    explode:(p,o)=>{if(native.explode)native.explode(p,o)}};

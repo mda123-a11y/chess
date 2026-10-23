@@ -873,6 +873,7 @@ var AegisCombat;
                     !s.gun ||
                     c.treating ||
                     c.reload >= 0 ||
+                    s.tmBusy > t ||
                     s.thr?.mode)
                     continue;
                 const q = b.target;

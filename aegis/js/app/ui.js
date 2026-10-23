@@ -121,9 +121,36 @@
     if (g) $('pauseWho').querySelector('b').textContent = g.short;
     if (g && g.trait) $('pauseWho').querySelector('small').textContent = g.trait.icon + ' ' + g.trait.name + ': ' + g.trait.lines.join(' · ');
     $('pLeave').style.display = g ? '' : 'none';
+    resetQuit();
     openOverlay('pause');
   }
   $('pResume').onclick = () => closeOverlay();
+  /* выход из боя: второй клик в течение 3 с подтверждает; работает и без pointer lock */
+  const onMap = () => !!(window.GMaps && GMaps.id);
+  let quitT = 0;
+  function resetQuit() {
+    clearTimeout(quitT);
+    const q = $('pQuit'); if (!q) return;
+    q.hidden = !onMap(); q.classList.remove('arm');
+    q.querySelector('span').textContent = 'Выйти из боя';
+  }
+  $('pQuit').onclick = () => {
+    const q = $('pQuit');
+    if (!q.classList.contains('arm')) {
+      q.classList.add('arm'); q.querySelector('span').textContent = 'ТОЧНО? ЕЩЁ РАЗ';
+      quitT = setTimeout(resetQuit, 3000);
+      return;
+    }
+    try { sessionStorage.removeItem('aegis.levelTransfer.v1'); } catch (e) { /* */ }
+    const u = new URL(location.href); u.searchParams.delete('map'); u.searchParams.delete('weather');
+    location.assign(u.href);
+  };
+  function mapToast(text) {
+    let t = $('mapToast');
+    if (!t) { t = document.createElement('div'); t.id = 'mapToast'; document.body.appendChild(t); }
+    t.textContent = text; t.classList.add('on');
+    clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove('on'), 4500);
+  }
   $('pArmory').onclick = () => { const a = G.state().active || pickGeneral().key; openArmory(a); };
   $('pSettings').onclick = () => openSettings();
   $('pLeave').onclick = () => { st.back = []; G.pause(false); G.disembody(); setState('menu'); };
@@ -142,11 +169,13 @@
   window.AEGIS_UI = {
     onGameReady(api) {
       G = api;
-      G.applySettings(SET);
+      /* на карте погода случайная (GWeather.pickBattle) — сохранённую не применяем */
+      if (onMap()) { document.body.classList.add('map-battle'); const S2 = Object.assign({}, SET); delete S2.weather; G.applySettings(S2); }
+      else G.applySettings(SET);
       window.__AEGIS_SENS = SET.sens;
       updateKeyHints();
       setState('menu');
-      if(window.GMaps){const transfer=GMaps.readTransfer();if(GMaps.id||transfer){const key=transfer&&transfer.key||'alpha_1';G.select(key);G.embody(key);GMaps.clearTransfer();if(window.AEGIS_INTRO){AEGIS_INTRO.markReady();}return;}}
+      if(window.GMaps){const transfer=GMaps.readTransfer();if(GMaps.id||transfer){const key=transfer&&transfer.key||'alpha_1';G.select(key);G.embody(key);GMaps.clearTransfer();try{const wk=G.weather&&G.weather(),nm=window.GWeather&&GWeather.NAMES&&GWeather.NAMES[wk];if(nm)setTimeout(()=>mapToast('Погода: '+nm),1200);}catch(e){}if(window.AEGIS_INTRO){AEGIS_INTRO.markReady();}return;}}
       /* лес звучит сразу: аудио-контекст запускается первым же жестом (браузеры требуют жест) */
       try { if (navigator.userActivation && navigator.userActivation.hasBeenActive) G.audioInit && G.audioInit(); } catch (e) { /* */ }
       const IN = window.AEGIS_INTRO;
@@ -155,6 +184,15 @@
         IN.markReady();
         IN.onClose(() => { if (firstRun) setTimeout(() => openTutorial(), 650); });
       } else if (firstRun) setTimeout(() => openTutorial(), 700);
+    },
+    /* F-тап у ящика: та же оружейная, что и в паузе; закрытие применяет сборку к живому бойцу */
+    openCrate() {
+      if (!G || st.name !== 'play') return false;
+      const key = G.state().active;
+      if (!key || !AE.GEN[key]) return false;
+      st.back = [];
+      openArmory(key);
+      return true;
     },
     onFreeMove() {
       st.lastAct = performance.now();
@@ -579,7 +617,7 @@
       case 'weather':
         if (['overcast', 'morning', 'rain', 'fog', 'dusk', 'night'].includes(m.w)) {
           SET.weather = m.w; AE.saveSettings(SET);
-          if (G) G.applySettings({ weather: m.w });
+          if (G && !onMap()) G.applySettings({ weather: m.w });
           try { renderGfx(); } catch (e) { /* */ }
         }
         break;

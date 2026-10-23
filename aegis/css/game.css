@@ -725,3 +725,14 @@ body.intro-on #loading{opacity:0}
 #battle .map-start:not(:disabled){color:#f2eee6;border-color:#bd914b;background:#43351f;cursor:pointer}
 #battle .map-start:not(:disabled):hover{background:#604725}
 body.st-battle #battle .map-start{font-size:15px}
+
+/* ---- реализм: никаких точек, маркеров и подсветки противника ---- */
+#hitmark,body.embodied #tag{display:none!important}
+body.map-battle #tag{display:none!important}
+#mapToast{position:fixed;left:50%;top:9%;transform:translateX(-50%);z-index:9;pointer-events:none;opacity:0;transition:opacity .5s;
+  padding:8px 18px;border-radius:3px;background:rgba(12,14,18,.82);border:1px solid rgba(255,255,255,.25);
+  font:600 13px/1.4 var(--f);letter-spacing:.06em;color:#fff;text-shadow:0 1px 2px #000}
+#mapToast.on{opacity:1}
+#pQuit{border-color:rgba(240,120,100,.55)}
+#pQuit.arm{background:rgba(190,50,40,.55)}
+#pQuit[hidden]{display:none}
