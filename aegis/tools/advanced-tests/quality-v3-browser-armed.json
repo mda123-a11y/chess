@@ -1,0 +1,65 @@
+{
+  "result": {
+    "rows": [
+      {
+        "key": "delta_1",
+        "finite": true,
+        "contacts": 1,
+        "angle": 0.23995865636978073,
+        "maxGap": 0.00027956063752349904,
+        "parts": 17
+      },
+      {
+        "key": "delta_2",
+        "finite": true,
+        "contacts": 1,
+        "angle": 0.3399960106514742,
+        "maxGap": 0.0004834019316805464,
+        "parts": 17
+      },
+      {
+        "key": "alpha_1",
+        "finite": true,
+        "contacts": 1,
+        "angle": 0.21929183384264425,
+        "maxGap": 0.00020494876977205569,
+        "parts": 17
+      },
+      {
+        "key": "alpha_2",
+        "finite": true,
+        "contacts": 1,
+        "angle": 0.26701848463104644,
+        "maxGap": 0.00034428690921197645,
+        "parts": 17
+      }
+    ],
+    "vault": {
+      "armed": true,
+      "maxFPError": 6.684427777288335e-16,
+      "fpFrames": 72,
+      "hiddenGunFrames": 72,
+      "result": "landed",
+      "frames": 73,
+      "handFrames": 18,
+      "maxHandError": 0.000009722867278790835,
+      "contactFrames": 10,
+      "maxAngle": 2.309323522311409,
+      "pos": [
+        0,
+        0.01500000836327664,
+        -1.7599999642372128
+      ],
+      "restoredWeapon": true
+    },
+    "geometry": {
+      "geometries": 163,
+      "triangles": 380156,
+      "buildMs": 179.09999999962747,
+      "failures": 0,
+      "backend": "three-mesh-bvh 0.9.2",
+      "enabled": true
+    }
+  },
+  "errors": []
+}

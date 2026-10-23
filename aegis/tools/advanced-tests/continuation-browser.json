@@ -1,0 +1,7481 @@
+{
+  "result": {
+    "poses": [
+      {
+        "key": "delta_1",
+        "opt": {
+          "ready": 0
+        },
+        "grip": {
+          "palmR": 0,
+          "wristErrorR": 0,
+          "palmL": 0,
+          "wristErrorL": 0,
+          "elbowR": 66,
+          "elbowL": 132,
+          "reachR": 0.289,
+          "reachL": 0.488,
+          "gunToChest": 0.3038,
+          "abductR": 63,
+          "elbowOutR": 0.376,
+          "abductL": 0,
+          "elbowOutL": 0.214,
+          "gunPitch": 12,
+          "key": "delta_1"
+        },
+        "finite": true,
+        "footGap": {
+          "R": 3.5762788799797995e-8,
+          "L": 3.576278402583899e-8
+        }
+      },
+      {
+        "key": "delta_1",
+        "opt": {
+          "ready": 1
+        },
+        "grip": {
+          "palmR": 0,
+          "wristErrorR": 0,
+          "palmL": 0,
+          "wristErrorL": 0,
+          "elbowR": 78,
+          "elbowL": 132,
+          "reachR": 0.334,
+          "reachL": 0.488,
+          "gunToChest": 0.3559,
+          "abductR": 45,
+          "elbowOutR": 0.313,
+          "abductL": 45,
+          "elbowOutL": 0.294,
+          "gunPitch": 12,
+          "key": "delta_1"
+        },
+        "finite": true,
+        "footGap": {
+          "R": 3.57627844699282e-8,
+          "L": 3.57627843589059e-8
+        }
+      },
+      {
+        "key": "delta_1",
+        "opt": {
+          "ready": 1,
+          "crouch": 1
+        },
+        "grip": {
+          "palmR": 0,
+          "wristErrorR": 0,
+          "palmL": 0,
+          "wristErrorL": 0,
+          "elbowR": 76,
+          "elbowL": 125,
+          "reachR": 0.329,
+          "reachL": 0.473,
+          "gunToChest": 0.3591,
+          "abductR": 51,
+          "elbowOutR": 0.319,
+          "abductL": 46,
+          "elbowOutL": 0.309,
+          "gunPitch": 7,
+          "key": "delta_1"
+        },
+        "finite": true,
+        "footGap": {
+          "R": 0.08627933091697372,
+          "L": 3.576278780059727e-8
+        }
+      },
+      {
+        "key": "delta_1",
+        "opt": {
+          "ready": 1,
+          "prone": 1
+        },
+        "grip": {
+          "palmR": 0,
+          "wristErrorR": 0,
+          "palmL": 0,
+          "wristErrorL": 0,
+          "elbowR": 36,
+          "elbowL": 119,
+          "reachR": 0.166,
+          "reachL": 0.459,
+          "gunToChest": 0.4599,
+          "abductR": 38,
+          "elbowOutR": 0.301,
+          "abductL": -105,
+          "elbowOutL": 0.096,
+          "gunPitch": 29,
+          "key": "delta_1"
+        },
+        "finite": true,
+        "footGap": {
+          "R": -0.023750047683715234,
+          "L": -0.023750047683715372
+        }
+      },
+      {
+        "key": "delta_1",
+        "opt": {
+          "ads": 1
+        },
+        "grip": {
+          "palmR": 0,
+          "wristErrorR": 0,
+          "palmL": 0,
+          "wristErrorL": 0,
+          "elbowR": 45,
+          "elbowL": 88,
+          "reachR": 0.205,
+          "reachL": 0.37,
+          "gunToChest": 0.2747,
+          "abductR": 47,
+          "elbowOutR": 0.321,
+          "abductL": 52,
+          "elbowOutL": 0.339,
+          "gunPitch": 15,
+          "key": "delta_1"
+        },
+        "finite": true,
+        "footGap": {
+          "R": 3.576278397032784e-8,
+          "L": 3.5762788855309147e-8
+        }
+      },
+      {
+        "key": "delta_2",
+        "opt": {
+          "ready": 0
+        },
+        "grip": {
+          "palmR": 0,
+          "wristErrorR": 0,
+          "palmL": 0,
+          "wristErrorL": 0,
+          "elbowR": 67,
+          "elbowL": 132,
+          "reachR": 0.284,
+          "reachL": 0.471,
+          "gunToChest": 0.2933,
+          "abductR": 63,
+          "elbowOutR": 0.359,
+          "abductL": 4,
+          "elbowOutL": 0.214,
+          "gunPitch": 11,
+          "key": "delta_2"
+        },
+        "finite": true,
+        "footGap": {
+          "R": 3.5762787342630276e-8,
+          "L": 3.5762784178494655e-8
+        }
+      },
+      {
+        "key": "delta_2",
+        "opt": {
+          "ready": 1
+        },
+        "grip": {
+          "palmR": 0,
+          "wristErrorR": 0,
+          "palmL": 0,
+          "wristErrorL": 0,
+          "elbowR": 80,
+          "elbowL": 142,
+          "reachR": 0.331,
+          "reachL": 0.487,
+          "gunToChest": 0.3486,
+          "abductR": 43,
+          "elbowOutR": 0.301,
+          "abductL": 37,
+          "elbowOutL": 0.27,
+          "gunPitch": 12,
+          "key": "delta_2"
+        },
+        "finite": true,
+        "footGap": {
+          "R": 3.576278573280689e-8,
+          "L": 3.5762787786719485e-8
+        }
+      },
+      {
+        "key": "delta_2",
+        "opt": {
+          "ready": 1,
+          "crouch": 1
+        },
+        "grip": {
+          "palmR": 0,
+          "wristErrorR": 0,
+          "palmL": 0,
+          "wristErrorL": 0,
+          "elbowR": 78,
+          "elbowL": 132,
+          "reachR": 0.325,
+          "reachL": 0.471,
+          "gunToChest": 0.3516,
+          "abductR": 50,
+          "elbowOutR": 0.306,
+          "abductL": 45,
+          "elbowOutL": 0.287,
+          "gunPitch": 7,
+          "key": "delta_2"
+        },
+        "finite": true,
+        "footGap": {
+          "R": 0.08334583488172947,
+          "L": 3.576278739814143e-8
+        }
+      },
+      {
+        "key": "delta_2",
+        "opt": {
+          "ready": 1,
+          "prone": 1
+        },
+        "grip": {
+          "palmR": 0,
+          "wristErrorR": 0,
+          "palmL": 0,
+          "wristErrorL": 0,
+          "elbowR": 38,
+          "elbowL": 121,
+          "reachR": 0.169,
+          "reachL": 0.449,
+          "gunToChest": 0.4601,
+          "abductR": 41,
+          "elbowOutR": 0.289,
+          "abductL": -115,
+          "elbowOutL": 0.107,
+          "gunPitch": 28,
+          "key": "delta_2"
+        },
+        "finite": true,
+        "footGap": {
+          "R": -0.02022254768371476,
+          "L": -0.020222547683717368
+        }
+      },
+      {
+        "key": "delta_2",
+        "opt": {
+          "ads": 1
+        },
+        "grip": {
+          "palmR": 0,
+          "wristErrorR": 0,
+          "palmL": 0,
+          "wristErrorL": 0,
+          "elbowR": 46,
+          "elbowL": 91,
+          "reachR": 0.201,
+          "reachL": 0.366,
+          "gunToChest": 0.2662,
+          "abductR": 47,
+          "elbowOutR": 0.312,
+          "abductL": 51,
+          "elbowOutL": 0.328,
+          "gunPitch": 15,
+          "key": "delta_2"
+        },
+        "finite": true,
+        "footGap": {
+          "R": 3.5762787287119124e-8,
+          "L": 3.576278428951696e-8
+        }
+      },
+      {
+        "key": "delta_soldier_0",
+        "opt": {
+          "ready": 0
+        },
+        "grip": {
+          "palmR": 0,
+          "wristErrorR": 0,
+          "palmL": 0,
+          "wristErrorL": 0,
+          "elbowR": 66,
+          "elbowL": 132,
+          "reachR": 0.29,
+          "reachL": 0.488,
+          "gunToChest": 0.3037,
+          "abductR": 63,
+          "elbowOutR": 0.375,
+          "abductL": 0,
+          "elbowOutL": 0.214,
+          "gunPitch": 12,
+          "key": "delta_soldier_0"
+        },
+        "finite": true,
+        "footGap": {
+          "R": 3.576278763406382e-8,
+          "L": 3.576278669037425e-8
+        }
+      },
+      {
+        "key": "delta_soldier_0",
+        "opt": {
+          "ready": 1
+        },
+        "grip": {
+          "palmR": 0,
+          "wristErrorR": 0,
+          "palmL": 0,
+          "wristErrorL": 0,
+          "elbowR": 78,
+          "elbowL": 133,
+          "reachR": 0.335,
+          "reachL": 0.489,
+          "gunToChest": 0.356,
+          "abductR": 45,
+          "elbowOutR": 0.313,
+          "abductL": 44,
+          "elbowOutL": 0.292,
+          "gunPitch": 12,
+          "key": "delta_soldier_0"
+        },
+        "finite": true,
+        "footGap": {
+          "R": 3.576278441441705e-8,
+          "L": 3.576278813366418e-8
+        }
+      },
+      {
+        "key": "delta_soldier_0",
+        "opt": {
+          "ready": 1,
+          "crouch": 1
+        },
+        "grip": {
+          "palmR": 0,
+          "wristErrorR": 0,
+          "palmL": 0,
+          "wristErrorL": 0,
+          "elbowR": 76,
+          "elbowL": 125,
+          "reachR": 0.33,
+          "reachL": 0.474,
+          "gunToChest": 0.3592,
+          "abductR": 51,
+          "elbowOutR": 0.319,
+          "abductL": 45,
+          "elbowOutL": 0.308,
+          "gunPitch": 7,
+          "key": "delta_soldier_0"
+        },
+        "finite": true,
+        "footGap": {
+          "R": 0.0862793309169715,
+          "L": 3.576278630179619e-8
+        }
+      },
+      {
+        "key": "delta_soldier_0",
+        "opt": {
+          "ready": 1,
+          "prone": 1
+        },
+        "grip": {
+          "palmR": 0,
+          "wristErrorR": 0,
+          "palmL": 0,
+          "wristErrorL": 0,
+          "elbowR": 36,
+          "elbowL": 119,
+          "reachR": 0.167,
+          "reachL": 0.459,
+          "gunToChest": 0.46,
+          "abductR": 39,
+          "elbowOutR": 0.303,
+          "abductL": -105,
+          "elbowOutL": 0.096,
+          "gunPitch": 29,
+          "key": "delta_soldier_0"
+        },
+        "finite": true,
+        "footGap": {
+          "R": -0.023750047683715428,
+          "L": -0.02375004768371565
+        }
+      },
+      {
+        "key": "delta_soldier_0",
+        "opt": {
+          "ads": 1
+        },
+        "grip": {
+          "palmR": 0,
+          "wristErrorR": 0,
+          "palmL": 0,
+          "wristErrorL": 0,
+          "elbowR": 45,
+          "elbowL": 88,
+          "reachR": 0.205,
+          "reachL": 0.371,
+          "gunToChest": 0.2749,
+          "abductR": 47,
+          "elbowOutR": 0.321,
+          "abductL": 52,
+          "elbowOutL": 0.339,
+          "gunPitch": 15,
+          "key": "delta_soldier_0"
+        },
+        "finite": true,
+        "footGap": {
+          "R": 3.576278763406382e-8,
+          "L": 3.5762786579351946e-8
+        }
+      },
+      {
+        "key": "delta_soldier_1",
+        "opt": {
+          "ready": 0
+        },
+        "grip": {
+          "palmR": 0,
+          "wristErrorR": 0,
+          "palmL": 0,
+          "wristErrorL": 0,
+          "elbowR": 67,
+          "elbowL": 132,
+          "reachR": 0.284,
+          "reachL": 0.471,
+          "gunToChest": 0.2933,
+          "abductR": 63,
+          "elbowOutR": 0.36,
+          "abductL": 4,
+          "elbowOutL": 0.213,
+          "gunPitch": 11,
+          "key": "delta_soldier_1"
+        },
+        "finite": true,
+        "footGap": {
+          "R": 3.5762784178494655e-8,
+          "L": 3.576278517769538e-8
+        }
+      },
+      {
+        "key": "delta_soldier_1",
+        "opt": {
+          "ready": 1
+        },
+        "grip": {
+          "palmR": 0,
+          "wristErrorR": 0,
+          "palmL": 0,
+          "wristErrorL": 0,
+          "elbowR": 80,
+          "elbowL": 141,
+          "reachR": 0.33,
+          "reachL": 0.486,
+          "gunToChest": 0.3488,
+          "abductR": 44,
+          "elbowOutR": 0.302,
+          "abductL": 37,
+          "elbowOutL": 0.269,
+          "gunPitch": 12,
+          "key": "delta_soldier_1"
+        },
+        "finite": true,
+        "footGap": {
+          "R": 3.576278528871768e-8,
+          "L": 3.57627839009389e-8
+        }
+      },
+      {
+        "key": "delta_soldier_1",
+        "opt": {
+          "ready": 1,
+          "crouch": 1
+        },
+        "grip": {
+          "palmR": 0,
+          "wristErrorR": 0,
+          "palmL": 0,
+          "wristErrorL": 0,
+          "elbowR": 78,
+          "elbowL": 132,
+          "reachR": 0.325,
+          "reachL": 0.471,
+          "gunToChest": 0.3519,
+          "abductR": 51,
+          "elbowOutR": 0.307,
+          "abductL": 46,
+          "elbowOutL": 0.287,
+          "gunPitch": 7,
+          "key": "delta_soldier_1"
+        },
+        "finite": true,
+        "footGap": {
+          "R": 0.08334583488172892,
+          "L": 3.576278717609682e-8
+        }
+      },
+      {
+        "key": "delta_soldier_1",
+        "opt": {
+          "ready": 1,
+          "prone": 1
+        },
+        "grip": {
+          "palmR": 0,
+          "wristErrorR": 0,
+          "palmL": 0,
+          "wristErrorL": 0,
+          "elbowR": 38,
+          "elbowL": 121,
+          "reachR": 0.169,
+          "reachL": 0.449,
+          "gunToChest": 0.4602,
+          "abductR": 42,
+          "elbowOutR": 0.292,
+          "abductL": -115,
+          "elbowOutL": 0.107,
+          "gunPitch": 28,
+          "key": "delta_soldier_1"
+        },
+        "finite": true,
+        "footGap": {
+          "R": -0.020222547683718284,
+          "L": -0.020222547683715036
+        }
+      },
+      {
+        "key": "delta_soldier_1",
+        "opt": {
+          "ads": 1
+        },
+        "grip": {
+          "palmR": 0,
+          "wristErrorR": 0,
+          "palmL": 0,
+          "wristErrorL": 0,
+          "elbowR": 46,
+          "elbowL": 90,
+          "reachR": 0.201,
+          "reachL": 0.366,
+          "gunToChest": 0.2657,
+          "abductR": 47,
+          "elbowOutR": 0.311,
+          "abductL": 51,
+          "elbowOutL": 0.328,
+          "gunPitch": 15,
+          "key": "delta_soldier_1"
+        },
+        "finite": true,
+        "footGap": {
+          "R": 3.5762784122983504e-8,
+          "L": 3.5762785122184226e-8
+        }
+      },
+      {
+        "key": "delta_soldier_2",
+        "opt": {
+          "ready": 0
+        },
+        "grip": {
+          "palmR": 0,
+          "wristErrorR": 0,
+          "palmL": 0,
+          "wristErrorL": 0,
+          "elbowR": 66,
+          "elbowL": 132,
+          "reachR": 0.29,
+          "reachL": 0.488,
+          "gunToChest": 0.3034,
+          "abductR": 62,
+          "elbowOutR": 0.375,
+          "abductL": 0,
+          "elbowOutL": 0.214,
+          "gunPitch": 12,
+          "key": "delta_soldier_2"
+        },
+        "finite": true,
+        "footGap": {
+          "R": -2.384185592008148e-8,
+          "L": -2.3841857252349108e-8
+        }
+      },
+      {
+        "key": "delta_soldier_2",
+        "opt": {
+          "ready": 1
+        },
+        "grip": {
+          "palmR": 0,
+          "wristErrorR": 0,
+          "palmL": 0,
+          "wristErrorL": 0,
+          "elbowR": 78,
+          "elbowL": 133,
+          "reachR": 0.335,
+          "reachL": 0.489,
+          "gunToChest": 0.3555,
+          "abductR": 44,
+          "elbowOutR": 0.313,
+          "abductL": 45,
+          "elbowOutL": 0.293,
+          "gunPitch": 12,
+          "key": "delta_soldier_2"
+        },
+        "finite": true,
+        "footGap": {
+          "R": -2.3841859306261703e-8,
+          "L": -2.3841857085815654e-8
+        }
+      },
+      {
+        "key": "delta_soldier_2",
+        "opt": {
+          "ready": 1,
+          "crouch": 1
+        },
+        "grip": {
+          "palmR": 0,
+          "wristErrorR": 0,
+          "palmL": 0,
+          "wristErrorL": 0,
+          "elbowR": 76,
+          "elbowL": 125,
+          "reachR": 0.33,
+          "reachL": 0.474,
+          "gunToChest": 0.3587,
+          "abductR": 51,
+          "elbowOutR": 0.319,
+          "abductL": 45,
+          "elbowOutL": 0.308,
+          "gunPitch": 7,
+          "key": "delta_soldier_2"
+        },
+        "finite": true,
+        "footGap": {
+          "R": 0.08627927131232728,
+          "L": -2.3841858806661342e-8
+        }
+      },
+      {
+        "key": "delta_soldier_2",
+        "opt": {
+          "ready": 1,
+          "prone": 1
+        },
+        "grip": {
+          "palmR": 0,
+          "wristErrorR": 0,
+          "palmL": 0,
+          "wristErrorL": 0,
+          "elbowR": 36,
+          "elbowL": 119,
+          "reachR": 0.167,
+          "reachL": 0.459,
+          "gunToChest": 0.46,
+          "abductR": 38,
+          "elbowOutR": 0.302,
+          "abductL": -105,
+          "elbowOutL": 0.097,
+          "gunPitch": 29,
+          "key": "delta_soldier_2"
+        },
+        "finite": true,
+        "footGap": {
+          "R": -0.023750047683717454,
+          "L": -0.023750047683714207
+        }
+      },
+      {
+        "key": "delta_soldier_2",
+        "opt": {
+          "ads": 1
+        },
+        "grip": {
+          "palmR": 0,
+          "wristErrorR": 0,
+          "palmL": 0,
+          "wristErrorL": 0,
+          "elbowR": 45,
+          "elbowL": 88,
+          "reachR": 0.205,
+          "reachL": 0.37,
+          "gunToChest": 0.2747,
+          "abductR": 47,
+          "elbowOutR": 0.321,
+          "abductL": 52,
+          "elbowOutL": 0.339,
+          "gunPitch": 15,
+          "key": "delta_soldier_2"
+        },
+        "finite": true,
+        "footGap": {
+          "R": -2.3841855864570327e-8,
+          "L": -2.3841857141326805e-8
+        }
+      },
+      {
+        "key": "delta_soldier_3",
+        "opt": {
+          "ready": 0
+        },
+        "grip": {
+          "palmR": 0,
+          "wristErrorR": 0,
+          "palmL": 0,
+          "wristErrorL": 0,
+          "elbowR": 67,
+          "elbowL": 132,
+          "reachR": 0.284,
+          "reachL": 0.471,
+          "gunToChest": 0.2934,
+          "abductR": 63,
+          "elbowOutR": 0.36,
+          "abductL": 4,
+          "elbowOutL": 0.213,
+          "gunPitch": 11,
+          "key": "delta_soldier_3"
+        },
+        "finite": true,
+        "footGap": {
+          "R": 3.576278939654287e-8,
+          "L": 3.576278662098531e-8
+        }
+      },
+      {
+        "key": "delta_soldier_3",
+        "opt": {
+          "ready": 1
+        },
+        "grip": {
+          "palmR": 0,
+          "wristErrorR": 0,
+          "palmL": 0,
+          "wristErrorL": 0,
+          "elbowR": 80,
+          "elbowL": 142,
+          "reachR": 0.33,
+          "reachL": 0.487,
+          "gunToChest": 0.3492,
+          "abductR": 44,
+          "elbowOutR": 0.302,
+          "abductL": 36,
+          "elbowOutL": 0.268,
+          "gunPitch": 12,
+          "key": "delta_soldier_3"
+        },
+        "finite": true,
+        "footGap": {
+          "R": 3.576278528871768e-8,
+          "L": 3.576278440053926e-8
+        }
+      },
+      {
+        "key": "delta_soldier_3",
+        "opt": {
+          "ready": 1,
+          "crouch": 1
+        },
+        "grip": {
+          "palmR": 0,
+          "wristErrorR": 0,
+          "palmL": 0,
+          "wristErrorL": 0,
+          "elbowR": 78,
+          "elbowL": 133,
+          "reachR": 0.325,
+          "reachL": 0.472,
+          "gunToChest": 0.3522,
+          "abductR": 51,
+          "elbowOutR": 0.307,
+          "abductL": 45,
+          "elbowOutL": 0.286,
+          "gunPitch": 7,
+          "key": "delta_soldier_3"
+        },
+        "finite": true,
+        "footGap": {
+          "R": 0.08334583488172936,
+          "L": 3.576278717609682e-8
+        }
+      },
+      {
+        "key": "delta_soldier_3",
+        "opt": {
+          "ready": 1,
+          "prone": 1
+        },
+        "grip": {
+          "palmR": 0,
+          "wristErrorR": 0,
+          "palmL": 0,
+          "wristErrorL": 0,
+          "elbowR": 38,
+          "elbowL": 121,
+          "reachR": 0.169,
+          "reachL": 0.449,
+          "gunToChest": 0.4602,
+          "abductR": 43,
+          "elbowOutR": 0.292,
+          "abductL": -115,
+          "elbowOutL": 0.107,
+          "gunPitch": 28,
+          "key": "delta_soldier_3"
+        },
+        "finite": true,
+        "footGap": {
+          "R": -0.020222547683713232,
+          "L": -0.020222547683715508
+        }
+      },
+      {
+        "key": "delta_soldier_3",
+        "opt": {
+          "ads": 1
+        },
+        "grip": {
+          "palmR": 0,
+          "wristErrorR": 0,
+          "palmL": 0,
+          "wristErrorL": 0,
+          "elbowR": 46,
+          "elbowL": 91,
+          "reachR": 0.201,
+          "reachL": 0.366,
+          "gunToChest": 0.2662,
+          "abductR": 47,
+          "elbowOutR": 0.312,
+          "abductL": 51,
+          "elbowOutL": 0.328,
+          "gunPitch": 15,
+          "key": "delta_soldier_3"
+        },
+        "finite": true,
+        "footGap": {
+          "R": 3.576278934103172e-8,
+          "L": 3.576278662098531e-8
+        }
+      },
+      {
+        "key": "alpha_1",
+        "opt": {
+          "ready": 0
+        },
+        "grip": {
+          "palmR": 0,
+          "wristErrorR": 0,
+          "palmL": 0,
+          "wristErrorL": 0,
+          "elbowR": 117,
+          "elbowL": 131,
+          "reachR": 0.466,
+          "reachL": 0.498,
+          "gunToChest": 0.3217,
+          "abductR": 15,
+          "elbowOutR": 0.296,
+          "abductL": 12,
+          "elbowOutL": 0.275,
+          "gunPitch": 16,
+          "key": "alpha_1"
+        },
+        "finite": true,
+        "footGap": {
+          "R": 3.576278909123154e-8,
+          "L": 3.576278898020924e-8
+        }
+      },
+      {
+        "key": "alpha_1",
+        "opt": {
+          "ready": 1
+        },
+        "grip": {
+          "palmR": 0,
+          "wristErrorR": 0,
+          "palmL": 0,
+          "wristErrorL": 0,
+          "elbowR": 115,
+          "elbowL": 132,
+          "reachR": 0.46,
+          "reachL": 0.5,
+          "gunToChest": 0.3195,
+          "abductR": 16,
+          "elbowOutR": 0.299,
+          "abductL": 12,
+          "elbowOutL": 0.275,
+          "gunPitch": 18,
+          "key": "alpha_1"
+        },
+        "finite": true,
+        "footGap": {
+          "R": 3.576278909123154e-8,
+          "L": 3.5762787981008515e-8
+        }
+      },
+      {
+        "key": "alpha_1",
+        "opt": {
+          "ready": 1,
+          "crouch": 1
+        },
+        "grip": {
+          "palmR": 0,
+          "wristErrorR": 0,
+          "palmL": 0,
+          "wristErrorL": 0,
+          "elbowR": 111,
+          "elbowL": 130,
+          "reachR": 0.449,
+          "reachL": 0.496,
+          "gunToChest": 0.331,
+          "abductR": 16,
+          "elbowOutR": 0.297,
+          "abductL": 8,
+          "elbowOutL": 0.254,
+          "gunPitch": 10,
+          "key": "alpha_1"
+        },
+        "finite": true,
+        "footGap": {
+          "R": 0.08843631329582716,
+          "L": 3.576278786998621e-8
+        }
+      },
+      {
+        "key": "alpha_1",
+        "opt": {
+          "ready": 1,
+          "prone": 1
+        },
+        "grip": {
+          "palmR": 0,
+          "wristErrorR": 0,
+          "palmL": 0,
+          "wristErrorL": 0,
+          "elbowR": 112,
+          "elbowL": 134,
+          "reachR": 0.454,
+          "reachL": 0.503,
+          "gunToChest": 0.3173,
+          "abductR": 17,
+          "elbowOutR": 0.303,
+          "abductL": 12,
+          "elbowOutL": 0.271,
+          "gunPitch": 35,
+          "key": "alpha_1"
+        },
+        "finite": true,
+        "footGap": {
+          "R": -0.026343797683716363,
+          "L": -0.026343797683716752
+        }
+      },
+      {
+        "key": "alpha_1",
+        "opt": {
+          "ads": 1
+        },
+        "grip": {
+          "palmR": 0,
+          "wristErrorR": 0,
+          "palmL": 0,
+          "wristErrorL": 0,
+          "elbowR": 113,
+          "elbowL": 130,
+          "reachR": 0.455,
+          "reachL": 0.496,
+          "gunToChest": 0.3237,
+          "abductR": 17,
+          "elbowOutR": 0.3,
+          "abductL": 14,
+          "elbowOutL": 0.276,
+          "gunPitch": 19,
+          "key": "alpha_1"
+        },
+        "finite": true,
+        "footGap": {
+          "R": 3.576278909123154e-8,
+          "L": 3.576278426176138e-8
+        }
+      },
+      {
+        "key": "alpha_2",
+        "opt": {
+          "ready": 0
+        },
+        "grip": {
+          "palmR": 0,
+          "wristErrorR": 0,
+          "palmL": 0,
+          "wristErrorL": 0,
+          "elbowR": 66,
+          "elbowL": 132,
+          "reachR": 0.289,
+          "reachL": 0.482,
+          "gunToChest": 0.2997,
+          "abductR": 62,
+          "elbowOutR": 0.369,
+          "abductL": 2,
+          "elbowOutL": 0.214,
+          "gunPitch": 12,
+          "key": "alpha_2"
+        },
+        "finite": true,
+        "footGap": {
+          "R": 3.576278502503971e-8,
+          "L": 3.576278680139655e-8
+        }
+      },
+      {
+        "key": "alpha_2",
+        "opt": {
+          "ready": 1
+        },
+        "grip": {
+          "palmR": 0,
+          "wristErrorR": 0,
+          "palmL": 0,
+          "wristErrorL": 0,
+          "elbowR": 79,
+          "elbowL": 136,
+          "reachR": 0.334,
+          "reachL": 0.488,
+          "gunToChest": 0.3528,
+          "abductR": 44,
+          "elbowOutR": 0.308,
+          "abductL": 42,
+          "elbowOutL": 0.285,
+          "gunPitch": 12,
+          "key": "alpha_2"
+        },
+        "finite": true,
+        "footGap": {
+          "R": 3.5762786579351946e-8,
+          "L": 3.5762785691173526e-8
+        }
+      },
+      {
+        "key": "alpha_2",
+        "opt": {
+          "ready": 1,
+          "crouch": 1
+        },
+        "grip": {
+          "palmR": 0,
+          "wristErrorR": 0,
+          "palmL": 0,
+          "wristErrorL": 0,
+          "elbowR": 77,
+          "elbowL": 128,
+          "reachR": 0.329,
+          "reachL": 0.473,
+          "gunToChest": 0.356,
+          "abductR": 50,
+          "elbowOutR": 0.314,
+          "abductL": 44,
+          "elbowOutL": 0.301,
+          "gunPitch": 7,
+          "key": "alpha_2"
+        },
+        "finite": true,
+        "footGap": {
+          "R": 0.08524397937512286,
+          "L": 3.576278802264188e-8
+        }
+      },
+      {
+        "key": "alpha_2",
+        "opt": {
+          "ready": 1,
+          "prone": 1
+        },
+        "grip": {
+          "palmR": 0,
+          "wristErrorR": 0,
+          "palmL": 0,
+          "wristErrorL": 0,
+          "elbowR": 37,
+          "elbowL": 121,
+          "reachR": 0.168,
+          "reachL": 0.458,
+          "gunToChest": 0.4602,
+          "abductR": 39,
+          "elbowOutR": 0.298,
+          "abductL": -109,
+          "elbowOutL": 0.099,
+          "gunPitch": 29,
+          "key": "alpha_2"
+        },
+        "finite": true,
+        "footGap": {
+          "R": -0.022505047683716847,
+          "L": -0.022505047683716015
+        }
+      },
+      {
+        "key": "alpha_2",
+        "opt": {
+          "ads": 1
+        },
+        "grip": {
+          "palmR": 0,
+          "wristErrorR": 0,
+          "palmL": 0,
+          "wristErrorL": 0,
+          "elbowR": 45,
+          "elbowL": 89,
+          "reachR": 0.204,
+          "reachL": 0.369,
+          "gunToChest": 0.2718,
+          "abductR": 47,
+          "elbowOutR": 0.318,
+          "abductL": 51,
+          "elbowOutL": 0.335,
+          "gunPitch": 15,
+          "key": "alpha_2"
+        },
+        "finite": true,
+        "footGap": {
+          "R": 3.5762785136062014e-8,
+          "L": 3.57627867458854e-8
+        }
+      },
+      {
+        "key": "alpha_soldier_0",
+        "opt": {
+          "ready": 0
+        },
+        "grip": {
+          "palmR": 0,
+          "wristErrorR": 0,
+          "palmL": 0,
+          "wristErrorL": 0,
+          "elbowR": 64,
+          "elbowL": 132,
+          "reachR": 0.291,
+          "reachL": 0.499,
+          "gunToChest": 0.3111,
+          "abductR": 63,
+          "elbowOutR": 0.389,
+          "abductL": -3,
+          "elbowOutL": 0.214,
+          "gunPitch": 13,
+          "key": "alpha_soldier_0"
+        },
+        "finite": true,
+        "footGap": {
+          "R": 3.5762789313276144e-8,
+          "L": 3.5762786704252036e-8
+        }
+      },
+      {
+        "key": "alpha_soldier_0",
+        "opt": {
+          "ready": 1
+        },
+        "grip": {
+          "palmR": 0,
+          "wristErrorR": 0,
+          "palmL": 0,
+          "wristErrorL": 0,
+          "elbowR": 76,
+          "elbowL": 127,
+          "reachR": 0.336,
+          "reachL": 0.489,
+          "gunToChest": 0.3614,
+          "abductR": 46,
+          "elbowOutR": 0.322,
+          "abductL": 47,
+          "elbowOutL": 0.314,
+          "gunPitch": 12,
+          "key": "alpha_soldier_0"
+        },
+        "finite": true,
+        "footGap": {
+          "R": 3.576278581607362e-8,
+          "L": 3.576278609362937e-8
+        }
+      },
+      {
+        "key": "alpha_soldier_0",
+        "opt": {
+          "ready": 1,
+          "crouch": 1
+        },
+        "grip": {
+          "palmR": 0,
+          "wristErrorR": 0,
+          "palmL": 0,
+          "wristErrorL": 0,
+          "elbowR": 74,
+          "elbowL": 120,
+          "reachR": 0.33,
+          "reachL": 0.474,
+          "gunToChest": 0.3648,
+          "abductR": 52,
+          "elbowOutR": 0.329,
+          "abductL": 48,
+          "elbowOutL": 0.324,
+          "gunPitch": 7,
+          "key": "alpha_soldier_0"
+        },
+        "finite": true,
+        "footGap": {
+          "R": 0.08843631329582827,
+          "L": 3.5762786704252036e-8
+        }
+      },
+      {
+        "key": "alpha_soldier_0",
+        "opt": {
+          "ready": 1,
+          "prone": 1
+        },
+        "grip": {
+          "palmR": 0,
+          "wristErrorR": 0,
+          "palmL": 0,
+          "wristErrorL": 0,
+          "elbowR": 35,
+          "elbowL": 114,
+          "reachR": 0.166,
+          "reachL": 0.458,
+          "gunToChest": 0.4593,
+          "abductR": 50,
+          "elbowOutR": 0.33,
+          "abductL": -97,
+          "elbowOutL": 0.093,
+          "gunPitch": 29,
+          "key": "alpha_soldier_0"
+        },
+        "finite": true,
+        "footGap": {
+          "R": -0.02634379768371342,
+          "L": -0.026343797683718417
+        }
+      },
+      {
+        "key": "alpha_soldier_0",
+        "opt": {
+          "ads": 1
+        },
+        "grip": {
+          "palmR": 0,
+          "wristErrorR": 0,
+          "palmL": 0,
+          "wristErrorL": 0,
+          "elbowR": 45,
+          "elbowL": 86,
+          "reachR": 0.208,
+          "reachL": 0.373,
+          "gunToChest": 0.2807,
+          "abductR": 43,
+          "elbowOutR": 0.339,
+          "abductL": 52,
+          "elbowOutL": 0.348,
+          "gunPitch": 15,
+          "key": "alpha_soldier_0"
+        },
+        "finite": true,
+        "footGap": {
+          "R": 3.5762784372783685e-8,
+          "L": 3.5762786648740885e-8
+        }
+      },
+      {
+        "key": "alpha_soldier_1",
+        "opt": {
+          "ready": 0
+        },
+        "grip": {
+          "palmR": 0,
+          "wristErrorR": 0,
+          "palmL": 0,
+          "wristErrorL": 0,
+          "elbowR": 66,
+          "elbowL": 132,
+          "reachR": 0.285,
+          "reachL": 0.482,
+          "gunToChest": 0.3001,
+          "abductR": 63,
+          "elbowOutR": 0.371,
+          "abductL": 1,
+          "elbowOutL": 0.213,
+          "gunPitch": 12,
+          "key": "alpha_soldier_1"
+        },
+        "finite": true,
+        "footGap": {
+          "R": 3.576278824468648e-8,
+          "L": 3.5762789299398356e-8
+        }
+      },
+      {
+        "key": "alpha_soldier_1",
+        "opt": {
+          "ready": 1
+        },
+        "grip": {
+          "palmR": 0,
+          "wristErrorR": 0,
+          "palmL": 0,
+          "wristErrorL": 0,
+          "elbowR": 78,
+          "elbowL": 134,
+          "reachR": 0.33,
+          "reachL": 0.485,
+          "gunToChest": 0.353,
+          "abductR": 45,
+          "elbowOutR": 0.31,
+          "abductL": 45,
+          "elbowOutL": 0.288,
+          "gunPitch": 12,
+          "key": "alpha_soldier_1"
+        },
+        "finite": true,
+        "footGap": {
+          "R": 3.57627845809505e-8,
+          "L": 3.576278619077389e-8
+        }
+      },
+      {
+        "key": "alpha_soldier_1",
+        "opt": {
+          "ready": 1,
+          "crouch": 1
+        },
+        "grip": {
+          "palmR": 0,
+          "wristErrorR": 0,
+          "palmL": 0,
+          "wristErrorL": 0,
+          "elbowR": 76,
+          "elbowL": 126,
+          "reachR": 0.325,
+          "reachL": 0.47,
+          "gunToChest": 0.3562,
+          "abductR": 52,
+          "elbowOutR": 0.316,
+          "abductL": 45,
+          "elbowOutL": 0.304,
+          "gunPitch": 7,
+          "key": "alpha_soldier_1"
+        },
+        "finite": true,
+        "footGap": {
+          "R": 0.0852439793751213,
+          "L": 3.5762785691173526e-8
+        }
+      },
+      {
+        "key": "alpha_soldier_1",
+        "opt": {
+          "ready": 1,
+          "prone": 1
+        },
+        "grip": {
+          "palmR": 0,
+          "wristErrorR": 0,
+          "palmL": 0,
+          "wristErrorL": 0,
+          "elbowR": 37,
+          "elbowL": 121,
+          "reachR": 0.166,
+          "reachL": 0.458,
+          "gunToChest": 0.4602,
+          "abductR": 39,
+          "elbowOutR": 0.297,
+          "abductL": -109,
+          "elbowOutL": 0.098,
+          "gunPitch": 29,
+          "key": "alpha_soldier_1"
+        },
+        "finite": true,
+        "footGap": {
+          "R": -0.022505047683717014,
+          "L": -0.022505047683717513
+        }
+      },
+      {
+        "key": "alpha_soldier_1",
+        "opt": {
+          "ads": 1
+        },
+        "grip": {
+          "palmR": 0,
+          "wristErrorR": 0,
+          "palmL": 0,
+          "wristErrorL": 0,
+          "elbowR": 45,
+          "elbowL": 88,
+          "reachR": 0.203,
+          "reachL": 0.367,
+          "gunToChest": 0.2705,
+          "abductR": 46,
+          "elbowOutR": 0.317,
+          "abductL": 52,
+          "elbowOutL": 0.336,
+          "gunPitch": 16,
+          "key": "alpha_soldier_1"
+        },
+        "finite": true,
+        "footGap": {
+          "R": 3.576278824468648e-8,
+          "L": 3.57627843589059e-8
+        }
+      },
+      {
+        "key": "alpha_soldier_2",
+        "opt": {
+          "ready": 0
+        },
+        "grip": {
+          "palmR": 0,
+          "wristErrorR": 0,
+          "palmL": 0,
+          "wristErrorL": 0,
+          "elbowR": 64,
+          "elbowL": 132,
+          "reachR": 0.29,
+          "reachL": 0.499,
+          "gunToChest": 0.3106,
+          "abductR": 62,
+          "elbowOutR": 0.389,
+          "abductL": -3,
+          "elbowOutL": 0.214,
+          "gunPitch": 14,
+          "key": "alpha_soldier_2"
+        },
+        "finite": true,
+        "footGap": {
+          "R": -2.384185723847132e-8,
+          "L": -2.3841859680961974e-8
+        }
+      },
+      {
+        "key": "alpha_soldier_2",
+        "opt": {
+          "ready": 1
+        },
+        "grip": {
+          "palmR": 0,
+          "wristErrorR": 0,
+          "palmL": 0,
+          "wristErrorL": 0,
+          "elbowR": 76,
+          "elbowL": 125,
+          "reachR": 0.335,
+          "reachL": 0.486,
+          "gunToChest": 0.3602,
+          "abductR": 46,
+          "elbowOutR": 0.321,
+          "abductL": 45,
+          "elbowOutL": 0.32,
+          "gunPitch": 12,
+          "key": "alpha_soldier_2"
+        },
+        "finite": true,
+        "footGap": {
+          "R": -2.3841858681761252e-8,
+          "L": -2.3841856627848657e-8
+        }
+      },
+      {
+        "key": "alpha_soldier_2",
+        "opt": {
+          "ready": 1,
+          "crouch": 1
+        },
+        "grip": {
+          "palmR": 0,
+          "wristErrorR": 0,
+          "palmL": 0,
+          "wristErrorL": 0,
+          "elbowR": 74,
+          "elbowL": 119,
+          "reachR": 0.329,
+          "reachL": 0.471,
+          "gunToChest": 0.3636,
+          "abductR": 52,
+          "elbowOutR": 0.329,
+          "abductL": 44,
+          "elbowOutL": 0.325,
+          "gunPitch": 7,
+          "key": "alpha_soldier_2"
+        },
+        "finite": true,
+        "footGap": {
+          "R": 0.08843625369118033,
+          "L": -2.3841858348694345e-8
+        }
+      },
+      {
+        "key": "alpha_soldier_2",
+        "opt": {
+          "ready": 1,
+          "prone": 1
+        },
+        "grip": {
+          "palmR": 0,
+          "wristErrorR": 0,
+          "palmL": 0,
+          "wristErrorL": 0,
+          "elbowR": 35,
+          "elbowL": 113,
+          "reachR": 0.166,
+          "reachL": 0.457,
+          "gunToChest": 0.4592,
+          "abductR": 49,
+          "elbowOutR": 0.326,
+          "abductL": -98,
+          "elbowOutL": 0.094,
+          "gunPitch": 29,
+          "key": "alpha_soldier_2"
+        },
+        "finite": true,
+        "footGap": {
+          "R": -0.026343857288360917,
+          "L": -0.02634385728836039
+        }
+      },
+      {
+        "key": "alpha_soldier_2",
+        "opt": {
+          "ads": 1
+        },
+        "grip": {
+          "palmR": 0,
+          "wristErrorR": 0,
+          "palmL": 0,
+          "wristErrorL": 0,
+          "elbowR": 45,
+          "elbowL": 86,
+          "reachR": 0.208,
+          "reachL": 0.371,
+          "gunToChest": 0.28,
+          "abductR": 43,
+          "elbowOutR": 0.338,
+          "abductL": 53,
+          "elbowOutL": 0.349,
+          "gunPitch": 16,
+          "key": "alpha_soldier_2"
+        },
+        "finite": true,
+        "footGap": {
+          "R": -2.3841857349493623e-8,
+          "L": -2.3841855073536422e-8
+        }
+      },
+      {
+        "key": "alpha_soldier_3",
+        "opt": {
+          "ready": 0
+        },
+        "grip": {
+          "palmR": 0,
+          "wristErrorR": 0,
+          "palmL": 0,
+          "wristErrorL": 0,
+          "elbowR": 66,
+          "elbowL": 132,
+          "reachR": 0.288,
+          "reachL": 0.482,
+          "gunToChest": 0.2997,
+          "abductR": 63,
+          "elbowOutR": 0.37,
+          "abductL": 1,
+          "elbowOutL": 0.214,
+          "gunPitch": 12,
+          "key": "alpha_soldier_3"
+        },
+        "finite": true,
+        "footGap": {
+          "R": 3.5762787467530366e-8,
+          "L": 3.576278502503971e-8
+        }
+      },
+      {
+        "key": "alpha_soldier_3",
+        "opt": {
+          "ready": 1
+        },
+        "grip": {
+          "palmR": 0,
+          "wristErrorR": 0,
+          "palmL": 0,
+          "wristErrorL": 0,
+          "elbowR": 79,
+          "elbowL": 136,
+          "reachR": 0.334,
+          "reachL": 0.489,
+          "gunToChest": 0.3533,
+          "abductR": 44,
+          "elbowOutR": 0.309,
+          "abductL": 41,
+          "elbowOutL": 0.284,
+          "gunPitch": 12,
+          "key": "alpha_soldier_3"
+        },
+        "finite": true,
+        "footGap": {
+          "R": 3.576278718997461e-8,
+          "L": 3.576278763406382e-8
+        }
+      },
+      {
+        "key": "alpha_soldier_3",
+        "opt": {
+          "ready": 1,
+          "crouch": 1
+        },
+        "grip": {
+          "palmR": 0,
+          "wristErrorR": 0,
+          "palmL": 0,
+          "wristErrorL": 0,
+          "elbowR": 77,
+          "elbowL": 128,
+          "reachR": 0.329,
+          "reachL": 0.474,
+          "gunToChest": 0.3565,
+          "abductR": 51,
+          "elbowOutR": 0.315,
+          "abductL": 43,
+          "elbowOutL": 0.3,
+          "gunPitch": 7,
+          "key": "alpha_soldier_3"
+        },
+        "finite": true,
+        "footGap": {
+          "R": 0.08524397937511903,
+          "L": 3.5762786523840795e-8
+        }
+      },
+      {
+        "key": "alpha_soldier_3",
+        "opt": {
+          "ready": 1,
+          "prone": 1
+        },
+        "grip": {
+          "palmR": 0,
+          "wristErrorR": 0,
+          "palmL": 0,
+          "wristErrorL": 0,
+          "elbowR": 37,
+          "elbowL": 121,
+          "reachR": 0.167,
+          "reachL": 0.459,
+          "gunToChest": 0.4604,
+          "abductR": 41,
+          "elbowOutR": 0.301,
+          "abductL": -109,
+          "elbowOutL": 0.099,
+          "gunPitch": 29,
+          "key": "alpha_soldier_3"
+        },
+        "finite": true,
+        "footGap": {
+          "R": -0.022505047683713544,
+          "L": -0.022505047683716597
+        }
+      },
+      {
+        "key": "alpha_soldier_3",
+        "opt": {
+          "ads": 1
+        },
+        "grip": {
+          "palmR": 0,
+          "wristErrorR": 0,
+          "palmL": 0,
+          "wristErrorL": 0,
+          "elbowR": 45,
+          "elbowL": 89,
+          "reachR": 0.204,
+          "reachL": 0.369,
+          "gunToChest": 0.2717,
+          "abductR": 47,
+          "elbowOutR": 0.318,
+          "abductL": 52,
+          "elbowOutL": 0.335,
+          "gunPitch": 15,
+          "key": "alpha_soldier_3"
+        },
+        "finite": true,
+        "footGap": {
+          "R": 3.5762787412019215e-8,
+          "L": 3.576278496952856e-8
+        }
+      }
+    ],
+    "movement": [
+      {
+        "i": 0,
+        "finite": true,
+        "pos": [
+          0.02500000037252903,
+          0.015487313829362394,
+          0
+        ],
+        "phase": 0.2,
+        "feet": {
+          "R": {
+            "target": [
+              0.16223000037252902,
+              0.1037500244006515,
+              0
+            ],
+            "plant": true,
+            "error": 1.296292357640769e-16,
+            "gap": 3.5762786967930005e-8
+          },
+          "L": {
+            "target": [
+              -0.008123395166179326,
+              0.1621002293809889,
+              0
+            ],
+            "plant": false,
+            "error": 1.6883057536160649e-16,
+            "gap": 0.05835024074312441
+          }
+        }
+      },
+      {
+        "i": 1,
+        "finite": true,
+        "pos": [
+          0.0499954205006361,
+          0.0150174358044751,
+          0
+        ],
+        "phase": 0.21893592433947506,
+        "feet": {
+          "R": {
+            "target": [
+              0.16223000037252902,
+              0.1037500244006515,
+              0
+            ],
+            "plant": true,
+            "error": 4.3885418357208765e-17,
+            "gap": 5.037290969067687e-8
+          },
+          "L": {
+            "target": [
+              0.040840057526582624,
+              0.1730750748975844,
+              0
+            ],
+            "plant": false,
+            "error": 0.024840261086320568,
+            "gap": 0.058710442114705066
+          }
+        }
+      },
+      {
+        "i": 2,
+        "finite": true,
+        "pos": [
+          0.07499518990516663,
+          0.015102924282837195,
+          0
+        ],
+        "phase": 0.23787514358533152,
+        "feet": {
+          "R": {
+            "target": [
+              0.16223000037252902,
+              0.1037500244006515,
+              0
+            ],
+            "plant": true,
+            "error": 4.0860111026514726e-10,
+            "gap": 3.5360243635929045e-8
+          },
+          "L": {
+            "target": [
+              0.0963175450808782,
+              0.18235583116446297,
+              0
+            ],
+            "plant": false,
+            "error": 0.05552048379670424,
+            "gap": 0.05829303997076131
+          }
+        }
+      },
+      {
+        "i": 3,
+        "finite": true,
+        "pos": [
+          0.09999173320829868,
+          0.015158738302852727,
+          0
+        ],
+        "phase": 0.256811918814977,
+        "feet": {
+          "R": {
+            "target": [
+              0.16223000037252902,
+              0.1037500244006515,
+              0
+            ],
+            "plant": true,
+            "error": 1.8555427376142651e-9,
+            "gap": 1.2718643541131947e-8
+          },
+          "L": {
+            "target": [
+              0.15693996326144163,
+              0.18971257264809332,
+              0
+            ],
+            "plant": false,
+            "error": 0.08983137920029183,
+            "gap": 0.05759065448830271
+          }
+        }
+      },
+      {
+        "i": 4,
+        "finite": true,
+        "pos": [
+          0.12498875707387924,
+          0.015163823855255033,
+          0
+        ],
+        "phase": 0.2757490581070835,
+        "feet": {
+          "R": {
+            "target": [
+              0.16223000037252902,
+              0.1037500244006515,
+              0
+            ],
+            "plant": true,
+            "error": 1.8888295312536852e-10,
+            "gap": 5.1510232759732766e-8
+          },
+          "L": {
+            "target": [
+              0.22136274014920196,
+              0.1949667453754519,
+              0
+            ],
+            "plant": false,
+            "error": 0.12498150290708396,
+            "gap": 0.05708381943965592
+          }
+        }
+      },
+      {
+        "i": 5,
+        "finite": true,
+        "pos": [
+          0.1499865185469389,
+          0.015157647134765286,
+          0
+        ],
+        "phase": 0.29468675619273477,
+        "feet": {
+          "R": {
+            "target": [
+              0.16223000037252902,
+              0.1037500244006515,
+              0
+            ],
+            "plant": true,
+            "error": 8.02391501304315e-9,
+            "gap": 3.701651392351568e-8
+          },
+          "L": {
+            "target": [
+              0.2882340666500124,
+              0.1979897219148477,
+              0
+            ],
+            "plant": false,
+            "error": 0.1587533261301357,
+            "gap": 0.05677500526754321
+          }
+        }
+      },
+      {
+        "i": 6,
+        "finite": true,
+        "pos": [
+          0.17498459108173847,
+          0.015157829579402461,
+          0
+        ],
+        "phase": 0.3136246899312193,
+        "feet": {
+          "R": {
+            "target": [
+              0.16223000037252902,
+              0.1037500244006515,
+              0
+            ],
+            "plant": true,
+            "error": 2.7919852654656314e-9,
+            "gap": 2.82694420788987e-8
+          },
+          "L": {
+            "target": [
+              0.3562001336031295,
+              0.19870736053301685,
+              0
+            ],
+            "plant": false,
+            "error": 0.1893800201246217,
+            "gap": 0.056442726501001586
+          }
+        }
+      },
+      {
+        "i": 7,
+        "finite": true,
+        "pos": [
+          0.19998289830982685,
+          0.015158085183793447,
+          0
+        ],
+        "phase": 0.3325628014676499,
+        "feet": {
+          "R": {
+            "target": [
+              0.16223000037252902,
+              0.1037500244006515,
+              0
+            ],
+            "plant": true,
+            "error": 4.500198622476928e-9,
+            "gap": 1.27016849954531e-8
+          },
+          "L": {
+            "target": [
+              0.42390789650727945,
+              0.19710202799246493,
+              0
+            ],
+            "plant": false,
+            "error": 0.21546224681634268,
+            "gap": 0.05577576191902668
+          }
+        }
+      },
+      {
+        "i": 8,
+        "finite": true,
+        "pos": [
+          0.22498184815049171,
+          0.015000033107207857,
+          0
+        ],
+        "phase": 0.3515013998317899,
+        "feet": {
+          "R": {
+            "target": [
+              0.16223000037252902,
+              0.1037500244006515,
+              0
+            ],
+            "plant": true,
+            "error": 1.673334801942364e-9,
+            "gap": 5.011535393617539e-8
+          },
+          "L": {
+            "target": [
+              0.49000549393197423,
+              0.19321285007277447,
+              0
+            ],
+            "plant": false,
+            "error": 0.2361641829360826,
+            "gap": 0.05449700935203573
+          }
+        }
+      },
+      {
+        "i": 9,
+        "finite": true,
+        "pos": [
+          0.24998181499540806,
+          0.015100179322325859,
+          -1.7953098563339154e-8
+        ],
+        "phase": 0.3704407686537011,
+        "feet": {
+          "R": {
+            "target": [
+              0.16223000037252902,
+              0.1037500244006515,
+              0
+            ],
+            "plant": true,
+            "error": 3.823320794406436e-9,
+            "gap": 4.174567148906849e-8
+          },
+          "L": {
+            "target": [
+              0.5531406684805701,
+              0.18713469605679575,
+              0
+            ],
+            "plant": false,
+            "error": 0.25026101888894003,
+            "gap": 0.05221426494457883
+          }
+        }
+      },
+      {
+        "i": 10,
+        "finite": true,
+        "pos": [
+          0.2749818153679371,
+          0.015099997874494876,
+          -1.218559475546499e-8
+        ],
+        "phase": 0.3893801628753145,
+        "feet": {
+          "R": {
+            "target": [
+              0.16223000037252902,
+              0.1037500244006515,
+              0
+            ],
+            "plant": true,
+            "error": 5.445567053389952e-10,
+            "gap": 4.0227214850863113e-8
+          },
+          "L": {
+            "target": [
+              0.6119576020046428,
+              0.1790163785926497,
+              0
+            ],
+            "plant": false,
+            "error": 0.2570118154723395,
+            "gap": 0.048580410048789116
+          }
+        }
+      },
+      {
+        "i": 11,
+        "finite": true,
+        "pos": [
+          0.2999818157404661,
+          0.015099995247874178,
+          -7.552236613861396e-9
+        ],
+        "phase": 0.40831955709692774,
+        "feet": {
+          "R": {
+            "target": [
+              0.16223000037252902,
+              0.1037500244006515,
+              0
+            ],
+            "plant": true,
+            "error": 7.671874576049006e-10,
+            "gap": 4.410140548583019e-8
+          },
+          "L": {
+            "target": [
+              0.6651030395081909,
+              0.16905653367196022,
+              0
+            ],
+            "plant": false,
+            "error": 0.2557753837717652,
+            "gap": 0.04319641242890905
+          }
+        }
+      },
+      {
+        "i": 12,
+        "finite": true,
+        "pos": [
+          0.32498135790228844,
+          0.015125413085479524,
+          3.1666673727670513e-9
+        ],
+        "phase": 0.4272586041892191,
+        "feet": {
+          "R": {
+            "target": [
+              0.16223000037252902,
+              0.1037500244006515,
+              0
+            ],
+            "plant": true,
+            "error": 3.872962253291618e-10,
+            "gap": 1.6783128956032733e-8
+          },
+          "L": {
+            "target": [
+              0.7112230402769275,
+              0.15749907167333993,
+              0
+            ],
+            "plant": false,
+            "error": 0.2458970490133579,
+            "gap": 0.03516878920751067
+          }
+        }
+      },
+      {
+        "i": 13,
+        "finite": true,
+        "pos": [
+          0.34997957572340965,
+          0.015205571117257934,
+          -0.00000110237689332493
+        ],
+        "phase": 0.44619664801161874,
+        "feet": {
+          "R": {
+            "target": [
+              0.16223000037252902,
+              0.1037500244006515,
+              0
+            ],
+            "plant": true,
+            "error": 4.179534265579733e-9,
+            "gap": 3.117967102561625e-8
+          },
+          "L": {
+            "target": [
+              0.7489637872747397,
+              0.1446273013575926,
+              0
+            ],
+            "plant": false,
+            "error": 0.226963463021897,
+            "gap": 0.025901174437733834
+          }
+        }
+      },
+      {
+        "i": 14,
+        "finite": true,
+        "pos": [
+          0.3749795760959387,
+          0.015000008507195163,
+          -0.00000110237689332493
+        ],
+        "phase": 0.46513604223323163,
+        "feet": {
+          "R": {
+            "target": [
+              0.16223000037252902,
+              0.1037500244006515,
+              0
+            ],
+            "plant": true,
+            "error": 7.003089022400802e-10,
+            "gap": 1.4144760099310538e-8
+          },
+          "L": {
+            "target": [
+              0.7769766613322089,
+              0.13075451989653403,
+              0
+            ],
+            "plant": false,
+            "error": 0.19905425804237104,
+            "gap": 0.017569015017310965
+          }
+        }
+      },
+      {
+        "i": 15,
+        "finite": true,
+        "pos": [
+          0.3999795410782099,
+          0.015098964826756857,
+          -0.0000011214436628215196
+        ],
+        "phase": 0.48407540964404866,
+        "feet": {
+          "R": {
+            "target": [
+              0.16223000037252902,
+              0.1037500244006515,
+              0
+            ],
+            "plant": true,
+            "error": 5.350779054722208e-9,
+            "gap": 5.710032294214962e-9
+          },
+          "L": {
+            "target": [
+              0.7939054730350418,
+              0.11622104533069369,
+              0
+            ],
+            "plant": false,
+            "error": 0.1623182612808706,
+            "gap": 0.010618517365156413
+          }
+        }
+      },
+      {
+        "i": 16,
+        "finite": true,
+        "pos": [
+          0.4249782506376505,
+          0.015193384688609514,
+          0.000012492017642973252
+        ],
+        "phase": 0.5030138287850776,
+        "feet": {
+          "R": {
+            "target": [
+              0.16223000037252902,
+              0.1037500244006515,
+              0
+            ],
+            "plant": true,
+            "error": 9.456777471767816e-10,
+            "gap": -4.406139550439114e-9
+          },
+          "L": {
+            "target": [
+              0.798570000372529,
+              0.10375000055879356,
+              0
+            ],
+            "plant": true,
+            "error": 3.5347218350031275e-9,
+            "gap": -2.6240197278926125e-8
+          }
+        }
+      },
+      {
+        "i": 17,
+        "finite": true,
+        "pos": [
+          0.4499782510101795,
+          0.015000012843665901,
+          0.000012577267984870133
+        ],
+        "phase": 0.5219532230068006,
+        "feet": {
+          "R": {
+            "target": [
+              0.16223000037252902,
+              0.1037500244006515,
+              0
+            ],
+            "plant": true,
+            "error": 2.9954840309259595e-10,
+            "gap": 9.102778322778171e-9
+          },
+          "L": {
+            "target": [
+              0.798570000372529,
+              0.10375000055879356,
+              0
+            ],
+            "plant": true,
+            "error": 6.920230715517877e-9,
+            "gap": -2.0161809818897147e-8
+          }
+        }
+      },
+      {
+        "i": 18,
+        "finite": true,
+        "pos": [
+          0.47497822903096676,
+          0.015100112026993885,
+          0.000012562479640099156
+        ],
+        "phase": 0.5408926002952791,
+        "feet": {
+          "R": {
+            "target": [
+              0.16223000037252902,
+              0.1037500244006515,
+              0
+            ],
+            "plant": true,
+            "error": 5.412132307627285e-9,
+            "gap": 5.0404354759447934e-8
+          },
+          "L": {
+            "target": [
+              0.798570000372529,
+              0.10375000055879356,
+              0
+            ],
+            "plant": true,
+            "error": 3.00080683151912e-9,
+            "gap": 2.4429936809622355e-8
+          }
+        }
+      },
+      {
+        "i": 19,
+        "finite": true,
+        "pos": [
+          0.4999782294034958,
+          0.015099990154703848,
+          0.000012578963474840776
+        ],
+        "phase": 0.5598319945168961,
+        "feet": {
+          "R": {
+            "target": [
+              0.16223000037252902,
+              0.1037500244006515,
+              0
+            ],
+            "plant": true,
+            "error": 1.4472352222578264e-9,
+            "gap": 4.975459412526195e-8
+          },
+          "L": {
+            "target": [
+              0.798570000372529,
+              0.10375000055879356,
+              0
+            ],
+            "plant": true,
+            "error": 7.133043224800547e-9,
+            "gap": 1.8813558835817368e-8
+          }
+        }
+      },
+      {
+        "i": 20,
+        "finite": true,
+        "pos": [
+          0.5249782297760248,
+          0.01509998749170336,
+          0.000012594327327253296
+        ],
+        "phase": 0.5787713887385126,
+        "feet": {
+          "R": {
+            "target": [
+              0.16223000037252902,
+              0.1037500244006515,
+              0
+            ],
+            "plant": true,
+            "error": 3.0405097198253767e-10,
+            "gap": 5.124506798070971e-8
+          },
+          "L": {
+            "target": [
+              0.798570000372529,
+              0.10375000055879356,
+              0
+            ],
+            "plant": true,
+            "error": 7.618508875944811e-9,
+            "gap": 3.3406374402855654e-8
+          }
+        }
+      },
+      {
+        "i": 21,
+        "finite": true,
+        "pos": [
+          0.5499782301485538,
+          0.015100681377953153,
+          0.000012801386287453198
+        ],
+        "phase": 0.5977107829607752,
+        "feet": {
+          "R": {
+            "target": [
+              0.16223000037252902,
+              0.1037500244006515,
+              0
+            ],
+            "plant": true,
+            "error": 5.134782089712192e-10,
+            "gap": 1.3127225487186145e-8
+          },
+          "L": {
+            "target": [
+              0.798570000372529,
+              0.10375000055879356,
+              0
+            ],
+            "plant": true,
+            "error": 5.929475938047777e-9,
+            "gap": -6.295258300759166e-9
+          }
+        }
+      },
+      {
+        "i": 22,
+        "finite": true,
+        "pos": [
+          0.5749779064208269,
+          0.015131746828410543,
+          0.00001280656773383626
+        ],
+        "phase": 0.6166499316518915,
+        "feet": {
+          "R": {
+            "target": [
+              0.16223000037252902,
+              0.1037500244006515,
+              0
+            ],
+            "plant": true,
+            "error": 1.2028911632501059e-8,
+            "gap": 1.0777712458609479e-8
+          },
+          "L": {
+            "target": [
+              0.798570000372529,
+              0.10375000055879356,
+              0
+            ],
+            "plant": true,
+            "error": 4.3208848555979394e-10,
+            "gap": -2.2682191222478387e-8
+          }
+        }
+      },
+      {
+        "i": 23,
+        "finite": true,
+        "pos": [
+          0.5999779067933559,
+          0.015000033834803618,
+          0.000012825565268048678
+        ],
+        "phase": 0.6355893258735099,
+        "feet": {
+          "R": {
+            "target": [
+              0.16952658050009758,
+              0.1159599839052817,
+              6.638465938770232e-8
+            ],
+            "plant": false,
+            "error": 0.17678093260619693,
+            "gap": 0.026718570430247127
+          },
+          "L": {
+            "target": [
+              0.798570000372529,
+              0.10375000055879356,
+              0
+            ],
+            "plant": true,
+            "error": 4.2207724988621325e-10,
+            "gap": 2.3546466512702757e-8
+          }
+        }
+      },
+      {
+        "i": 24,
+        "finite": true,
+        "pos": [
+          0.6249793525785208,
+          0.01509385277531692,
+          0.000027456453740359876
+        ],
+        "phase": 0.6545298183478848,
+        "feet": {
+          "R": {
+            "target": [
+              0.19680458575681045,
+              0.1305028330537815,
+              3.14561347107606e-7
+            ],
+            "plant": false,
+            "error": 0.15077365139692347,
+            "gap": 0.04540019879051822
+          },
+          "L": {
+            "target": [
+              0.798570000372529,
+              0.10375000055879356,
+              0
+            ],
+            "plant": true,
+            "error": 8.183417581352196e-9,
+            "gap": 3.030313384944083e-8
+          }
+        }
+      },
+      {
+        "i": 25,
+        "finite": true,
+        "pos": [
+          0.649979330599308,
+          0.015193870926304955,
+          0.000027446925649154963
+        ],
+        "phase": 0.6734691956363614,
+        "feet": {
+          "R": {
+            "target": [
+              0.24220175600246618,
+              0.14439025858469887,
+              7.275871251069272e-7
+            ],
+            "plant": false,
+            "error": 0.10952738823297042,
+            "gap": 0.06208935700897085
+          },
+          "L": {
+            "target": [
+              0.798570000372529,
+              0.10375000055879356,
+              0
+            ],
+            "plant": true,
+            "error": 9.780320920347178e-9,
+            "gap": 3.036157415758911e-8
+          }
+        }
+      },
+      {
+        "i": 26,
+        "finite": true,
+        "pos": [
+          0.6749793626368046,
+          0.015000021924061004,
+          0.00002746769925421333
+        ],
+        "phase": 0.6924086138465927,
+        "feet": {
+          "R": {
+            "target": [
+              0.3035118665541119,
+              0.15728337536250694,
+              0.00000128538964832127
+            ],
+            "plant": false,
+            "error": 0.05787137070373234,
+            "gap": 0.07583046518110222
+          },
+          "L": {
+            "target": [
+              0.798570000372529,
+              0.10375000055879356,
+              0
+            ],
+            "plant": true,
+            "error": 5.647601246438247e-9,
+            "gap": -1.8415908062396902e-8
+          }
+        }
+      },
+      {
+        "i": 27,
+        "finite": true,
+        "pos": [
+          0.6999793574213982,
+          0.015100046601583018,
+          0.000027460297160608604
+        ],
+        "phase": 0.711348003834922,
+        "feet": {
+          "R": {
+            "target": [
+              0.37852730086111275,
+              0.16886668226626408,
+              0.000001967883908402843
+            ],
+            "plant": false,
+            "error": 0.02558079142013007,
+            "gap": 0.0871803849728487
+          },
+          "L": {
+            "target": [
+              0.798570000372529,
+              0.10375000055879356,
+              0
+            ],
+            "plant": true,
+            "error": 2.7512737540723343e-9,
+            "gap": 2.548903300925165e-8
+          }
+        }
+      },
+      {
+        "i": 28,
+        "finite": true,
+        "pos": [
+          0.7249799966812134,
+          0.015129907022492263,
+          0.000027481852325372813
+        ],
+        "phase": 0.7302878820620619,
+        "feet": {
+          "R": {
+            "target": [
+              0.46504309196539484,
+              0.17885702777252793,
+              0.0000027550090031325603
+            ],
+            "plant": false,
+            "error": 0.08474986657133211,
+            "gap": 0.09587171906054011
+          },
+          "L": {
+            "target": [
+              0.798570000372529,
+              0.10375000055879356,
+              0
+            ],
+            "plant": true,
+            "error": 8.967738195892352e-9,
+            "gap": 3.789720311175859e-8
+          }
+        }
+      },
+      {
+        "i": 29,
+        "finite": true,
+        "pos": [
+          0.7499799970537424,
+          0.015071268650353888,
+          0.000027850864424472377
+        ],
+        "phase": 0.7492272762857379,
+        "feet": {
+          "R": {
+            "target": [
+              0.56084734779723,
+              0.18700946775176885,
+              0.000003626641025271128
+            ],
+            "plant": false,
+            "error": 0.1577148152104112,
+            "gap": 0.10129630377366146
+          },
+          "L": {
+            "target": [
+              0.798570000372529,
+              0.10375000055879356,
+              0
+            ],
+            "plant": true,
+            "error": 7.964424863953195e-9,
+            "gap": 9.022843985850848e-9
+          }
+        }
+      },
+      {
+        "i": 30,
+        "finite": true,
+        "pos": [
+          0.7749802600592375,
+          0.015110456354159398,
+          0.000027848495763427294
+        ],
+        "phase": 0.7681668694717191,
+        "feet": {
+          "R": {
+            "target": [
+              0.6637358440979345,
+              0.1931248678097066,
+              0.0000045627258297165195
+            ],
+            "plant": false,
+            "error": 0.23183960369135573,
+            "gap": 0.10359248213233808
+          },
+          "L": {
+            "target": [
+              0.798570000372529,
+              0.10375000055879356,
+              0
+            ],
+            "plant": true,
+            "error": 9.814822292083772e-9,
+            "gap": -1.201856933419343e-9
+          }
+        }
+      },
+      {
+        "i": 31,
+        "finite": true,
+        "pos": [
+          0.7999803274869919,
+          0.015111036349844655,
+          0.00007262826048459736
+        ],
+        "phase": 0.7871063448748711,
+        "feet": {
+          "R": {
+            "target": [
+              0.7714994610737675,
+              0.19705348741622886,
+              0.0000055431647315382376
+            ],
+            "plant": false,
+            "error": 0.3028757088486896,
+            "gap": 0.10292452596220449
+          },
+          "L": {
+            "target": [
+              0.798570000372529,
+              0.10375000055879356,
+              0
+            ],
+            "plant": true,
+            "error": 7.903532419903462e-9,
+            "gap": 1.300621828292936e-8
+          }
+        }
+      },
+      {
+        "i": 32,
+        "finite": true,
+        "pos": [
+          0.8249822854995728,
+          0.015158320255432046,
+          0.00007263250544942146
+        ],
+        "phase": 0.8060472221571295,
+        "feet": {
+          "R": {
+            "target": [
+              0.8819396008322933,
+              0.19869928549985758,
+              0.000006547954774602297
+            ],
+            "plant": false,
+            "error": 0.36752745287555516,
+            "gap": 0.0994054224764941
+          },
+          "L": {
+            "target": [
+              0.798570000372529,
+              0.10375000055879356,
+              0
+            ],
+            "plant": true,
+            "error": 3.558601277034862e-9,
+            "gap": -8.649708657659794e-9
+          }
+        }
+      },
+      {
+        "i": 33,
+        "finite": true,
+        "pos": [
+          0.8499822858721018,
+          0.015000271394819721,
+          0.00007261668756908257
+        ],
+        "phase": 0.8249866163787463,
+        "feet": {
+          "R": {
+            "target": [
+              0.9928318696017286,
+              0.19802175904017505,
+              0.0000075568583105443595
+            ],
+            "plant": false,
+            "error": 0.4229525252986637,
+            "gap": 0.09357036777271056
+          },
+          "L": {
+            "target": [
+              0.798570000372529,
+              0.10375000055879356,
+              0
+            ],
+            "plant": true,
+            "error": 8.360984962809809e-9,
+            "gap": 3.304338803966633e-8
+          }
+        }
+      },
+      {
+        "i": 34,
+        "finite": true,
+        "pos": [
+          0.8749822862446308,
+          0.015100271392293509,
+          0.00007261527160817849
+        ],
+        "phase": 0.8439260106003592,
+        "feet": {
+          "R": {
+            "target": [
+              1.10197743117,
+              0.19503770407119386,
+              0.000008549870214986177
+            ],
+            "plant": false,
+            "error": 0.46703155257046686,
+            "gap": 0.08615911575919656
+          },
+          "L": {
+            "target": [
+              0.798570000372529,
+              0.10375000055879356,
+              0
+            ],
+            "plant": true,
+            "error": 6.3628388328209356e-9,
+            "gap": -1.1941027375228508e-8
+          }
+        }
+      },
+      {
+        "i": 35,
+        "finite": true,
+        "pos": [
+          0.8999822866171598,
+          0.015101225743273973,
+          0.00007260829779154321
+        ],
+        "phase": 0.8628654048219728,
+        "feet": {
+          "R": {
+            "target": [
+              1.2071688775781828,
+              0.1898201308700012,
+              0.000009506907377358016
+            ],
+            "plant": false,
+            "error": 0.4984506230882923,
+            "gap": 0.07787978281230341
+          },
+          "L": {
+            "target": [
+              0.798570000372529,
+              0.10375000055879356,
+              0
+            ],
+            "plant": true,
+            "error": 1.9303862455499176e-9,
+            "gap": -1.6983425651928563e-8
+          }
+        }
+      },
+      {
+        "i": 36,
+        "finite": true,
+        "pos": [
+          0.9249827098101377,
+          0.015105453918658897,
+          0.00007261872062835906
+        ],
+        "phase": 0.8818051193621093,
+        "feet": {
+          "R": {
+            "target": [
+              1.3062004111923171,
+              0.18249655604169596,
+              0.000010407901337909068
+            ],
+            "plant": false,
+            "error": 0.5165495380979779,
+            "gap": 0.06923592988857748
+          },
+          "L": {
+            "target": [
+              0.798570000372529,
+              0.10375000055879356,
+              0
+            ],
+            "plant": true,
+            "error": 2.3801359174337123e-9,
+            "gap": -1.2768805554563833e-8
+          }
+        }
+      },
+      {
+        "i": 37,
+        "finite": true,
+        "pos": [
+          0.9499827101826668,
+          0.015103086038288895,
+          0.00007260088636451556
+        ],
+        "phase": 0.900744513583727,
+        "feet": {
+          "R": {
+            "target": [
+              1.3968612431942207,
+              0.17324641126557422,
+              0.000011232738226839063
+            ],
+            "plant": false,
+            "error": 0.5210281147044962,
+            "gap": 0.0604303071892668
+          },
+          "L": {
+            "target": [
+              0.798570000372529,
+              0.10375000055879356,
+              0
+            ],
+            "plant": true,
+            "error": 5.9471587092466e-9,
+            "gap": 3.4073872792750315e-8
+          }
+        }
+      },
+      {
+        "i": 38,
+        "finite": true,
+        "pos": [
+          0.9749827105551958,
+          0.015100920895201854,
+          0.0000728569644601329
+        ],
+        "phase": 0.9196839078063335,
+        "feet": {
+          "R": {
+            "target": [
+              1.4769456988295562,
+              0.16229591153386322,
+              0.000011961350702362288
+            ],
+            "plant": false,
+            "error": 0.5117108791488073,
+            "gap": 0.05131182461679419
+          },
+          "L": {
+            "target": [
+              0.798570000372529,
+              0.10375000055879356,
+              0
+            ],
+            "plant": true,
+            "error": 2.7391619680339958e-9,
+            "gap": -9.338456938290385e-9
+          }
+        }
+      },
+      {
+        "i": 39,
+        "finite": true,
+        "pos": [
+          0.9999827109277248,
+          0.015100443556002575,
+          0.00007304555907206023
+        ],
+        "phase": 0.9386233020284853,
+        "feet": {
+          "R": {
+            "target": [
+              1.5442463701326123,
+              0.14991298058474417,
+              0.000012573655653847265
+            ],
+            "plant": false,
+            "error": 0.488445116935666,
+            "gap": 0.04110850831570735
+          },
+          "L": {
+            "target": [
+              0.798570000372529,
+              0.10375000055879356,
+              0
+            ],
+            "plant": true,
+            "error": 9.19327726481281e-10,
+            "gap": -1.0694762728191698e-8
+          }
+        }
+      },
+      {
+        "i": 40,
+        "finite": true,
+        "pos": [
+          1.0249263364821672,
+          0.016274465417518515,
+          0.00013293963052740665
+        ],
+        "phase": 0.9575200425303686,
+        "feet": {
+          "R": {
+            "target": [
+              1.5964565365674364,
+              0.13643204657231736,
+              0.000013048666419816333
+            ],
+            "plant": false,
+            "error": 0.45053837545020814,
+            "gap": 0.03022171039758438
+          },
+          "L": {
+            "target": [
+              0.798570000372529,
+              0.10375000055879356,
+              0
+            ],
+            "plant": true,
+            "error": 3.6951120611244596e-9,
+            "gap": 2.9326621825420673e-9
+          }
+        }
+      },
+      {
+        "i": 41,
+        "finite": true,
+        "pos": [
+          1.0499257575720549,
+          0.015005101153656143,
+          0.0001823768266668857
+        ],
+        "phase": 0.9764590349331709,
+        "feet": {
+          "R": {
+            "target": [
+              1.6316080808621343,
+              0.12212252086360631,
+              0.000013368476968615562
+            ],
+            "plant": false,
+            "error": 0.39725987805055013,
+            "gap": 0.0211736199191664
+          },
+          "L": {
+            "target": [
+              0.798570000372529,
+              0.10375000055879356,
+              0
+            ],
+            "plant": true,
+            "error": 2.0537762946807844e-9,
+            "gap": 2.503519337671012e-8
+          }
+        }
+      },
+      {
+        "i": 42,
+        "finite": true,
+        "pos": [
+          1.074925757944584,
+          0.015099991340684939,
+          0.0001823062653536489
+        ],
+        "phase": 0.9953984291548592,
+        "feet": {
+          "R": {
+            "target": [
+              1.6473595711100013,
+              0.10736318215940739,
+              0.000013511784832939916
+            ],
+            "plant": false,
+            "error": 0.32845588507254525,
+            "gap": 0.015681410875906257
+          },
+          "L": {
+            "target": [
+              0.798570000372529,
+              0.10375000055879356,
+              0
+            ],
+            "plant": true,
+            "error": 1.209036844286122e-9,
+            "gap": 2.463124661178373e-8
+          }
+        }
+      },
+      {
+        "i": 43,
+        "finite": true,
+        "pos": [
+          1.099925758317113,
+          0.015100726394302912,
+          0.0001825881357242487
+        ],
+        "phase": 1.0143378233776759,
+        "feet": {
+          "R": {
+            "target": [
+              1.6480079067930928,
+              0.1037499885352736,
+              0.000013517683424161894
+            ],
+            "plant": true,
+            "error": 5.620360969462362e-9,
+            "gap": -3.723677408085102e-9
+          },
+          "L": {
+            "target": [
+              0.798570000372529,
+              0.10375000055879356,
+              0
+            ],
+            "plant": true,
+            "error": 1.3907427878218115e-9,
+            "gap": 4.799601840965728e-9
+          }
+        }
+      },
+      {
+        "i": 44,
+        "finite": true,
+        "pos": [
+          1.1249249503016472,
+          0.015119721045630287,
+          0.00020974242972693347
+        ],
+        "phase": 1.0332766163565548,
+        "feet": {
+          "R": {
+            "target": [
+              1.6480079067930928,
+              0.1037499885352736,
+              0.000013517683424161894
+            ],
+            "plant": true,
+            "error": 9.121647755244214e-9,
+            "gap": 1.863692973558262e-8
+          },
+          "L": {
+            "target": [
+              0.798570000372529,
+              0.10375000055879356,
+              0
+            ],
+            "plant": true,
+            "error": 3.768056064855943e-9,
+            "gap": 2.6217991069832358e-8
+          }
+        }
+      },
+      {
+        "i": 45,
+        "finite": true,
+        "pos": [
+          1.149924548342824,
+          0.015112504176067888,
+          0.00023592268582683928
+        ],
+        "phase": 1.0522157161667893,
+        "feet": {
+          "R": {
+            "target": [
+              1.6480079067930928,
+              0.1037499885352736,
+              0.000013517683424161894
+            ],
+            "plant": true,
+            "error": 7.375764906876854e-9,
+            "gap": 2.2080761177822872e-8
+          },
+          "L": {
+            "target": [
+              0.798570000372529,
+              0.10375000055879356,
+              0
+            ],
+            "plant": true,
+            "error": 2.460079199582691e-10,
+            "gap": 2.7805723182283693e-8
+          }
+        }
+      },
+      {
+        "i": 46,
+        "finite": true,
+        "pos": [
+          1.174924548715353,
+          0.015068027429515497,
+          0.00023640104184119437
+        ],
+        "phase": 1.0711551103918693,
+        "feet": {
+          "R": {
+            "target": [
+              1.6480079067930928,
+              0.1037499885352736,
+              0.000013517683424161894
+            ],
+            "plant": true,
+            "error": 1.4952224341053147e-8,
+            "gap": -1.8937712828459574e-8
+          },
+          "L": {
+            "target": [
+              0.798570000372529,
+              0.10375000055879356,
+              0
+            ],
+            "plant": true,
+            "error": 1.3249670930228127e-9,
+            "gap": -1.9157773797906508e-8
+          }
+        }
+      },
+      {
+        "i": 47,
+        "finite": true,
+        "pos": [
+          1.1999239679425955,
+          0.015120717593526935,
+          0.000256310923143932
+        ],
+        "phase": 1.0900940703581516,
+        "feet": {
+          "R": {
+            "target": [
+              1.6480079067930928,
+              0.1037499885352736,
+              0.000013517683424161894
+            ],
+            "plant": true,
+            "error": 1.5596830833254528e-9,
+            "gap": -3.048295070529061e-8
+          },
+          "L": {
+            "target": [
+              0.798570000372529,
+              0.10375000055879356,
+              0
+            ],
+            "plant": true,
+            "error": 1.5166743834273441e-10,
+            "gap": -2.014404375250134e-8
+          }
+        }
+      },
+      {
+        "i": 48,
+        "finite": true,
+        "pos": [
+          1.2249230481684208,
+          0.01513545755587984,
+          0.00025633887470322136
+        ],
+        "phase": 1.1090327674989402,
+        "feet": {
+          "R": {
+            "target": [
+              1.6480079067930928,
+              0.1037499885352736,
+              0.000013517683424161894
+            ],
+            "plant": true,
+            "error": 7.309781090463742e-9,
+            "gap": 1.6856202614268234e-8
+          },
+          "L": {
+            "target": [
+              0.798570000372529,
+              0.10375000055879356,
+              0
+            ],
+            "plant": true,
+            "error": 7.983952856050662e-9,
+            "gap": 2.958129637076201e-8
+          }
+        }
+      },
+      {
+        "i": 49,
+        "finite": true,
+        "pos": [
+          1.2499230485409498,
+          0.015091268893593225,
+          0.00025638292548224584
+        ],
+        "phase": 1.1279721617205825,
+        "feet": {
+          "R": {
+            "target": [
+              1.6480079067930928,
+              0.1037499885352736,
+              0.000013517683424161894
+            ],
+            "plant": true,
+            "error": 9.001808904527542e-9,
+            "gap": -1.9530795911104626e-8
+          },
+          "L": {
+            "target": [
+              0.8001647703083861,
+              0.11000678960962476,
+              3.358832715767642e-7
+            ],
+            "plant": false,
+            "error": 0.19475798548046802,
+            "gap": -0.013145653446769365
+          }
+        }
+      },
+      {
+        "i": 50,
+        "finite": true,
+        "pos": [
+          1.2749230489134789,
+          0.015106941131671194,
+          0.0002571330424356866
+        ],
+        "phase": 1.1469115559507208,
+        "feet": {
+          "R": {
+            "target": [
+              1.6480079067930928,
+              0.1037499885352736,
+              0.000013517683424161894
+            ],
+            "plant": true,
+            "error": 1.6482725995992824e-8,
+            "gap": -8.439245566260745e-9
+          },
+          "L": {
+            "target": [
+              0.8161304725961482,
+              0.12471234229520772,
+              0.000003698507683324389
+            ],
+            "plant": false,
+            "error": 0.17947690660273657,
+            "gap": -0.00027192139272329274
+          }
+        }
+      },
+      {
+        "i": 51,
+        "finite": true,
+        "pos": [
+          1.2999229859560728,
+          0.015103132182412084,
+          0.0002571709424441515
+        ],
+        "phase": 1.165850902195132,
+        "feet": {
+          "R": {
+            "target": [
+              1.6480079067930928,
+              0.1037499885352736,
+              0.000013517683424161894
+            ],
+            "plant": true,
+            "error": 1.2683735500432038e-8,
+            "gap": -1.7778218661113065e-8
+          },
+          "L": {
+            "target": [
+              0.8477670009834314,
+              0.13890497882681493,
+              0.000010361651010227545
+            ],
+            "plant": false,
+            "error": 0.14947145947512328,
+            "gap": 0.00894432686435527
+          }
+        }
+      },
+      {
+        "i": 52,
+        "finite": true,
+        "pos": [
+          1.3249230291694403,
+          0.015105042281356874,
+          0.00025810855389041265
+        ],
+        "phase": 1.1847903288852455,
+        "feet": {
+          "R": {
+            "target": [
+              1.6480079067930928,
+              0.1037499885352736,
+              0.000013517683424161894
+            ],
+            "plant": true,
+            "error": 3.2331545329961647e-9,
+            "gap": -3.589923340541201e-8
+          },
+          "L": {
+            "target": [
+              0.8932547503613258,
+              0.15223754441776172,
+              0.00001994207620773415
+            ],
+            "plant": false,
+            "error": 0.10788905298340057,
+            "gap": 0.016016996764066274
+          }
+        }
+      },
+      {
+        "i": 53,
+        "finite": true,
+        "pos": [
+          1.3499230705201626,
+          0.01510474233000423,
+          0.00025867863494655197
+        ],
+        "phase": 1.2037297541558682,
+        "feet": {
+          "R": {
+            "target": [
+              1.6480079067930928,
+              0.1037499885352736,
+              0.000013517683424161894
+            ],
+            "plant": true,
+            "error": 4.43402067879848e-9,
+            "gap": -2.650228279887923e-8
+          },
+          "L": {
+            "target": [
+              0.9507737462180461,
+              0.16438377018284034,
+              0.000032056468429319774
+            ],
+            "plant": false,
+            "error": 0.06161701878131432,
+            "gap": 0.02316567313152325
+          }
+        }
+      },
+      {
+        "i": 54,
+        "finite": true,
+        "pos": [
+          1.3749230708926916,
+          0.015100024024286542,
+          0.0002588397654759156
+        ],
+        "phase": 1.2226691483778744,
+        "feet": {
+          "R": {
+            "target": [
+              1.6480079067930928,
+              0.1037499885352736,
+              0.000013517683424161894
+            ],
+            "plant": true,
+            "error": 6.215817932892921e-9,
+            "gap": -1.5150148288678444e-8
+          },
+          "L": {
+            "target": [
+              1.018504006054365,
+              0.17504646073399216,
+              0.00004632151114618096
+            ],
+            "plant": false,
+            "error": 0.04251520646815501,
+            "gap": 0.03104418842507546
+          }
+        }
+      },
+      {
+        "i": 55,
+        "finite": true,
+        "pos": [
+          1.3999222237616777,
+          0.015157472297141796,
+          0.00025935515696717815
+        ],
+        "phase": 1.2416079005553735,
+        "feet": {
+          "R": {
+            "target": [
+              1.6480079067930928,
+              0.1037499885352736,
+              0.000013517683424161894
+            ],
+            "plant": true,
+            "error": 9.56983932724075e-9,
+            "gap": -1.2381703301533875e-9
+          },
+          "L": {
+            "target": [
+              1.0946230545578675,
+              0.1839644849095457,
+              0.00006235336280441172
+            ],
+            "plant": false,
+            "error": 0.08602851948885044,
+            "gap": 0.03906026017461224
+          }
+        }
+      },
+      {
+        "i": 56,
+        "finite": true,
+        "pos": [
+          1.4249219577759504,
+          0.0150476803741185,
+          0.0002591703673826551
+        ],
+        "phase": 1.260547092990946,
+        "feet": {
+          "R": {
+            "target": [
+              1.6480079067930928,
+              0.1037499885352736,
+              0.000013517683424161894
+            ],
+            "plant": true,
+            "error": 4.461671482419e-9,
+            "gap": -6.1012562085904776e-9
+          },
+          "L": {
+            "target": [
+              1.1773153365412286,
+              0.19092018758139692,
+              0.00007976963933573007
+            ],
+            "plant": false,
+            "error": 0.14439964647428788,
+            "gap": 0.04647166223982187
+          }
+        }
+      },
+      {
+        "i": 57,
+        "finite": true,
+        "pos": [
+          1.4499219581484795,
+          0.015099995629861952,
+          0.0002595390188671054
+        ],
+        "phase": 1.2794864872146179,
+        "feet": {
+          "R": {
+            "target": [
+              1.6480079067930928,
+              0.1037499885352736,
+              0.000013517683424161894
+            ],
+            "plant": true,
+            "error": 1.5536963623396759e-9,
+            "gap": 5.581242037977496e-9
+          },
+          "L": {
+            "target": [
+              1.264760323632645,
+              0.1957431995970243,
+              0.00009818690924210557
+            ],
+            "plant": false,
+            "error": 0.20264167652717913,
+            "gap": 0.05274052280275811
+          }
+        }
+      },
+      {
+        "i": 58,
+        "finite": true,
+        "pos": [
+          1.47492216527462,
+          0.015118573827203365,
+          0.00025981853506751307
+        ],
+        "phase": 1.2984260380689385,
+        "feet": {
+          "R": {
+            "target": [
+              1.6480079067930928,
+              0.1037499885352736,
+              0.000013517683424161894
+            ],
+            "plant": true,
+            "error": 1.2361187861402723e-9,
+            "gap": -3.513980771641112e-8
+          },
+          "L": {
+            "target": [
+              1.3551380630440906,
+              0.1983154441154893,
+              0.00011722186225237425
+            ],
+            "plant": false,
+            "error": 0.2566424509348053,
+            "gap": 0.05756627417847916
+          }
+        }
+      },
+      {
+        "i": 59,
+        "finite": true,
+        "pos": [
+          1.499922165647149,
+          0.015000074612908067,
+          0.00026061821044409683
+        ],
+        "phase": 1.3173654323002406,
+        "feet": {
+          "R": {
+            "target": [
+              1.6480079067930928,
+              0.1037499885352736,
+              0.000013517683424161894
+            ],
+            "plant": true,
+            "error": 4.802524966305827e-9,
+            "gap": -2.4104687787462886e-8
+          },
+          "L": {
+            "target": [
+              1.4466271893651785,
+              0.19857394408456008,
+              0.00013649089057520371
+            ],
+            "plant": false,
+            "error": 0.3040321729400568,
+            "gap": 0.06082509459381848
+          }
+        }
+      },
+      {
+        "i": 60,
+        "finite": true,
+        "pos": [
+          1.5249221660196781,
+          0.015100012757466176,
+          0.0002606196206282885
+        ],
+        "phase": 1.3363048265218536,
+        "feet": {
+          "R": {
+            "target": [
+              1.6480079067930928,
+              0.1037499885352736,
+              0.000013517683424161894
+            ],
+            "plant": true,
+            "error": 1.946548504403297e-9,
+            "gap": -1.193870784177431e-8
+          },
+          "L": {
+            "target": [
+              1.5374085822708807,
+              0.19651240555075883,
+              0.00015561085926904273
+            ],
+            "plant": false,
+            "error": 0.343183335684868,
+            "gap": 0.06250203567193731
+          }
+        }
+      },
+      {
+        "i": 61,
+        "finite": true,
+        "pos": [
+          1.5499221663922071,
+          0.015100003386032769,
+          0.0002607757107948583
+        ],
+        "phase": 1.3552442207438355,
+        "feet": {
+          "R": {
+            "target": [
+              1.6480079067930928,
+              0.1037499885352736,
+              0.000013517683424161894
+            ],
+            "plant": true,
+            "error": 5.162383744217627e-10,
+            "gap": -6.32782590215264e-10
+          },
+          "L": {
+            "target": [
+              1.6256623837581343,
+              0.19218126778324818,
+              0.00017419847802591
+            ],
+            "plant": false,
+            "error": 0.3729646734493312,
+            "gap": 0.06263648725038408
+          }
+        }
+      },
+      {
+        "i": 62,
+        "finite": true,
+        "pos": [
+          1.5749213248491287,
+          0.015181717352243142,
+          0.000260903603314544
+        ],
+        "phase": 1.3741829771508423,
+        "feet": {
+          "R": {
+            "target": [
+              1.6480079067930928,
+              0.1037499885352736,
+              0.000013517683424161894
+            ],
+            "plant": true,
+            "error": 1.1013544134901146e-9,
+            "gap": 4.374086384761888e-9
+          },
+          "L": {
+            "target": [
+              1.709566003719563,
+              0.18568675340050336,
+              0.0001918698811143013
+            ],
+            "plant": false,
+            "error": 0.3925903490171129,
+            "gap": 0.06128016416218475
+          }
+        }
+      },
+      {
+        "i": 63,
+        "finite": true,
+        "pos": [
+          1.5999185405671597,
+          0.015359001632896253,
+          0.0002626823946438872
+        ],
+        "phase": 1.3931202618336604,
+        "feet": {
+          "R": {
+            "target": [
+              1.6480079067930928,
+              0.1037499885352736,
+              0.000013517683424161894
+            ],
+            "plant": true,
+            "error": 5.297644271356399e-9,
+            "gap": -1.1638907546074329e-8
+          },
+          "L": {
+            "target": [
+              1.7872970386450784,
+              0.17718837691293965,
+              0.00020824124210299356
+            ],
+            "plant": false,
+            "error": 0.4014972192082391,
+            "gap": 0.05846344498403323
+          }
+        }
+      },
+      {
+        "i": 64,
+        "finite": true,
+        "pos": [
+          1.6249185409396887,
+          0.015000192701700145,
+          0.00026268724697486867
+        ],
+        "phase": 1.4120596560552736,
+        "feet": {
+          "R": {
+            "target": [
+              1.6480079067930928,
+              0.1037499885352736,
+              0.000013517683424161894
+            ],
+            "plant": true,
+            "error": 3.6994493600958224e-9,
+            "gap": -2.4222299707665762e-8
+          },
+          "L": {
+            "target": [
+              1.8570502081572333,
+              0.16689235996963653,
+              0.00022293234095795147
+            ],
+            "plant": false,
+            "error": 0.39925278677946585,
+            "gap": 0.0541616482390654
+          }
+        }
+      },
+      {
+        "i": 65,
+        "finite": true,
+        "pos": [
+          1.6499185431748629,
+          0.015100184782932048,
+          0.0002626773474252442
+        ],
+        "phase": 1.430999051687983,
+        "feet": {
+          "R": {
+            "target": [
+              1.6480079067930928,
+              0.1037499885352736,
+              0.000013517683424161894
+            ],
+            "plant": true,
+            "error": 1.3599862795644643e-9,
+            "gap": -1.880967367973163e-9
+          },
+          "L": {
+            "target": [
+              1.9169966220884418,
+              0.15505145072411305,
+              0.00023555798505732324
+            ],
+            "plant": false,
+            "error": 0.3854436452341389,
+            "gap": 0.04824665712478966
+          }
+        }
+      },
+      {
+        "i": 66,
+        "finite": true,
+        "pos": [
+          1.674918543547392,
+          0.015103177973651329,
+          0.00026321661940520436
+        ],
+        "phase": 1.4499384459140021,
+        "feet": {
+          "R": {
+            "target": [
+              1.6480079067930928,
+              0.1037499885352736,
+              0.000013517683424161894
+            ],
+            "plant": true,
+            "error": 1.260429724750849e-9,
+            "gap": -1.493212330172522e-8
+          },
+          "L": {
+            "target": [
+              1.9653164133513195,
+              0.14195536013251514,
+              0.00024573488217982843
+            ],
+            "plant": false,
+            "error": 0.35963557775408916,
+            "gap": 0.04033032573412877
+          }
+        }
+      },
+      {
+        "i": 67,
+        "finite": true,
+        "pos": [
+          1.699918543919921,
+          0.015100451061152854,
+          0.00026348496851702485
+        ],
+        "phase": 1.4688778401367062,
+        "feet": {
+          "R": {
+            "target": [
+              1.6480079067930928,
+              0.1037499885352736,
+              0.000013517683424161894
+            ],
+            "plant": true,
+            "error": 1.7051980917141211e-9,
+            "gap": -2.9430666612095813e-8
+          },
+          "L": {
+            "target": [
+              2.000189728727484,
+              0.127924506840119,
+              0.0002530797430252138
+            ],
+            "plant": false,
+            "error": 0.32125902016634333,
+            "gap": 0.03034486340665561
+          }
+        }
+      },
+      {
+        "i": 68,
+        "finite": true,
+        "pos": [
+          1.72491854429245,
+          0.015102989446313587,
+          0.0002640113020253576
+        ],
+        "phase": 1.4878172343625164,
+        "feet": {
+          "R": {
+            "target": [
+              1.6480079067930928,
+              0.1037499885352736,
+              0.000013517683424161894
+            ],
+            "plant": true,
+            "error": 2.4026176905958434e-9,
+            "gap": -4.1766165942425104e-9
+          },
+          "L": {
+            "target": [
+              2.019796710176591,
+              0.11330218095876672,
+              0.0002572092772776461
+            ],
+            "plant": false,
+            "error": 0.26969771917787166,
+            "gap": 0.020501359211554118
+          }
+        }
+      },
+      {
+        "i": 69,
+        "finite": true,
+        "pos": [
+          1.749919256195426,
+          0.015130357880843805,
+          0.00026406057135353045
+        ],
+        "phase": 1.5067571676223837,
+        "feet": {
+          "R": {
+            "target": [
+              1.6480079067930928,
+              0.1037499885352736,
+              0.000013517683424161894
+            ],
+            "plant": true,
+            "error": 4.638602426728463e-9,
+            "gap": -1.2403274005090559e-8
+          },
+          "L": {
+            "target": [
+              2.023493048539536,
+              0.10375002848755686,
+              0.0002579877834397487
+            ],
+            "plant": true,
+            "error": 1.1294056918590808e-8,
+            "gap": 3.358050555679615e-8
+          }
+        }
+      },
+      {
+        "i": 70,
+        "finite": true,
+        "pos": [
+          1.7749195154756308,
+          0.015014130125928206,
+          0.0003040727502960916
+        ],
+        "phase": 1.525696782243097,
+        "feet": {
+          "R": {
+            "target": [
+              1.6480079067930928,
+              0.1037499885352736,
+              0.000013517683424161894
+            ],
+            "plant": true,
+            "error": 3.214815962196231e-9,
+            "gap": -1.4776610754441144e-8
+          },
+          "L": {
+            "target": [
+              2.023493048539536,
+              0.10375002848755686,
+              0.0002579877834397487
+            ],
+            "plant": true,
+            "error": 1.4775959509679584e-9,
+            "gap": 2.362764923991012e-8
+          }
+        }
+      },
+      {
+        "i": 71,
+        "finite": true,
+        "pos": [
+          1.7999195158481598,
+          0.015100027302105447,
+          0.0003042710351761624
+        ],
+        "phase": 1.5446361764653056,
+        "feet": {
+          "R": {
+            "target": [
+              1.6480079067930928,
+              0.1037499885352736,
+              0.000013517683424161894
+            ],
+            "plant": true,
+            "error": 2.2750396184965186e-9,
+            "gap": -2.2542595720653757e-8
+          },
+          "L": {
+            "target": [
+              2.023493048539536,
+              0.10375002848755686,
+              0.0002579877834397487
+            ],
+            "plant": true,
+            "error": 3.4856683875236178e-9,
+            "gap": 1.230722991574229e-8
+          }
+        }
+      },
+      {
+        "i": 72,
+        "finite": true,
+        "pos": [
+          1.8249195162206888,
+          0.015100685463403353,
+          0.0003045932063654444
+        ],
+        "phase": 1.563575570688491,
+        "feet": {
+          "R": {
+            "target": [
+              1.6480079067930928,
+              0.1037499885352736,
+              0.000013517683424161894
+            ],
+            "plant": true,
+            "error": 1.1785564168337423e-10,
+            "gap": -2.6966017904750395e-8
+          },
+          "L": {
+            "target": [
+              2.023493048539536,
+              0.10375002848755686,
+              0.0002579877834397487
+            ],
+            "plant": true,
+            "error": 5.022056540954355e-9,
+            "gap": 1.752183161063403e-8
+          }
+        }
+      },
+      {
+        "i": 73,
+        "finite": true,
+        "pos": [
+          1.8499195165932178,
+          0.015100946299207864,
+          0.00030494998857455435
+        ],
+        "phase": 1.5825149649120327,
+        "feet": {
+          "R": {
+            "target": [
+              1.6480079067930928,
+              0.1037499885352736,
+              0.000013517683424161894
+            ],
+            "plant": true,
+            "error": 1.5644720110427792e-9,
+            "gap": 1.1543216729692496e-8
+          },
+          "L": {
+            "target": [
+              2.023493048539536,
+              0.10375002848755686,
+              0.0002579877834397487
+            ],
+            "plant": true,
+            "error": 2.0801068899531056e-9,
+            "gap": 4.817977473925428e-8
+          }
+        }
+      },
+      {
+        "i": 74,
+        "finite": true,
+        "pos": [
+          1.8749195169657469,
+          0.015099994880438318,
+          0.0003048580460640604
+        ],
+        "phase": 1.6014543591337738,
+        "feet": {
+          "R": {
+            "target": [
+              1.6480079067930928,
+              0.1037499885352736,
+              0.000013517683424161894
+            ],
+            "plant": true,
+            "error": 1.1672076220700684e-8,
+            "gap": 1.8186452524493468e-8
+          },
+          "L": {
+            "target": [
+              2.023493048539536,
+              0.10375002848755686,
+              0.0002579877834397487
+            ],
+            "plant": true,
+            "error": 3.013136244417281e-9,
+            "gap": 4.50691172854123e-8
+          }
+        }
+      },
+      {
+        "i": 75,
+        "finite": true,
+        "pos": [
+          1.8999193850904703,
+          0.015121403534431012,
+          0.00032696793684272585
+        ],
+        "phase": 1.6203936605744695,
+        "feet": {
+          "R": {
+            "target": [
+              1.6480120891543812,
+              0.10405916828170708,
+              0.000013521283511993714
+            ],
+            "plant": false,
+            "error": 0.18556171301892257,
+            "gap": -0.002525081494373402
+          },
+          "L": {
+            "target": [
+              2.023493048539536,
+              0.10375002848755686,
+              0.0002579877834397487
+            ],
+            "plant": true,
+            "error": 1.2072909618231464e-8,
+            "gap": 4.865828391598104e-8
+          }
+        }
+      },
+      {
+        "i": 76,
+        "finite": true,
+        "pos": [
+          1.9249193966388702,
+          0.015121316433942412,
+          0.0004024370141164635
+        ],
+        "phase": 1.6393331495591061,
+        "feet": {
+          "R": {
+            "target": [
+              1.6577599820167415,
+              0.11886963977263554,
+              0.000021912062801455845
+            ],
+            "plant": false,
+            "error": 0.17650628884498515,
+            "gap": 0.00805852566212252
+          },
+          "L": {
+            "target": [
+              2.023493048539536,
+              0.10375002848755686,
+              0.0002579877834397487
+            ],
+            "plant": true,
+            "error": 1.6288306753533923e-9,
+            "gap": 6.710236213902654e-9
+          }
+        }
+      },
+      {
+        "i": 77,
+        "finite": true,
+        "pos": [
+          1.9499194920063019,
+          0.015118580361013302,
+          0.00047359005154112843
+        ],
+        "phase": 1.6582726924545115,
+        "feet": {
+          "R": {
+            "target": [
+              1.6849116044874244,
+              0.13331021846300475,
+              0.00004528360316604079
+            ],
+            "plant": false,
+            "error": 0.15091046680456802,
+            "gap": 0.01705835859278683
+          },
+          "L": {
+            "target": [
+              2.023493048539536,
+              0.10375002848755686,
+              0.0002579877834397487
+            ],
+            "plant": true,
+            "error": 1.5189363658223033e-9,
+            "gap": -2.0857413990382767e-9
+          }
+        }
+      },
+      {
+        "i": 78,
+        "finite": true,
+        "pos": [
+          1.974920116364956,
+          0.015003964594507126,
+          0.0004849516903673301
+        ],
+        "phase": 1.677212561348698,
+        "feet": {
+          "R": {
+            "target": [
+              1.7275364539051723,
+              0.1470277695799681,
+              0.00008197416888736767
+            ],
+            "plant": false,
+            "error": 0.11155381667948139,
+            "gap": 0.024743438651291208
+          },
+          "L": {
+            "target": [
+              2.023493048539536,
+              0.10375002848755686,
+              0.0002579877834397487
+            ],
+            "plant": true,
+            "error": 1.0057181952449215e-8,
+            "gap": 6.483045207617e-8
+          }
+        }
+      },
+      {
+        "i": 79,
+        "finite": true,
+        "pos": [
+          1.999920068308711,
+          0.015102254261728378,
+          0.0005189695679914674
+        ],
+        "phase": 1.6961519364154471,
+        "feet": {
+          "R": {
+            "target": [
+              1.783701125970497,
+              0.15968608542235843,
+              0.00013031952657845038
+            ],
+            "plant": false,
+            "error": 0.06274571616138636,
+            "gap": 0.03185275691787488
+          },
+          "L": {
+            "target": [
+              2.023493048539536,
+              0.10375002848755686,
+              0.0002579877834397487
+            ],
+            "plant": true,
+            "error": 7.721391196011399e-9,
+            "gap": 6.094408551426955e-8
+          }
+        }
+      },
+      {
+        "i": 80,
+        "finite": true,
+        "pos": [
+          2.0249389596283436,
+          0.014989539681118914,
+          0.0005188375418752056
+        ],
+        "phase": 1.7151056419608872,
+        "feet": {
+          "R": {
+            "target": [
+              1.85153042190038,
+              0.1709837787709731,
+              0.00018870554492554355
+            ],
+            "plant": false,
+            "error": 0.029456302350090575,
+            "gap": 0.038230656377925845
+          },
+          "L": {
+            "target": [
+              2.023493048539536,
+              0.10375002848755686,
+              0.0002579877834397487
+            ],
+            "plant": true,
+            "error": 2.0454892950871654e-10,
+            "gap": 5.5662443557147334e-8
+          }
+        }
+      },
+      {
+        "i": 81,
+        "finite": true,
+        "pos": [
+          2.0499370954930782,
+          0.015097366382542533,
+          0.0005282505337331767
+        ],
+        "phase": 1.7340436250191864,
+        "feet": {
+          "R": {
+            "target": [
+              1.9289832479985847,
+              0.18062674045870336,
+              0.0002553752937945079
+            ],
+            "plant": false,
+            "error": 0.07573334404555332,
+            "gap": 0.04404028600163247
+          },
+          "L": {
+            "target": [
+              2.023493048539536,
+              0.10375002848755686,
+              0.0002579877834397487
+            ],
+            "plant": true,
+            "error": 2.2397178260735327e-9,
+            "gap": 5.5912855637108017e-8
+          }
+        }
+      },
+      {
+        "i": 82,
+        "finite": true,
+        "pos": [
+          2.0749370958656073,
+          0.015103366340918002,
+          0.0005289080039856398
+        ],
+        "phase": 1.7529830192473488,
+        "feet": {
+          "R": {
+            "target": [
+              2.014187028226351,
+              0.18838955691053552,
+              0.0003287168994741915
+            ],
+            "plant": false,
+            "error": 0.13936868026247728,
+            "gap": 0.04913486070008728
+          },
+          "L": {
+            "target": [
+              2.023493048539536,
+              0.10375002848755686,
+              0.0002579877834397487
+            ],
+            "plant": true,
+            "error": 1.7273887320843284e-9,
+            "gap": 1.5908971487399448e-8
+          }
+        }
+      },
+      {
+        "i": 83,
+        "finite": true,
+        "pos": [
+          2.0999370962381363,
+          0.015100851726310795,
+          0.0005293615524235573
+        ],
+        "phase": 1.7719224134720784,
+        "feet": {
+          "R": {
+            "target": [
+              2.105205015882487,
+              0.1940815137903838,
+              0.00040706325150915935
+            ],
+            "plant": false,
+            "error": 0.2030231955163473,
+            "gap": 0.05299720614322802
+          },
+          "L": {
+            "target": [
+              2.023493048539536,
+              0.10375002848755686,
+              0.0002579877834397487
+            ],
+            "plant": true,
+            "error": 1.6220181781235744e-9,
+            "gap": 2.7042883113392868e-8
+          }
+        }
+      },
+      {
+        "i": 84,
+        "finite": true,
+        "pos": [
+          2.1249370966106653,
+          0.015113585452490953,
+          0.000530472215757305
+        ],
+        "phase": 1.7908618077123817,
+        "feet": {
+          "R": {
+            "target": [
+              2.2001058992759335,
+              0.19756334711128087,
+              0.0004887519177853487
+            ],
+            "plant": false,
+            "error": 0.26266535208710046,
+            "gap": 0.05538951430184637
+          },
+          "L": {
+            "target": [
+              2.023493048539536,
+              0.10375002848755686,
+              0.0002579877834397487
+            ],
+            "plant": true,
+            "error": 1.744633838501462e-9,
+            "gap": 4.8833843038775804e-8
+          }
+        }
+      },
+      {
+        "i": 85,
+        "finite": true,
+        "pos": [
+          2.1499370969831944,
+          0.015112080675316976,
+          0.0005315317399092745
+        ],
+        "phase": 1.8098012019510035,
+        "feet": {
+          "R": {
+            "target": [
+              2.296958366535619,
+              0.1987498675382303,
+              0.0005721204660337449
+            ],
+            "plant": false,
+            "error": 0.31565049351826785,
+            "gap": 0.05632300057570434
+          },
+          "L": {
+            "target": [
+              2.023493048539536,
+              0.10375002848755686,
+              0.0002579877834397487
+            ],
+            "plant": true,
+            "error": 2.216748281385986e-9,
+            "gap": 4.353513674559828e-9
+          }
+        }
+      },
+      {
+        "i": 86,
+        "finite": true,
+        "pos": [
+          2.1749370954930782,
+          0.01512004603719106,
+          0.0005328411312459647
+        ],
+        "phase": 1.8287405947874988,
+        "feet": {
+          "R": {
+            "target": [
+              2.393831098755813,
+              0.19761204488365056,
+              0.0006555064579300494
+            ],
+            "plant": false,
+            "error": 0.36006098119059277,
+            "gap": 0.05592224895087923
+          },
+          "L": {
+            "target": [
+              2.023493048539536,
+              0.10375002848755686,
+              0.0002579877834397487
+            ],
+            "plant": true,
+            "error": 8.40252783792273e-10,
+            "gap": 2.4651198374248118e-8
+          }
+        }
+      },
+      {
+        "i": 87,
+        "finite": true,
+        "pos": [
+          2.1999370958656073,
+          0.015070917727280177,
+          0.0005332373844451066
+        ],
+        "phase": 1.8476799890114908,
+        "feet": {
+          "R": {
+            "target": [
+              2.4887927985377534,
+              0.19417771787188753,
+              0.0007372474736627049
+            ],
+            "plant": false,
+            "error": 0.39458957081561374,
+            "gap": 0.054325633377295526
+          },
+          "L": {
+            "target": [
+              2.023493048539536,
+              0.10375002848755686,
+              0.0002579877834397487
+            ],
+            "plant": true,
+            "error": 4.457888117317716e-10,
+            "gap": 3.747853140334545e-8
+          }
+        }
+      },
+      {
+        "i": 88,
+        "finite": true,
+        "pos": [
+          2.224936343729496,
+          0.015148009888798698,
+          0.000611255920887066
+        ],
+        "phase": 1.8666189053789874,
+        "feet": {
+          "R": {
+            "target": [
+              2.5799099126747396,
+              0.18853108284400605,
+              0.0008156791516685569
+            ],
+            "plant": false,
+            "error": 0.4183954903919748,
+            "gap": 0.05162561080620488
+          },
+          "L": {
+            "target": [
+              2.023493048539536,
+              0.10375002848755686,
+              0.0002579877834397487
+            ],
+            "plant": true,
+            "error": 8.34186626405976e-10,
+            "gap": 1.537481415792019e-8
+          }
+        }
+      },
+      {
+        "i": 89,
+        "finite": true,
+        "pos": [
+          2.249936344102025,
+          0.015006886710034452,
+          0.0006116909686679772
+        ],
+        "phase": 1.885558299603468,
+        "feet": {
+          "R": {
+            "target": [
+              2.665255768026588,
+              0.18081001055279874,
+              0.000889143052599689
+            ],
+            "plant": false,
+            "error": 0.4309428929483402,
+            "gap": 0.04783344447249134
+          },
+          "L": {
+            "target": [
+              2.023493048539536,
+              0.10375002848755686,
+              0.0002579877834397487
+            ],
+            "plant": true,
+            "error": 3.0459673401535923e-9,
+            "gap": 5.6515608318208344e-8
+          }
+        }
+      },
+      {
+        "i": 90,
+        "finite": true,
+        "pos": [
+          2.274936344474554,
+          0.015104125285142801,
+          0.0006117155288050125
+        ],
+        "phase": 1.9044976938250902,
+        "feet": {
+          "R": {
+            "target": [
+              2.742896697183354,
+              0.17120352599571997,
+              0.0009559747165892184
+            ],
+            "plant": false,
+            "error": 0.431836015109392,
+            "gap": 0.042861833880477276
+          },
+          "L": {
+            "target": [
+              2.023493048539536,
+              0.10375002848755686,
+              0.0002579877834397487
+            ],
+            "plant": true,
+            "error": 3.931618620008553e-9,
+            "gap": 3.394314714022517e-8
+          }
+        }
+      },
+      {
+        "i": 91,
+        "finite": true,
+        "pos": [
+          2.2999361269176006,
+          0.015111180730309572,
+          0.0006117090734176767
+        ],
+        "phase": 1.923436922948611,
+        "feet": {
+          "R": {
+            "target": [
+              2.8109008431771176,
+              0.15994677369439333,
+              0.0010145112421603326
+            ],
+            "plant": false,
+            "error": 0.42072496217514394,
+            "gap": 0.036476324162165466
+          },
+          "L": {
+            "target": [
+              2.023493048539536,
+              0.10375002848755686,
+              0.0002579877834397487
+            ],
+            "plant": true,
+            "error": 4.367943804322719e-9,
+            "gap": 1.2264948681672827e-8
+          }
+        }
+      },
+      {
+        "i": 92,
+        "finite": true,
+        "pos": [
+          2.3249361272901297,
+          0.015095627161281301,
+          0.0006117090734176767
+        ],
+        "phase": 1.942376317170224,
+        "feet": {
+          "R": {
+            "target": [
+              2.867338093872525,
+              0.14731497454400871,
+              0.0010630912297510606
+            ],
+            "plant": false,
+            "error": 0.39726270553803616,
+            "gap": 0.028040173035249763
+          },
+          "L": {
+            "target": [
+              2.023493048539536,
+              0.10375002848755686,
+              0.0002579877834397487
+            ],
+            "plant": true,
+            "error": 3.3645471858591976e-9,
+            "gap": 8.065006787405515e-9
+          }
+        }
+      },
+      {
+        "i": 93,
+        "finite": true,
+        "pos": [
+          2.3499354775995016,
+          0.01514621783680923,
+          0.0006665081082599666
+        ],
+        "phase": 1.9613152644198792,
+        "feet": {
+          "R": {
+            "target": [
+              2.910275660994232,
+              0.13361761285060764,
+              0.0011000509762349256
+            ],
+            "plant": false,
+            "error": 0.36079945911560557,
+            "gap": 0.018064980592363125
+          },
+          "L": {
+            "target": [
+              2.023493048539536,
+              0.10375002848755686,
+              0.0002579877834397487
+            ],
+            "plant": true,
+            "error": 2.435705594794489e-9,
+            "gap": 2.0817257986860405e-8
+          }
+        }
+      },
+      {
+        "i": 94,
+        "finite": true,
+        "pos": [
+          2.374935135245323,
+          0.01508019549182791,
+          0.0007185379172722772
+        ],
+        "phase": 1.9802544400172466,
+        "feet": {
+          "R": {
+            "target": [
+              2.937784076397616,
+              0.1191893434809321,
+              0.0011237296363835092
+            ],
+            "plant": false,
+            "error": 0.3106752871618696,
+            "gap": 0.008891667530424488
+          },
+          "L": {
+            "target": [
+              2.023493048539536,
+              0.10375002848755686,
+              0.0002579877834397487
+            ],
+            "plant": true,
+            "error": 4.454947533449663e-9,
+            "gap": 3.102620119155297e-9
+          }
+        }
+      },
+      {
+        "i": 95,
+        "finite": true,
+        "pos": [
+          2.399935567751527,
+          0.015149451694378514,
+          0.0007704113332136497
+        ],
+        "phase": 1.9991942023825802,
+        "feet": {
+          "R": {
+            "target": [
+              2.947931517717211,
+              0.10438287046563008,
+              0.0011324643385050583
+            ],
+            "plant": false,
+            "error": 0.2468043191845611,
+            "gap": 0.0019820918358465917
+          },
+          "L": {
+            "target": [
+              2.023493048539536,
+              0.10375002848755686,
+              0.0002579877834397487
+            ],
+            "plant": true,
+            "error": 3.1441032816450294e-10,
+            "gap": 2.954170921776189e-9
+          }
+        }
+      },
+      {
+        "i": 96,
+        "finite": true,
+        "pos": [
+          2.424935568124056,
+          0.015000037227218856,
+          0.0007704090964253396
+        ],
+        "phase": 2.0181335966041933,
+        "feet": {
+          "R": {
+            "target": [
+              2.9479490288932464,
+              0.1037500031781383,
+              0.0011324794117537375
+            ],
+            "plant": true,
+            "error": 3.881836716793666e-9,
+            "gap": 2.6745740913658445e-8
+          },
+          "L": {
+            "target": [
+              2.023493048539536,
+              0.10375002848755686,
+              0.0002579877834397487
+            ],
+            "plant": true,
+            "error": 1.1114996812828671e-9,
+            "gap": 4.9463719023479236e-8
+          }
+        }
+      },
+      {
+        "i": 97,
+        "finite": true,
+        "pos": [
+          2.4499355647712946,
+          0.0151000497975474,
+          0.0007703956519637956
+        ],
+        "phase": 2.0370729880036196,
+        "feet": {
+          "R": {
+            "target": [
+              2.9479490288932464,
+              0.1037500031781383,
+              0.0011324794117537375
+            ],
+            "plant": true,
+            "error": 5.333279203322643e-9,
+            "gap": 3.242520298096796e-8
+          },
+          "L": {
+            "target": [
+              2.023493048539536,
+              0.10375002848755686,
+              0.0002579877834397487
+            ],
+            "plant": true,
+            "error": 2.635607637697305e-9,
+            "gap": 5.488940087172711e-8
+          }
+        }
+      },
+      {
+        "i": 98,
+        "finite": true,
+        "pos": [
+          2.4749353509396315,
+          0.015116897844927736,
+          0.0007959204170422396
+        ],
+        "phase": 2.05601222982083,
+        "feet": {
+          "R": {
+            "target": [
+              2.9479490288932464,
+              0.1037500031781383,
+              0.0011324794117537375
+            ],
+            "plant": true,
+            "error": 5.604657102869864e-9,
+            "gap": -6.875703270625699e-9
+          },
+          "L": {
+            "target": [
+              2.023493048539536,
+              0.10375002848755686,
+              0.0002579877834397487
+            ],
+            "plant": true,
+            "error": 7.376913924327316e-10,
+            "gap": 1.366796921475899e-8
+          }
+        }
+      },
+      {
+        "i": 99,
+        "finite": true,
+        "pos": [
+          2.4999359231442213,
+          0.015148118062279538,
+          0.0008198019070935203
+        ],
+        "phase": 2.0749520658896463,
+        "feet": {
+          "R": {
+            "target": [
+              2.9479490288932464,
+              0.1037500031781383,
+              0.0011324794117537375
+            ],
+            "plant": true,
+            "error": 2.7822390738573627e-9,
+            "gap": -2.18376065841408e-9
+          },
+          "L": {
+            "target": [
+              2.023493048539536,
+              0.10375002848755686,
+              0.0002579877834397487
+            ],
+            "plant": true,
+            "error": 9.798601049169853e-9,
+            "gap": 3.434973890048543e-8
+          }
+        }
+      },
+      {
+        "i": 100,
+        "finite": true,
+        "pos": [
+          2.5249359235167503,
+          0.015000214345855058,
+          0.0008198200220377316
+        ],
+        "phase": 2.0938914601112644,
+        "feet": {
+          "R": {
+            "target": [
+              2.9479490288932464,
+              0.1037500031781383,
+              0.0011324794117537375
+            ],
+            "plant": true,
+            "error": 7.449969449158819e-9,
+            "gap": 3.154776985481167e-8
+          },
+          "L": {
+            "target": [
+              2.023493048539536,
+              0.10375002848755686,
+              0.0002579877834397487
+            ],
+            "plant": true,
+            "error": 1.743383113073268e-9,
+            "gap": 5.176440355525447e-8
+          }
+        }
+      },
+      {
+        "i": 101,
+        "finite": true,
+        "pos": [
+          2.5499359108507633,
+          0.015100266497393024,
+          0.000819810813223576
+        ],
+        "phase": 2.112830844455215,
+        "feet": {
+          "R": {
+            "target": [
+              2.9479490288932464,
+              0.1037500031781383,
+              0.0011324794117537375
+            ],
+            "plant": true,
+            "error": 2.952308210898964e-9,
+            "gap": -7.949605237977941e-9
+          },
+          "L": {
+            "target": [
+              2.023493048539536,
+              0.10375002848755686,
+              0.0002579877834397487
+            ],
+            "plant": true,
+            "error": 8.889434698509041e-10,
+            "gap": 1.3927743305885976e-8
+          }
+        }
+      },
+      {
+        "i": 102,
+        "finite": true,
+        "pos": [
+          2.5749359112232924,
+          0.015135797792390805,
+          0.0008216004703998081
+        ],
+        "phase": 2.1317702387253563,
+        "feet": {
+          "R": {
+            "target": [
+              2.9479490288932464,
+              0.1037500031781383,
+              0.0011324794117537375
+            ],
+            "plant": true,
+            "error": 1.0743626091430313e-8,
+            "gap": -7.2407656398487674e-9
+          },
+          "L": {
+            "target": [
+              2.027227981651849,
+              0.1129797700652438,
+              0.0002597602766309519
+            ],
+            "plant": false,
+            "error": 0.19355226041793253,
+            "gap": 0.002455597564319581
+          }
+        }
+      },
+      {
+        "i": 103,
+        "finite": true,
+        "pos": [
+          2.5999359115958214,
+          0.01512832480184443,
+          0.0008232270425567734
+        ],
+        "phase": 2.150709632987056,
+        "feet": {
+          "R": {
+            "target": [
+              2.9479490288932464,
+              0.1037500031781383,
+              0.0011324794117537375
+            ],
+            "plant": true,
+            "error": 2.292796906365964e-9,
+            "gap": 7.0559344061971174e-9
+          },
+          "L": {
+            "target": [
+              2.048055472006379,
+              0.12761103414752395,
+              0.00026964441209821204
+            ],
+            "plant": false,
+            "error": 0.1727708684636259,
+            "gap": 0.016732665123463344
+          }
+        }
+      },
+      {
+        "i": 104,
+        "finite": true,
+        "pos": [
+          2.624936366453767,
+          0.015129169002102573,
+          0.0008240694254739722
+        ],
+        "phase": 2.169649371526554,
+        "feet": {
+          "R": {
+            "target": [
+              2.9479490288932464,
+              0.1037500031781383,
+              0.0011324794117537375
+            ],
+            "plant": true,
+            "error": 3.984351307779853e-9,
+            "gap": -1.158206128226702e-9
+          },
+          "L": {
+            "target": [
+              2.0854404214918407,
+              0.14165874289444827,
+              0.0002873862474735247
+            ],
+            "plant": false,
+            "error": 0.13669810195034565,
+            "gap": 0.029508116358023487
+          }
+        }
+      },
+      {
+        "i": 105,
+        "finite": true,
+        "pos": [
+          2.649936368688941,
+          0.015002738528346528,
+          0.0008240481099628383
+        ],
+        "phase": 2.1885887671592688,
+        "feet": {
+          "R": {
+            "target": [
+              2.9479490288932464,
+              0.1037500031781383,
+              0.0011324794117537375
+            ],
+            "plant": true,
+            "error": 1.4091444113013375e-8,
+            "gap": 1.792696592561871e-8
+          },
+          "L": {
+            "target": [
+              2.1374128847272353,
+              0.15477868505763415,
+              0.0003120509026211914
+            ],
+            "plant": false,
+            "error": 0.08862374979305489,
+            "gap": 0.04047757860133962
+          }
+        }
+      },
+      {
+        "i": 106,
+        "finite": true,
+        "pos": [
+          2.674935007467866,
+          0.015282364522499849,
+          0.0008256117000664531
+        ],
+        "phase": 2.20752712990762,
+        "feet": {
+          "R": {
+            "target": [
+              2.9479490288932464,
+              0.1037500031781383,
+              0.0011324794117537375
+            ],
+            "plant": true,
+            "error": 1.845216788389649e-9,
+            "gap": -1.4751953478220337e-8
+          },
+          "L": {
+            "target": [
+              2.2020010026184704,
+              0.1666495103063648,
+              0.0003427025892116251
+            ],
+            "plant": false,
+            "error": 0.03314280274537223,
+            "gap": 0.05007511645955927
+          }
+        }
+      },
+      {
+        "i": 107,
+        "finite": true,
+        "pos": [
+          2.699935007840395,
+          0.015001635085718591,
+          0.0008256994962971831
+        ],
+        "phase": 2.2264665241293495,
+        "feet": {
+          "R": {
+            "target": [
+              2.9479490288932464,
+              0.1037500031781383,
+              0.0011324794117537375
+            ],
+            "plant": true,
+            "error": 3.8181682891740217e-10,
+            "gap": -2.4924792271785456e-8
+          },
+          "L": {
+            "target": [
+              2.2772433427546006,
+              0.1769820689576721,
+              0.00037841046712296534
+            ],
+            "plant": false,
+            "error": 0.03989280323499001,
+            "gap": 0.057987754305645636
+          }
+        }
+      },
+      {
+        "i": 108,
+        "finite": true,
+        "pos": [
+          2.7249329891055822,
+          0.01532536904087465,
+          0.0008261797210389332
+        ],
+        "phase": 2.2454043887276827,
+        "feet": {
+          "R": {
+            "target": [
+              2.9479490288932464,
+              0.1037500031781383,
+              0.0011324794117537375
+            ],
+            "plant": true,
+            "error": 1.4587954799154538e-9,
+            "gap": 1.4497144443237353e-8
+          },
+          "L": {
+            "target": [
+              2.3611610767635014,
+              0.18552226150131756,
+              0.00041823544060418333
+            ],
+            "plant": false,
+            "error": 0.10590968394507123,
+            "gap": 0.06409355656731498
+          }
+        }
+      },
+      {
+        "i": 109,
+        "finite": true,
+        "pos": [
+          2.74993241019547,
+          0.015008588223645349,
+          0.0008263029510198194
+        ],
+        "phase": 2.2643433440990397,
+        "feet": {
+          "R": {
+            "target": [
+              2.9479490288932464,
+              0.1037500031781383,
+              0.0011324794117537375
+            ],
+            "plant": true,
+            "error": 4.944531170143444e-9,
+            "gap": 5.217578730176697e-10
+          },
+          "L": {
+            "target": [
+              2.4517971698662406,
+              0.1920623864579139,
+              0.0004612487565246885
+            ],
+            "plant": false,
+            "error": 0.17370710375383996,
+            "gap": 0.06835135699123109
+          }
+        }
+      },
+      {
+        "i": 110,
+        "finite": true,
+        "pos": [
+          2.774932410567999,
+          0.015100094100853313,
+          0.0008257827629671866
+        ],
+        "phase": 2.2832827383247527,
+        "feet": {
+          "R": {
+            "target": [
+              2.9479490288932464,
+              0.1037500031781383,
+              0.0011324794117537375
+            ],
+            "plant": true,
+            "error": 3.956513094758688e-9,
+            "gap": -1.3203557566732194e-8
+          },
+          "L": {
+            "target": [
+              2.5471808458790477,
+              0.19644196506149061,
+              0.0005065151404733805
+            ],
+            "plant": false,
+            "error": 0.23880245448539741,
+            "gap": 0.07055649720133507
+          }
+        }
+      },
+      {
+        "i": 111,
+        "finite": true,
+        "pos": [
+          2.7999327275902033,
+          0.015112848170610961,
+          0.0008681494381557187
+        ],
+        "phase": 2.302222399628106,
+        "feet": {
+          "R": {
+            "target": [
+              2.9479490288932464,
+              0.1037500031781383,
+              0.0011324794117537375
+            ],
+            "plant": true,
+            "error": 2.1743363751428246e-9,
+            "gap": -1.3841154486438079e-8
+          },
+          "L": {
+            "target": [
+              2.6453429086630864,
+              0.19855368104000998,
+              0.0005531000678836149
+            ],
+            "plant": false,
+            "error": 0.2983028348782505,
+            "gap": 0.07069465834323164
+          }
+        }
+      },
+      {
+        "i": 112,
+        "finite": true,
+        "pos": [
+          2.8249327279627323,
+          0.015049445032127552,
+          0.0008681466807758387
+        ],
+        "phase": 2.3211617938497193,
+        "feet": {
+          "R": {
+            "target": [
+              2.9479490288932464,
+              0.1037500031781383,
+              0.0011324794117537375
+            ],
+            "plant": true,
+            "error": 2.77046529290957e-10,
+            "gap": 2.78794621416667e-8
+          },
+          "L": {
+            "target": [
+              2.7443120059391806,
+              0.19834580799954354,
+              0.0006000679909457707
+            ],
+            "plant": false,
+            "error": 0.34982618079782024,
+            "gap": 0.06903375576139816
+          }
+        }
+      },
+      {
+        "i": 113,
+        "finite": true,
+        "pos": [
+          2.8499328456819057,
+          0.015102972091335688,
+          0.0008681679956812349
+        ],
+        "phase": 2.3401012769703122,
+        "feet": {
+          "R": {
+            "target": [
+              2.9479490288932464,
+              0.1037500031781383,
+              0.0011324794117537375
+            ],
+            "plant": true,
+            "error": 2.489787966470465e-9,
+            "gap": 2.7978335939704557e-8
+          },
+          "L": {
+            "target": [
+              2.842121399648165,
+              0.19582346067047257,
+              0.0006464855516280115
+            ],
+            "plant": false,
+            "error": 0.3915899744715685,
+            "gap": 0.0659537360380232
+          }
+        }
+      },
+      {
+        "i": 114,
+        "finite": true,
+        "pos": [
+          2.8749328460544348,
+          0.015100006243665122,
+          0.0008680545832622233
+        ],
+        "phase": 2.35904067119212,
+        "feet": {
+          "R": {
+            "target": [
+              2.9479490288932464,
+              0.1037500031781383,
+              0.0011324794117537375
+            ],
+            "plant": true,
+            "error": 1.3517111180029487e-9,
+            "gap": 1.2455543776934697e-8
+          },
+          "L": {
+            "target": [
+              2.9368016032284068,
+              0.1910483764435083,
+              0.0006914180875372807
+            ],
+            "plant": false,
+            "error": 0.4224151021725423,
+            "gap": 0.06181881438496507
+          }
+        }
+      },
+      {
+        "i": 115,
+        "finite": true,
+        "pos": [
+          2.89993298612535,
+          0.01511047705243982,
+          0.0009305859528840887
+        ],
+        "phase": 2.377980230490452,
+        "feet": {
+          "R": {
+            "target": [
+              2.9479490288932464,
+              0.1037500031781383,
+              0.0011324794117537375
+            ],
+            "plant": true,
+            "error": 2.7427396925358976e-9,
+            "gap": 3.325414017762984e-8
+          },
+          "L": {
+            "target": [
+              3.0263852722599687,
+              0.18413731083042786,
+              0.0007339319528801385
+            ],
+            "plant": false,
+            "error": 0.44160757616476104,
+            "gap": 0.05689000248409938
+          }
+        }
+      },
+      {
+        "i": 116,
+        "finite": true,
+        "pos": [
+          2.924932986497879,
+          0.015018756287099679,
+          0.0009304917338159857
+        ],
+        "phase": 2.3969196247121993,
+        "feet": {
+          "R": {
+            "target": [
+              2.9479490288932464,
+              0.1037500031781383,
+              0.0011324794117537375
+            ],
+            "plant": true,
+            "error": 2.8347477954592876e-10,
+            "gap": 1.9695063482871866e-8
+          },
+          "L": {
+            "target": [
+              3.108902270169634,
+              0.17525947573718587,
+              0.000773092176786489
+            ],
+            "plant": false,
+            "error": 0.4487608794890941,
+            "gap": 0.0512868581581173
+          }
+        }
+      },
+      {
+        "i": 117,
+        "finite": true,
+        "pos": [
+          2.9499331787228584,
+          0.015107793541028515,
+          0.000990530302151571
+        ],
+        "phase": 2.41585921889168,
+        "feet": {
+          "R": {
+            "target": [
+              2.9479490288932464,
+              0.1037500031781383,
+              0.0011324794117537375
+            ],
+            "plant": true,
+            "error": 1.5783904873442598e-9,
+            "gap": 3.357747631327346e-8
+          },
+          "L": {
+            "target": [
+              3.182385563372957,
+              0.16463191171896807,
+              0.0008079652609765902
+            ],
+            "plant": false,
+            "error": 0.4435915740606932,
+            "gap": 0.04496221419765935
+          }
+        }
+      },
+      {
+        "i": 118,
+        "finite": true,
+        "pos": [
+          2.974933223798871,
+          0.015108740761570517,
+          0.0010572929030605582
+        ],
+        "phase": 2.4347987145133394,
+        "feet": {
+          "R": {
+            "target": [
+              2.9479490288932464,
+              0.1037500031781383,
+              0.0011324794117537375
+            ],
+            "plant": true,
+            "error": 1.210357532934461e-9,
+            "gap": -2.0009162202128117e-8
+          },
+          "L": {
+            "target": [
+              3.2448653238108474,
+              0.15251479690866881,
+              0.000837616380992389
+            ],
+            "plant": false,
+            "error": 0.4258068886251132,
+            "gap": 0.03769771384695221
+          }
+        }
+      },
+      {
+        "i": 119,
+        "finite": true,
+        "pos": [
+          2.999933337792754,
+          0.015100025575884503,
+          0.0010573573425294303
+        ],
+        "phase": 2.4537381948117987,
+        "feet": {
+          "R": {
+            "target": [
+              2.9479490288932464,
+              0.1037500031781383,
+              0.0011324794117537375
+            ],
+            "plant": true,
+            "error": 3.0783588184653544e-9,
+            "gap": -5.596739169333453e-9
+          },
+          "L": {
+            "target": [
+              3.2943733325361846,
+              0.13920456177267615,
+              0.0008611114760146802
+            ],
+            "plant": false,
+            "error": 0.39503887086923406,
+            "gap": 0.02898474152828502
+          }
+        }
+      },
+      {
+        "i": 120,
+        "finite": true,
+        "pos": [
+          3.024933435022831,
+          0.015099610999095604,
+          0.0010573573425294303
+        ],
+        "phase": 2.4726776624103417,
+        "feet": {
+          "R": {
+            "target": [
+              2.9479490288932464,
+              0.1037500031781383,
+              0.0011324794117537375
+            ],
+            "plant": true,
+            "error": 4.235902546744448e-9,
+            "gap": -7.323089287747386e-9
+          },
+          "L": {
+            "target": [
+              3.328941039586118,
+              0.12502686869446905,
+              0.0008775163281335909
+            ],
+            "plant": false,
+            "error": 0.3507007944934636,
+            "gap": 0.018613058096802373
+          }
+        }
+      },
+      {
+        "i": 121,
+        "finite": true,
+        "pos": [
+          3.04993343539536,
+          0.015100025612264291,
+          0.0010573573425294303
+        ],
+        "phase": 2.4916170566319544,
+        "feet": {
+          "R": {
+            "target": [
+              2.9479490288932464,
+              0.1037500031781383,
+              0.0011324794117537375
+            ],
+            "plant": true,
+            "error": 5.785967386457203e-9,
+            "gap": -3.006259949311918e-9
+          },
+          "L": {
+            "target": [
+              3.346599866070144,
+              0.11032865217371406,
+              0.000885896705711007
+            ],
+            "plant": false,
+            "error": 0.2920068919057145,
+            "gap": 0.008635291263809311
+          }
+        }
+      },
+      {
+        "i": 122,
+        "finite": true,
+        "pos": [
+          3.074933435767889,
+          0.015100022985643592,
+          0.0010573573425294303
+        ],
+        "phase": 2.510556450853567,
+        "feet": {
+          "R": {
+            "target": [
+              2.9479490288932464,
+              0.1037500031781383,
+              0.0011324794117537375
+            ],
+            "plant": true,
+            "error": 3.6831984869050474e-9,
+            "gap": -3.006669233029946e-9
+          },
+          "L": {
+            "target": [
+              3.348505908889551,
+              0.10374997311206245,
+              0.0008868012595056661
+            ],
+            "plant": true,
+            "error": 9.820375358828955e-9,
+            "gap": -2.6702086750041154e-8
+          }
+        }
+      },
+      {
+        "i": 123,
+        "finite": true,
+        "pos": [
+          3.099933436140418,
+          0.015117783707319178,
+          0.0010588070713997144
+        ],
+        "phase": 2.529495845107024,
+        "feet": {
+          "R": {
+            "target": [
+              2.9479490288932464,
+              0.1037500031781383,
+              0.0011324794117537375
+            ],
+            "plant": true,
+            "error": 4.088873724666166e-9,
+            "gap": -7.60016870271496e-9
+          },
+          "L": {
+            "target": [
+              3.348505908889551,
+              0.10374997311206245,
+              0.0008868012595056661
+            ],
+            "plant": true,
+            "error": 5.266964322056439e-9,
+            "gap": -2.9607470850012696e-8
+          }
+        }
+      },
+      {
+        "i": 124,
+        "finite": true,
+        "pos": [
+          3.124933432787657,
+          0.015055097112417572,
+          0.0010587984055894228
+        ],
+        "phase": 2.5484352365064487,
+        "feet": {
+          "R": {
+            "target": [
+              2.9479490288932464,
+              0.1037500031781383,
+              0.0011324794117537375
+            ],
+            "plant": true,
+            "error": 7.996765267574408e-9,
+            "gap": -1.4923650135112432e-8
+          },
+          "L": {
+            "target": [
+              3.348505908889551,
+              0.10374997311206245,
+              0.0008868012595056661
+            ],
+            "plant": true,
+            "error": 5.5083706354909694e-9,
+            "gap": -4.655577560963575e-8
+          }
+        }
+      },
+      {
+        "i": 125,
+        "finite": true,
+        "pos": [
+          3.149933433160186,
+          0.015100814522520524,
+          0.001058802985138163
+        ],
+        "phase": 2.567374630728062,
+        "feet": {
+          "R": {
+            "target": [
+              2.9479490288932464,
+              0.1037500031781383,
+              0.0011324794117537375
+            ],
+            "plant": true,
+            "error": 3.179346059359455e-9,
+            "gap": -1.9530339942508412e-8
+          },
+          "L": {
+            "target": [
+              3.348505908889551,
+              0.10374997311206245,
+              0.0008868012595056661
+            ],
+            "plant": true,
+            "error": 1.1692936181105945e-10,
+            "gap": -5.2319658203070496e-8
+          }
+        }
+      },
+      {
+        "i": 126,
+        "finite": true,
+        "pos": [
+          3.1749326456338167,
+          0.015122115870690324,
+          0.0010875322038221835
+        ],
+        "phase": 2.586313440562536,
+        "feet": {
+          "R": {
+            "target": [
+              2.9479490288932464,
+              0.1037500031781383,
+              0.0011324794117537375
+            ],
+            "plant": true,
+            "error": 1.0010371146611602e-8,
+            "gap": 2.3552970809803675e-8
+          },
+          "L": {
+            "target": [
+              3.348505908889551,
+              0.10374997311206245,
+              0.0008868012595056661
+            ],
+            "plant": true,
+            "error": 1.264895184065822e-9,
+            "gap": -1.4045416038555025e-8
+          }
+        }
+      },
+      {
+        "i": 127,
+        "finite": true,
+        "pos": [
+          3.199932100251317,
+          0.015118721389080748,
+          0.0010875322038221835
+        ],
+        "phase": 2.6052524213333697,
+        "feet": {
+          "R": {
+            "target": [
+              2.9479490288932464,
+              0.1037500031781383,
+              0.0011324794117537375
+            ],
+            "plant": true,
+            "error": 5.348169324243161e-9,
+            "gap": 1.671130846203628e-8
+          },
+          "L": {
+            "target": [
+              3.348505908889551,
+              0.10374997311206245,
+              0.0008868012595056661
+            ],
+            "plant": true,
+            "error": 4.8900668038744065e-9,
+            "gap": -1.379217566543911e-8
+          }
+        }
+      },
+      {
+        "i": 128,
+        "finite": true,
+        "pos": [
+          3.224931985139847,
+          0.015000005962428987,
+          0.0010875322038221835
+        ],
+        "phase": 2.6241917280671045,
+        "feet": {
+          "R": {
+            "target": [
+              2.948429154450618,
+              0.10704151980226287,
+              0.0011324631248916667
+            ],
+            "plant": false,
+            "error": 0.18545180687350488,
+            "gap": 0.000050474577161521705
+          },
+          "L": {
+            "target": [
+              3.348505908889551,
+              0.10374997311206245,
+              0.0008868012595056661
+            ],
+            "plant": true,
+            "error": 4.740757144673315e-9,
+            "gap": -3.067721481009311e-8
+          }
+        }
+      },
+      {
+        "i": 129,
+        "finite": true,
+        "pos": [
+          3.2499319836497307,
+          0.01510001713577367,
+          0.0010875137878139096
+        ],
+        "phase": 2.643131120877628,
+        "feet": {
+          "R": {
+            "target": [
+              2.9620801265106413,
+              0.12180661654801059,
+              0.0011320000553973217
+            ],
+            "plant": false,
+            "error": 0.17238348664228748,
+            "gap": 0.011355896318124906
+          },
+          "L": {
+            "target": [
+              3.348505908889551,
+              0.10374997311206245,
+              0.0008868012595056661
+            ],
+            "plant": true,
+            "error": 3.681808997725449e-9,
+            "gap": -2.644640011151278e-8
+          }
+        }
+      },
+      {
+        "i": 130,
+        "finite": true,
+        "pos": [
+          3.274932349100709,
+          0.015146117595941179,
+          0.0010823873254304228
+        ],
+        "phase": 2.662070792072009,
+        "feet": {
+          "R": {
+            "target": [
+              2.9930760221557917,
+              0.1361301315160841,
+              0.0011309486098548315
+            ],
+            "plant": false,
+            "error": 0.14296030745291094,
+            "gap": 0.021335595222656448
+          },
+          "L": {
+            "target": [
+              3.348505908889551,
+              0.10374997311206245,
+              0.0008868012595056661
+            ],
+            "plant": true,
+            "error": 4.480094020556842e-9,
+            "gap": -5.1483465587920385e-8
+          }
+        }
+      },
+      {
+        "i": 131,
+        "finite": true,
+        "pos": [
+          3.299931151792407,
+          0.015161500178146527,
+          0.0010824252853518512
+        ],
+        "phase": 2.6810092789596807,
+        "feet": {
+          "R": {
+            "target": [
+              3.0394447913323512,
+              0.14966057099640473,
+              0.0011293756843223802
+            ],
+            "plant": false,
+            "error": 0.10018316182156703,
+            "gap": 0.029975524910598975
+          },
+          "L": {
+            "target": [
+              3.348505908889551,
+              0.10374997311206245,
+              0.0008868012595056661
+            ],
+            "plant": true,
+            "error": 1.2409273501121991e-9,
+            "gap": 3.630227368711658e-10
+          }
+        }
+      },
+      {
+        "i": 132,
+        "finite": true,
+        "pos": [
+          3.324931152164936,
+          0.015049707752405085,
+          0.0010824211664444139
+        ],
+        "phase": 2.699948673181294,
+        "feet": {
+          "R": {
+            "target": [
+              3.099222726097828,
+              0.1620683957587037,
+              0.0011273478918763092
+            ],
+            "plant": false,
+            "error": 0.04874074824872788,
+            "gap": 0.03781738287234111
+          },
+          "L": {
+            "target": [
+              3.348505908889551,
+              0.10374997311206245,
+              0.0008868012595056661
+            ],
+            "plant": true,
+            "error": 1.2841109438975304e-9,
+            "gap": -2.7954822109932387e-8
+          }
+        }
+      },
+      {
+        "i": 133,
+        "finite": true,
+        "pos": [
+          3.3499310482293367,
+          0.015105145259803977,
+          0.001117535072495679
+        ],
+        "phase": 2.7188880070632777,
+        "feet": {
+          "R": {
+            "target": [
+              3.17043915371178,
+              0.17304932361526643,
+              0.0011249320818534593
+            ],
+            "plant": false,
+            "error": 0.031332535140288685,
+            "gap": 0.044603487290557256
+          },
+          "L": {
+            "target": [
+              3.348505908889551,
+              0.10374997311206245,
+              0.0008868012595056661
+            ],
+            "plant": true,
+            "error": 1.3812896164694098e-9,
+            "gap": -3.059841634234228e-8
+          }
+        }
+      },
+      {
+        "i": 134,
+        "finite": true,
+        "pos": [
+          3.37493022531271,
+          0.01515242547284288,
+          0.001117535072495679
+        ],
+        "phase": 2.7378267775809846,
+        "feet": {
+          "R": {
+            "target": [
+              3.2511231809187824,
+              0.18233448092983345,
+              0.0011221951110709988
+            ],
+            "plant": false,
+            "error": 0.09029952816874573,
+            "gap": 0.05039201277420592
+          },
+          "L": {
+            "target": [
+              3.348505908889551,
+              0.10374997311206245,
+              0.0008868012595056661
+            ],
+            "plant": true,
+            "error": 5.081504560097676e-9,
+            "gap": -4.064808632742167e-8
+          }
+        }
+      },
+      {
+        "i": 135,
+        "finite": true,
+        "pos": [
+          3.3999303840100765,
+          0.015010201048789897,
+          0.001111946687302856
+        ],
+        "phase": 2.756766292218836,
+        "feet": {
+          "R": {
+            "target": [
+              3.339311985877892,
+              0.18969730277894753,
+              0.001119203562546854
+            ],
+            "plant": false,
+            "error": 0.1565522405869732,
+            "gap": 0.05506326212234526
+          },
+          "L": {
+            "target": [
+              3.348505908889551,
+              0.10374997311206245,
+              0.0008868012595056661
+            ],
+            "plant": true,
+            "error": 8.003218789286358e-9,
+            "gap": -3.003615010876981e-8
+          }
+        }
+      },
+      {
+        "i": 136,
+        "finite": true,
+        "pos": [
+          3.4249303843826056,
+          0.015102985799239833,
+          0.0011128584305597489
+        ],
+        "phase": 2.775705686453044,
+        "feet": {
+          "R": {
+            "target": [
+              3.4330333640154027,
+              0.19495721594437343,
+              0.0011160243375808497
+            ],
+            "plant": false,
+            "error": 0.22139210361187145,
+            "gap": 0.058215943727744926
+          },
+          "L": {
+            "target": [
+              3.348505908889551,
+              0.10374997311206245,
+              0.0008868012595056661
+            ],
+            "plant": true,
+            "error": 3.2773060875403527e-9,
+            "gap": -2.1466375552114947e-8
+          }
+        }
+      },
+      {
+        "i": 137,
+        "finite": true,
+        "pos": [
+          3.4499303847551346,
+          0.01510879146771913,
+          0.0011140398869147194
+        ],
+        "phase": 2.794645080695806,
+        "feet": {
+          "R": {
+            "target": [
+              3.530319293451747,
+              0.19798558030207922,
+              0.0011127241955870863
+            ],
+            "plant": false,
+            "error": 0.2814604301476062,
+            "gap": 0.059708098167694915
+          },
+          "L": {
+            "target": [
+              3.348505908889551,
+              0.10374997311206245,
+              0.0008868012595056661
+            ],
+            "plant": true,
+            "error": 4.646777461892114e-9,
+            "gap": -3.7691111329229976e-8
+          }
+        }
+      },
+      {
+        "i": 138,
+        "finite": true,
+        "pos": [
+          3.474930265918374,
+          0.015138157443652746,
+          0.001168226046019294
+        ],
+        "phase": 2.813584429094478,
+        "feet": {
+          "R": {
+            "target": [
+              3.6292009736446027,
+              0.19870830252378613,
+              0.0011093699223935325
+            ],
+            "plant": false,
+            "error": 0.3342498600365673,
+            "gap": 0.059646417641411056
+          },
+          "L": {
+            "target": [
+              3.348505908889551,
+              0.10374997311206245,
+              0.0008868012595056661
+            ],
+            "plant": true,
+            "error": 4.551207224216372e-9,
+            "gap": -1.8731429893281693e-8
+          }
+        }
+      },
+      {
+        "i": 139,
+        "finite": true,
+        "pos": [
+          3.49992972612381,
+          0.015169861002868858,
+          0.0012677136123502297
+        ],
+        "phase": 2.832523564067541,
+        "feet": {
+          "R": {
+            "target": [
+              3.7277089894530606,
+              0.19710774110333912,
+              0.0011060283246766241
+            ],
+            "plant": false,
+            "error": 0.377911828167079,
+            "gap": 0.058239962381752566
+          },
+          "L": {
+            "target": [
+              3.348505908889551,
+              0.10374997311206245,
+              0.0008868012595056661
+            ],
+            "plant": true,
+            "error": 1.9311459309838848e-9,
+            "gap": -1.5229403613203907e-8
+          }
+        }
+      },
+      {
+        "i": 140,
+        "finite": true,
+        "pos": [
+          3.524929726496339,
+          0.01500072957824159,
+          0.001267727387165296
+        ],
+        "phase": 2.8514629582891566,
+        "feet": {
+          "R": {
+            "target": [
+              3.823877261284446,
+              0.19322300838368417,
+              0.0011027660959640325
+            ],
+            "plant": false,
+            "error": 0.4112098828773945,
+            "gap": 0.055691667839923756
+          },
+          "L": {
+            "target": [
+              3.348505908889551,
+              0.10374997311206245,
+              0.0008868012595056661
+            ],
+            "plant": true,
+            "error": 3.5681871210249155e-9,
+            "gap": -4.010535346876676e-8
+          }
+        }
+      },
+      {
+        "i": 141,
+        "finite": true,
+        "pos": [
+          3.549929730594158,
+          0.015099270535210964,
+          0.0012677217713721323
+        ],
+        "phase": 2.87040235533296,
+        "feet": {
+          "R": {
+            "target": [
+              3.915735886138175,
+              0.18714915633536863,
+              0.0010996500594814135
+            ],
+            "plant": false,
+            "error": 0.4333707532811216,
+            "gap": 0.052134295689073476
+          },
+          "L": {
+            "target": [
+              3.348505908889551,
+              0.10374997311206245,
+              0.0008868012595056661
+            ],
+            "plant": true,
+            "error": 4.658758430338672e-9,
+            "gap": 5.98533690665537e-9
+          }
+        }
+      },
+      {
+        "i": 142,
+        "finite": true,
+        "pos": [
+          3.574929730966687,
+          0.015184514708744247,
+          0.001270474423707535
+        ],
+        "phase": 2.889341749669377,
+        "feet": {
+          "R": {
+            "target": [
+              4.001316276088725,
+              0.17903479446147033,
+              0.0010967469938443293
+            ],
+            "plant": false,
+            "error": 0.443908347860089,
+            "gap": 0.04759222120291724
+          },
+          "L": {
+            "target": [
+              3.348505908889551,
+              0.10374997311206245,
+              0.0008868012595056661
+            ],
+            "plant": true,
+            "error": 3.41243375618928e-9,
+            "gap": -4.749428780814746e-9
+          }
+        }
+      },
+      {
+        "i": 143,
+        "finite": true,
+        "pos": [
+          3.5999302957206964,
+          0.015003109049212073,
+          0.0013136771355297672
+        ],
+        "phase": 2.9082815997319713,
+        "feet": {
+          "R": {
+            "target": [
+              4.078651629602472,
+              0.1690781946892181,
+              0.0010941236170701964
+            ],
+            "plant": false,
+            "error": 0.4424671714919307,
+            "gap": 0.04196041584641132
+          },
+          "L": {
+            "target": [
+              3.348505908889551,
+              0.10374997311206245,
+              0.0008868012595056661
+            ],
+            "plant": true,
+            "error": 4.89388373777609e-10,
+            "gap": -3.8419114542498356e-8
+          }
+        }
+      },
+      {
+        "i": 144,
+        "finite": true,
+        "pos": [
+          3.624909983947873,
+          0.01518318562411878,
+          0.0012684611007520719
+        ],
+        "phase": 2.927205636966962,
+        "feet": {
+          "R": {
+            "target": [
+              4.145719871428584,
+              0.15753338414508727,
+              0.0010918485221764066
+            ],
+            "plant": false,
+            "error": 0.428690449622234,
+            "gap": 0.034944514726744605
+          },
+          "L": {
+            "target": [
+              3.348505908889551,
+              0.10374997311206245,
+              0.0008868012595056661
+            ],
+            "plant": true,
+            "error": 2.7467445267311965e-9,
+            "gap": -4.717068328996543e-8
+          }
+        }
+      },
+      {
+        "i": 145,
+        "finite": true,
+        "pos": [
+          3.6499096006155014,
+          0.015030169674355422,
+          0.0013297881756975105
+        ],
+        "phase": 2.946144797488834,
+        "feet": {
+          "R": {
+            "target": [
+              4.200663997111695,
+              0.1446640756790909,
+              0.001089984702634074
+            ],
+            "plant": false,
+            "error": 0.4023589414691964,
+            "gap": 0.025507704803203093
+          },
+          "L": {
+            "target": [
+              3.348505908889551,
+              0.10374997311206245,
+              0.0008868012595056661
+            ],
+            "plant": true,
+            "error": 3.962409254145614e-10,
+            "gap": -3.920931944401129e-8
+          }
+        }
+      },
+      {
+        "i": 146,
+        "finite": true,
+        "pos": [
+          3.674920568242669,
+          0.015051957835021314,
+          0.001318654987388479
+        ],
+        "phase": 2.9650925021138628,
+        "feet": {
+          "R": {
+            "target": [
+              4.241472494404244,
+              0.13078732253950154,
+              0.0010886003931414496
+            ],
+            "plant": false,
+            "error": 0.36255877570184336,
+            "gap": 0.01511975244403753
+          },
+          "L": {
+            "target": [
+              3.348505908889551,
+              0.10374997311206245,
+              0.0008868012595056661
+            ],
+            "plant": true,
+            "error": 4.929025715137354e-9,
+            "gap": -7.316678971025503e-9
+          }
+        }
+      },
+      {
+        "i": 147,
+        "finite": true,
+        "pos": [
+          3.6999213974922895,
+          0.015141795655290481,
+          0.0013195625191164684
+        ],
+        "phase": 2.9840325242851446,
+        "feet": {
+          "R": {
+            "target": [
+              4.266140057321156,
+              0.11625445464568185,
+              0.0010877636178673936
+            ],
+            "plant": false,
+            "error": 0.3087031063333867,
+            "gap": 0.006537359248550437
+          },
+          "L": {
+            "target": [
+              3.348505908889551,
+              0.10374997311206245,
+              0.0008868012595056661
+            ],
+            "plant": true,
+            "error": 1.0792435867843945e-9,
+            "gap": -2.6131961081143906e-8
+          }
+        }
+      },
+      {
+        "i": 148,
+        "finite": true,
+        "pos": [
+          3.7249213978648186,
+          0.015009331128021587,
+          0.0013196711928336047
+        ],
+        "phase": 3.0029719185069363,
+        "feet": {
+          "R": {
+            "target": [
+              4.272961985139847,
+              0.10375002026754375,
+              0.0010875322038221835
+            ],
+            "plant": true,
+            "error": 4.64412437316393e-9,
+            "gap": 4.908381757984248e-8
+          },
+          "L": {
+            "target": [
+              3.348505908889551,
+              0.10374997311206245,
+              0.0008868012595056661
+            ],
+            "plant": true,
+            "error": 1.3144804884110132e-9,
+            "gap": -1.3221097411308946e-9
+          }
+        }
+      },
+      {
+        "i": 149,
+        "finite": true,
+        "pos": [
+          3.7499468587338924,
+          0.015113383986681585,
+          0.0012831138932247743
+        ],
+        "phase": 3.021930621211928,
+        "feet": {
+          "R": {
+            "target": [
+              4.272961985139847,
+              0.10375002026754375,
+              0.0010875322038221835
+            ],
+            "plant": true,
+            "error": 6.484566846317882e-10,
+            "gap": 1.831511511896089e-9
+          },
+          "L": {
+            "target": [
+              3.348505908889551,
+              0.10374997311206245,
+              0.0008868012595056661
+            ],
+            "plant": true,
+            "error": 4.450358862501014e-9,
+            "gap": -4.151217140868635e-8
+          }
+        }
+      },
+      {
+        "i": 150,
+        "finite": true,
+        "pos": [
+          3.7749473080039024,
+          0.015143236898802571,
+          0.0013885000056339525
+        ],
+        "phase": 3.0408705237798714,
+        "feet": {
+          "R": {
+            "target": [
+              4.272961985139847,
+              0.10375002026754375,
+              0.0010875322038221835
+            ],
+            "plant": true,
+            "error": 7.510121603325494e-10,
+            "gap": 1.025130742793312e-8
+          },
+          "L": {
+            "target": [
+              3.348505908889551,
+              0.10374997311206245,
+              0.0008868012595056661
+            ],
+            "plant": true,
+            "error": 2.8763026322718805e-9,
+            "gap": -3.404082286884158e-8
+          }
+        }
+      },
+      {
+        "i": 151,
+        "finite": true,
+        "pos": [
+          3.799947790801525,
+          0.015015036708427944,
+          0.0013885197872005595
+        ],
+        "phase": 3.0598102834750462,
+        "feet": {
+          "R": {
+            "target": [
+              4.272961985139847,
+              0.10375002026754375,
+              0.0010875322038221835
+            ],
+            "plant": true,
+            "error": 3.489788238083471e-9,
+            "gap": 4.562812253028348e-9
+          },
+          "L": {
+            "target": [
+              3.348505908889551,
+              0.10374997311206245,
+              0.0008868012595056661
+            ],
+            "plant": true,
+            "error": 2.1066446458025004e-9,
+            "gap": -4.378304029051261e-8
+          }
+        }
+      },
+      {
+        "i": 152,
+        "finite": true,
+        "pos": [
+          3.8249563071876764,
+          0.015058049099388883,
+          0.0014213331300416687
+        ],
+        "phase": 3.0787561455304386,
+        "feet": {
+          "R": {
+            "target": [
+              4.272961985139847,
+              0.10375002026754375,
+              0.0010875322038221835
+            ],
+            "plant": true,
+            "error": 1.0021560853027142e-8,
+            "gap": 3.314274600596523e-8
+          },
+          "L": {
+            "target": [
+              3.348505908889551,
+              0.10374997311206245,
+              0.0008868012595056661
+            ],
+            "plant": true,
+            "error": 2.078503992873722e-9,
+            "gap": -2.1731700758365058e-8
+          }
+        }
+      },
+      {
+        "i": 153,
+        "finite": true,
+        "pos": [
+          3.8499566558748484,
+          0.015105899471018348,
+          0.0014402139999438734
+        ],
+        "phase": 3.0976958090280267,
+        "feet": {
+          "R": {
+            "target": [
+              4.272961985139847,
+              0.10375002026754375,
+              0.0010875322038221835
+            ],
+            "plant": true,
+            "error": 8.279113026772436e-10,
+            "gap": 3.667678628860305e-8
+          },
+          "L": {
+            "target": [
+              3.348505908889551,
+              0.10374997311206245,
+              0.0008868012595056661
+            ],
+            "plant": true,
+            "error": 7.15694969206426e-9,
+            "gap": -5.008806300277335e-9
+          }
+        }
+      },
+      {
+        "i": 154,
+        "finite": true,
+        "pos": [
+          3.8749566562473774,
+          0.01510001817623561,
+          0.0014401244988226924
+        ],
+        "phase": 3.116635203249761,
+        "feet": {
+          "R": {
+            "target": [
+              4.272961985139847,
+              0.10375002026754375,
+              0.0010875322038221835
+            ],
+            "plant": true,
+            "error": 4.23309429761989e-9,
+            "gap": 2.0039694806350816e-8
+          },
+          "L": {
+            "target": [
+              3.348505908889551,
+              0.10374997311206245,
+              0.0008868012595056661
+            ],
+            "plant": true,
+            "error": 1.3058635143360691e-8,
+            "gap": -1.9964436034913824e-8
+          }
+        }
+      },
+      {
+        "i": 155,
+        "finite": true,
+        "pos": [
+          3.8999566566199064,
+          0.015105980321459357,
+          0.0014413494734759613
+        ],
+        "phase": 3.13557459749411,
+        "feet": {
+          "R": {
+            "target": [
+              4.272961985139847,
+              0.10375002026754375,
+              0.0010875322038221835
+            ],
+            "plant": true,
+            "error": 6.870427774238405e-10,
+            "gap": 1.4020419783489224e-8
+          },
+          "L": {
+            "target": [
+              3.3550009015994657,
+              0.11594846121836837,
+              0.0008897383055430266
+            ],
+            "plant": false,
+            "error": 0.18987514301439878,
+            "gap": 0.008057565529548075
+          }
+        }
+      },
+      {
+        "i": 156,
+        "finite": true,
+        "pos": [
+          3.9249567072838545,
+          0.015106182054660168,
+          0.001513860750288254
+        ],
+        "phase": 3.154514109479882,
+        "feet": {
+          "R": {
+            "target": [
+              4.272961985139847,
+              0.10375002026754375,
+              0.0010875322038221835
+            ],
+            "plant": true,
+            "error": 6.309963513250843e-10,
+            "gap": -8.855431485321752e-9
+          },
+          "L": {
+            "target": [
+              3.379312472809789,
+              0.1304909450066901,
+              0.0009007320367255555
+            ],
+            "plant": false,
+            "error": 0.16586421002298948,
+            "gap": 0.021365713374408304
+          }
+        }
+      },
+      {
+        "i": 157,
+        "finite": true,
+        "pos": [
+          3.949957201257348,
+          0.015100734996303801,
+          0.0015355206958480583
+        ],
+        "phase": 3.17345388474986,
+        "feet": {
+          "R": {
+            "target": [
+              4.272961985139847,
+              0.10375002026754375,
+              0.0010875322038221835
+            ],
+            "plant": true,
+            "error": 2.206935121733724e-9,
+            "gap": 1.2601352475383187e-8
+          },
+          "L": {
+            "target": [
+              3.419786210680854,
+              0.14437934204043035,
+              0.0009190343253870834
+            ],
+            "plant": false,
+            "error": 0.1269229296698708,
+            "gap": 0.03316970772500029
+          }
+        }
+      },
+      {
+        "i": 158,
+        "finite": true,
+        "pos": [
+          3.974957201629877,
+          0.015100032175178059,
+          0.0015354636481019757
+        ],
+        "phase": 3.192393278971522,
+        "feet": {
+          "R": {
+            "target": [
+              4.272961985139847,
+              0.10375002026754375,
+              0.0010875322038221835
+            ],
+            "plant": true,
+            "error": 8.815720271893888e-9,
+            "gap": 1.0970104338814402e-8
+          },
+          "L": {
+            "target": [
+              3.474451978096194,
+              0.15727338162609247,
+              0.0009437542723889334
+            ],
+            "plant": false,
+            "error": 0.07660009083600265,
+            "gap": 0.04318865711997728
+          }
+        }
+      },
+      {
+        "i": 159,
+        "finite": true,
+        "pos": [
+          3.9999568928033113,
+          0.01515265511297912,
+          0.0015354636481019757
+        ],
+        "phase": 3.211332438951396,
+        "feet": {
+          "R": {
+            "target": [
+              4.272961985139847,
+              0.10375002026754375,
+              0.0010875322038221835
+            ],
+            "plant": true,
+            "error": 4.5595687300304354e-9,
+            "gap": 5.771906355644951e-9
+          },
+          "L": {
+            "target": [
+              3.5413409662246815,
+              0.16885774100338846,
+              0.0009740015792451726
+            ],
+            "plant": false,
+            "error": 0.02208522171496377,
+            "gap": 0.051874602272491036
+          }
+        }
+      },
+      {
+        "i": 160,
+        "finite": true,
+        "pos": [
+          4.024956908077002,
+          0.015000239356959356,
+          0.0015353492103911126
+        ],
+        "phase": 3.230271844461966,
+        "feet": {
+          "R": {
+            "target": [
+              4.272961985139847,
+              0.10375002026754375,
+              0.0010875322038221835
+            ],
+            "plant": true,
+            "error": 9.369747656458941e-9,
+            "gap": 2.618479423566189e-8
+          },
+          "L": {
+            "target": [
+              3.618486326210722,
+              0.1788492793078293,
+              0.0010088868337739224
+            ],
+            "plant": false,
+            "error": 0.054018680416939635,
+            "gap": 0.05889177173461403
+          }
+        }
+      },
+      {
+        "i": 161,
+        "finite": true,
+        "pos": [
+          4.04995690099895,
+          0.015100273813368405,
+          0.0015353258239196865
+        ],
+        "phase": 3.249211233039208,
+        "feet": {
+          "R": {
+            "target": [
+              4.272961985139847,
+              0.10375002026754375,
+              0.0010875322038221835
+            ],
+            "plant": true,
+            "error": 4.0086670757343005e-9,
+            "gap": -4.869133693463645e-9
+          },
+          "L": {
+            "target": [
+              3.703918610480609,
+              0.18700336950942137,
+              0.001047519448648839
+            ],
+            "plant": false,
+            "error": 0.12113139582736401,
+            "gap": 0.06438416235922774
+          }
+        }
+      },
+      {
+        "i": 162,
+        "finite": true,
+        "pos": [
+          4.074957003816962,
+          0.0151189668544248,
+          0.0016038889769556253
+        ],
+        "phase": 3.2681507760964563,
+        "feet": {
+          "R": {
+            "target": [
+              4.272961985139847,
+              0.10375002026754375,
+              0.0010875322038221835
+            ],
+            "plant": true,
+            "error": 5.313121524952946e-9,
+            "gap": 2.7120908199784743e-8
+          },
+          "L": {
+            "target": [
+              3.795670081887203,
+              0.19312055803350225,
+              0.0010890096100011938
+            ],
+            "plant": false,
+            "error": 0.18850388446226074,
+            "gap": 0.06828340683973451
+          }
+        }
+      },
+      {
+        "i": 163,
+        "finite": true,
+        "pos": [
+          4.099952105432749,
+          0.015189516394821113,
+          0.0015854754363540113
+        ],
+        "phase": 3.2870864642769746,
+        "feet": {
+          "R": {
+            "target": [
+              4.272961985139847,
+              0.10375002026754375,
+              0.0010875322038221835
+            ],
+            "plant": true,
+            "error": 4.099692891173655e-9,
+            "gap": 4.021711803858796e-8
+          },
+          "L": {
+            "target": [
+              3.8917515867849417,
+              0.1970505301199481,
+              0.0011324578193875967
+            ],
+            "plant": false,
+            "error": 0.25244449368375144,
+            "gap": 0.07024420339770517
+          }
+        }
+      },
+      {
+        "i": 164,
+        "finite": true,
+        "pos": [
+          4.1249513402581215,
+          0.0150549889443937,
+          0.001609772843789381
+        ],
+        "phase": 3.3060252874838016,
+        "feet": {
+          "R": {
+            "target": [
+              4.272961985139847,
+              0.10375002026754375,
+              0.0010875322038221835
+            ],
+            "plant": true,
+            "error": 3.7748865324950774e-9,
+            "gap": 4.740627208843495e-8
+          },
+          "L": {
+            "target": [
+              3.9902301968911558,
+              0.19869870867827588,
+              0.0011769900035632158
+            ],
+            "plant": false,
+            "error": 0.3102572700051151,
+            "gap": 0.07025386653612677
+          }
+        }
+      },
+      {
+        "i": 165,
+        "finite": true,
+        "pos": [
+          4.149951260536909,
+          0.015112164554375342,
+          0.0016548927158732685
+        ],
+        "phase": 3.3249646518739087,
+        "feet": {
+          "R": {
+            "target": [
+              4.272961985139847,
+              0.10375002026754375,
+              0.0010875322038221835
+            ],
+            "plant": true,
+            "error": 5.1729959411785015e-9,
+            "gap": 3.411811806686149e-8
+          },
+          "L": {
+            "target": [
+              4.089124729185649,
+              0.198023883008833,
+              0.0012217102684141325
+            ],
+            "plant": false,
+            "error": 0.35971216351404856,
+            "gap": 0.06856688043845201
+          }
+        }
+      },
+      {
+        "i": 166,
+        "finite": true,
+        "pos": [
+          4.174951260909438,
+          0.015102569050577587,
+          0.0016560795264235484
+        ],
+        "phase": 3.3439040461168625,
+        "feet": {
+          "R": {
+            "target": [
+              4.272961985139847,
+              0.10375002026754375,
+              0.0010875322038221835
+            ],
+            "plant": true,
+            "error": 1.3737829524103755e-9,
+            "gap": 2.9146246652289598e-8
+          },
+          "L": {
+            "target": [
+              4.186463982357398,
+              0.19504247737781294,
+              0.0012657272335711985
+            ],
+            "plant": false,
+            "error": 0.3991769014027326,
+            "gap": 0.06553255724461378
+          }
+        }
+      },
+      {
+        "i": 167,
+        "finite": true,
+        "pos": [
+          4.199951214715838,
+          0.015101599412810175,
+          0.0016560795264235484
+        ],
+        "phase": 3.3628434050611054,
+        "feet": {
+          "R": {
+            "target": [
+              4.272961985139847,
+              0.10375002026754375,
+              0.0010875322038221835
+            ],
+            "plant": true,
+            "error": 1.5130213431764955e-9,
+            "gap": 4.5666616224626644e-8
+          },
+          "L": {
+            "target": [
+              4.280279057609169,
+              0.18982744822644754,
+              0.0013081505598656646
+            ],
+            "plant": false,
+            "error": 0.4275964532040557,
+            "gap": 0.06146977318520559
+          }
+        }
+      },
+      {
+        "i": 168,
+        "finite": true,
+        "pos": [
+          4.2249512150883675,
+          0.015099987468056499,
+          0.0016560795264235484
+        ],
+        "phase": 3.381782799282718,
+        "feet": {
+          "R": {
+            "target": [
+              4.272961985139847,
+              0.10375002026754375,
+              0.0010875322038221835
+            ],
+            "plant": true,
+            "error": 4.2866653753709725e-9,
+            "gap": 5.050899005987208e-8
+          },
+          "L": {
+            "target": [
+              4.368601735221592,
+              0.18250637127228087,
+              0.0013480902152088715
+            ],
+            "plant": false,
+            "error": 0.4443449005487896,
+            "gap": 0.05659570159379741
+          }
+        }
+      },
+      {
+        "i": 169,
+        "finite": true,
+        "pos": [
+          4.2499507665634155,
+          0.01512144678454206,
+          0.00164886261047692
+        ],
+        "phase": 3.4007218542196456,
+        "feet": {
+          "R": {
+            "target": [
+              4.272961985139847,
+              0.10375002026754375,
+              0.0010875322038221835
+            ],
+            "plant": true,
+            "error": 4.477296808171159e-9,
+            "gap": 4.944494132186339e-8
+          },
+          "L": {
+            "target": [
+              4.449461894193979,
+              0.17325855918665195,
+              0.0013846553077497227
+            ],
+            "plant": false,
+            "error": 0.4490395264444308,
+            "gap": 0.05098670056100009
+          }
+        }
+      },
+      {
+        "i": 170,
+        "finite": true,
+        "pos": [
+          4.274951232597232,
+          0.015159133556517192,
+          0.0016438081436940255
+        ],
+        "phase": 3.419661601602039,
+        "feet": {
+          "R": {
+            "target": [
+              4.272961985139847,
+              0.10375002026754375,
+              0.0010875322038221835
+            ],
+            "plant": true,
+            "error": 3.067516922665439e-10,
+            "gap": 2.862450694529617e-8
+          },
+          "L": {
+            "target": [
+              4.52089512051562,
+              0.16230972730512486,
+              0.0014169575263470716
+            ],
+            "plant": false,
+            "error": 0.4413891593818924,
+            "gap": 0.04456061298412402
+          }
+        }
+      },
+      {
+        "i": 171,
+        "finite": true,
+        "pos": [
+          4.299950337037444,
+          0.015004855082588621,
+          0.001643846046835984
+        ],
+        "phase": 3.43860031708707,
+        "feet": {
+          "R": {
+            "target": [
+              4.272961985139847,
+              0.10375002026754375,
+              0.0010875322038221835
+            ],
+            "plant": true,
+            "error": 3.03134944666088e-10,
+            "gap": -9.43630949767904e-9
+          },
+          "L": {
+            "target": [
+              4.580926702286508,
+              0.14992878090675604,
+              0.0014441039031378446
+            ],
+            "plant": false,
+            "error": 0.4210735399557085,
+            "gap": 0.03704469965010328
+          }
+        }
+      },
+      {
+        "i": 172,
+        "finite": true,
+        "pos": [
+          4.324930757284164,
+          0.015177807156214841,
+          0.0017551781372910913
+        ],
+        "phase": 3.457525065826826,
+        "feet": {
+          "R": {
+            "target": [
+              4.272961985139847,
+              0.10375002026754375,
+              0.0010875322038221835
+            ],
+            "plant": true,
+            "error": 3.4352360489339286e-9,
+            "gap": 8.28088665694171e-9
+          },
+          "L": {
+            "target": [
+              4.62756343897284,
+              0.1364283683162831,
+              0.0014651931096693505
+            ],
+            "plant": false,
+            "error": 0.38769972183696116,
+            "gap": 0.027705133310785737
+          }
+        }
+      },
+      {
+        "i": 173,
+        "finite": true,
+        "pos": [
+          4.349929744377732,
+          0.0150000319667015,
+          0.0017549777196033123
+        ],
+        "phase": 3.476463692413471,
+        "feet": {
+          "R": {
+            "target": [
+              4.272961985139847,
+              0.10375002026754375,
+              0.0010875322038221835
+            ],
+            "plant": true,
+            "error": 4.50104547856853e-9,
+            "gap": 4.928711579144096e-8
+          },
+          "L": {
+            "target": [
+              4.658906908477606,
+              0.1221189600790852,
+              0.0014793666764488136
+            ],
+            "plant": false,
+            "error": 0.3405391247700399,
+            "gap": 0.017257574721283822
+          }
+        }
+      },
+      {
+        "i": 174,
+        "finite": true,
+        "pos": [
+          4.374929735437036,
+          0.015098555992517505,
+          0.001754967408596153
+        ],
+        "phase": 3.4954030795796114,
+        "feet": {
+          "R": {
+            "target": [
+              4.272961985139847,
+              0.10375002026754375,
+              0.0010875322038221835
+            ],
+            "plant": true,
+            "error": 3.2690512392651726e-9,
+            "gap": 5.1153082616939294e-8
+          },
+          "L": {
+            "target": [
+              4.672949631330157,
+              0.10735956136224019,
+              0.001485716818065582
+            ],
+            "plant": false,
+            "error": 0.27896112245758564,
+            "gap": 0.008066806534832674
+          }
+        }
+      },
+      {
+        "i": 175,
+        "finite": true,
+        "pos": [
+          4.399929735809565,
+          0.015100043489292149,
+          0.001754967408596153
+        ],
+        "phase": 3.514342473801224,
+        "feet": {
+          "R": {
+            "target": [
+              4.272961985139847,
+              0.10375002026754375,
+              0.0010875322038221835
+            ],
+            "plant": true,
+            "error": 8.261117539996922e-10,
+            "gap": -9.749369020428666e-9
+          },
+          "L": {
+            "target": [
+              4.673526655526536,
+              0.10375001756816347,
+              0.0014859777493252658
+            ],
+            "plant": true,
+            "error": 3.865551862185803e-9,
+            "gap": -7.981823965663715e-9
+          }
+        }
+      },
+      {
+        "i": 176,
+        "finite": true,
+        "pos": [
+          4.424929736182094,
+          0.015100042885387667,
+          0.001754960691726426
+        ],
+        "phase": 3.5332818680228377,
+        "feet": {
+          "R": {
+            "target": [
+              4.272961985139847,
+              0.10375002026754375,
+              0.0010875322038221835
+            ],
+            "plant": true,
+            "error": 5.922205248642645e-9,
+            "gap": -3.941255252715159e-9
+          },
+          "L": {
+            "target": [
+              4.673526655526536,
+              0.10375001756816347,
+              0.0014859777493252658
+            ],
+            "plant": true,
+            "error": 3.0464338341732007e-9,
+            "gap": -8.386754943301433e-9
+          }
+        }
+      },
+      {
+        "i": 177,
+        "finite": true,
+        "pos": [
+          4.4499300215393305,
+          0.015121592758441695,
+          0.0017901349518461007
+        ],
+        "phase": 3.5522214968876207,
+        "feet": {
+          "R": {
+            "target": [
+              4.272961985139847,
+              0.10375002026754375,
+              0.0010875322038221835
+            ],
+            "plant": true,
+            "error": 3.415385040537801e-9,
+            "gap": 2.08983294697207e-8
+          },
+          "L": {
+            "target": [
+              4.673526655526536,
+              0.10375001756816347,
+              0.0014859777493252658
+            ],
+            "plant": true,
+            "error": 5.43856058484904e-9,
+            "gap": 2.1120672225038994e-8
+          }
+        }
+      },
+      {
+        "i": 178,
+        "finite": true,
+        "pos": [
+          4.474929919466376,
+          0.015000057992801887,
+          0.0017901489270688575
+        ],
+        "phase": 3.571160813499022,
+        "feet": {
+          "R": {
+            "target": [
+              4.272961985139847,
+              0.10375002026754375,
+              0.0010875322038221835
+            ],
+            "plant": true,
+            "error": 3.812541055702134e-9,
+            "gap": 1.5991709692575462e-8
+          },
+          "L": {
+            "target": [
+              4.673526655526536,
+              0.10375001756816347,
+              0.0014859777493252658
+            ],
+            "plant": true,
+            "error": 2.267696623650737e-9,
+            "gap": 1.4587435051560682e-8
+          }
+        }
+      },
+      {
+        "i": 179,
+        "finite": true,
+        "pos": [
+          4.499929919838905,
+          0.015100057990275674,
+          0.0017901426416713218
+        ],
+        "phase": 3.5901002077206354,
+        "feet": {
+          "R": {
+            "target": [
+              4.272961985139847,
+              0.10375002026754375,
+              0.0010875322038221835
+            ],
+            "plant": true,
+            "error": 2.5665334084744915e-9,
+            "gap": 3.372568076198679e-8
+          },
+          "L": {
+            "target": [
+              4.673526655526536,
+              0.10375001756816347,
+              0.0014859777493252658
+            ],
+            "plant": true,
+            "error": 6.3325272392221354e-9,
+            "gap": 3.928724064128364e-8
+          }
+        }
+      }
+    ],
+    "grenade": {
+      "finite": true,
+      "objects": 1,
+      "beforeTotal": 0,
+      "afterClear": 0,
+      "unrelatedRetained": true,
+      "afterTotal": 2
+    }
+  },
+  "errors": []
+}
