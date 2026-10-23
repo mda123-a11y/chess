@@ -1474,6 +1474,7 @@
       }
 
       /* короткое нажатие F у двери/ящика (js/app/crates.js); подсказка перекрывает «вселиться» */
+      if (root.GMG && world.mapId) try { root.GMG.update(dt, { C, world, camera, THREE, active }); } catch (e) { console.warn('mg', e && e.message); }
       const ex = root.GCrates ? root.GCrates.update(dt, S, world, S.mode === 'embodied' ? active() : null) : null;
       if (ex) { showPrompt = true; lbl = ex.lbl; sub = ex.sub; }
       if (S.fDown && (inRange || canExit)) {
@@ -2475,7 +2476,7 @@
       return res.pass?{...res,thickness,mat,exit:hit.point.clone().addScaledVector(dir,thickness+.002)}:null;
     }
     function traceBullet(origin, dir, objs, targets, shooter, v0, ammo) {
-      const spec=BALL.spec(shooter&&shooter.gun?shooter.gun.stats.cal:'545',ammo&&ammo.id);
+      const spec=BALL.spec((ammo&&ammo.cal)||(shooter&&shooter.gun?shooter.gun.stats.cal:'545'),ammo&&ammo.id);
       if(C.combat&&shooter)C.combat.hear(origin,shooter,S.time,65);
       const pos=origin.clone(),vel=dir.clone().multiplyScalar(v0||MUZZLE_VEL),path=[{p:pos.clone(),t:0}],passes=[];
       const end=new THREE.Vector3(),seg=new THREE.Vector3(),chord=new THREE.Vector3(),right=new THREE.Vector3().crossVectors(dir,new THREE.Vector3(0,1,0)).normalize();
@@ -2697,6 +2698,26 @@
         }
       }
     }
+
+    /* Выстрел стационарного пулемёта: та же баллистика, урон по бойцам и разрушение карты, что у винтовки */
+    C.fireMG = function (from, dir, shooter) {
+      const objs = [world.ground];
+      for (const k of ['house', 'props', 'fence', 'range', 'garden', 'v8props']) if (world[k]) objs.push(world[k]);
+      const shot = traceBullet(from, dir.clone().normalize(), objs, [], shooter || null, 850, { id: '7N6', cal: '762x54R', pen: 3 });
+      const end = shot.hit ? shot.hit.point : from.clone().addScaledVector(dir, 150);
+      fx.tracer(from.clone(), end, 1, MUZZLE_VEL);
+      if (shot.hit) {
+        const h = shot.hit, nrm = h.face ? h.face.normal.clone().transformDirection(h.object.matrixWorld) : dir.clone().negate();
+        if (h.object !== world.ground && world.bulletHit) try { world.bulletHit(h.point, dir, 2); } catch (e) { /* */ }
+        if (!shot.soldier) fx.impact(h.point, nrm, h.object === world.ground ? 'ground' : 'rock', null);
+      }
+      if (shot.soldier) {
+        const res = DMG.hit(shot.soldier, shot.dir, shooter || null, S.time, { v: shot.speed, ammo: null, dist: from.distanceTo(end) });
+        onSoldierHit(shooter || null, res, from.clone());
+      }
+      if (audio.shot) audio.shot({ vol: 1 });
+      return shot;
+    };
 
     function testFire(from, dir, shooter, to) {
       to = to || {};

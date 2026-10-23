@@ -341,6 +341,7 @@
 
     /* ======================================================= движение == */
     P.updateMove = function (dt, input, active) {
+      if (P.mounted) { P.vel.set(0, 0, 0); P._motorVX = 0; P._motorVZ = 0; P.speed = 0; return; } /* за пулемётом: позицию ведёт GMG */
       const moveStartX=P.pos.x,moveStartZ=P.pos.z;
       P._distancePhase=true;
       /* Неуправляемый боец стоит: только дыхание и лёгкие колебания. */
@@ -610,7 +611,7 @@
 
     /* ====================================================== стрельба === */
     P.canFire = function () {
-      return P.armed && !P.vault && !P.dragging && !P.treating && P.fireMode !== 'safe' && P.reload < 0 && P.inspect < 0 && P.cool <= 0
+      return P.armed && !P.mounted && !P.vault && !P.dragging && !P.treating && P.fireMode !== 'safe' && P.reload < 0 && P.inspect < 0 && P.cool <= 0
         && P.chamber > 0 && P.pump < 0 && P.sprint < 0.55 && !P.jam;
     };
     const ev = (name) => { if (P.onEvent) P.onEvent(name); };

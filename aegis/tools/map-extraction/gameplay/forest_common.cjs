@@ -25,8 +25,9 @@ var __deepNoop = (function () { var f = function () { return p; }; var p = new P
       splinterPuff: 'function(){}', splinters: 'function(){}', toast: 'function(){}', scareBirds: 'function(){}',
       FX: '__deepNoop',
     },
-    unoverride: ['explode', 'ignite'],
-    roots: ['onBlast', 'hitPanel', 'kill', 'processQueue', 'supportPass', 'updateStructs', 'updateDestruction', 'breakPane', 'breakTree', 'treesNear', 'boardAt', 'knockBoard', 'structAt', 'PANES', 'STRUCTS', 'QUEUE', 'FALLING', 'LDEB', 'ldebAdd', 'LADDERS'],
+    unoverride: ['explode', 'ignite', 'buildMG'],
+    stepInsert: { planLandmarks: 'planMG', buildGlass: 'buildMG' },
+    roots: ['onBlast', 'hitPanel', 'kill', 'processQueue', 'supportPass', 'updateStructs', 'updateDestruction', 'breakPane', 'breakTree', 'treesNear', 'boardAt', 'knockBoard', 'structAt', 'PANES', 'STRUCTS', 'QUEUE', 'FALLING', 'LDEB', 'ldebAdd', 'LADDERS', 'MG', 'mgFarSet'],
     patches: [
       // every tree trunk blocks movement (the original only collided near the perimeter and walked trees via TREE_GRID)
       ['if (e < MAP.FENCE + 1) {\n      t.col = addCircle', 'if (true) {\n      t.col = addCircle'],
@@ -109,6 +110,8 @@ function __extra() {
   return {
     hooks: __HK,
     ladders: LADDERS,
+    mg: MG,
+    mgFarSet: mgFarSet,
     crates: CRATES.map(function (c, i) { return { id: "depot" + i, kind: "ammo", name: c.name, x: c.x, y: hFast(c.x, c.z), z: c.z, r: 4.6 * (c.s || 1) }; }),
     bulletHit: function (p, dir, power) { return __bullet(p, dir, power || 1); },
     explode: function (p, o) { o = o || {}; var size = Math.min(3, Math.max(0.3, (o.power || 1) * (o.radius || 6) / 6)); onBlast(p.x, hFast(p.x, p.z), p.z, size, false, {}); },

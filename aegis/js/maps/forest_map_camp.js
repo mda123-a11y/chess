@@ -161,6 +161,7 @@ var camera = ctx.camera;
 var MAXA = () => Math.min(Q.aniso, renderer.capabilities.getMaxAnisotropy());
 var FRAME = { t: 0, dt: 0.016, n: 0 };
 var NO_REFLECT = [];
+var $ = (s) => document.querySelector(s);
 var PERF = { pr: Math.min(devicePixelRatio, Q.pixel), minPr: Math.min(Q.minPr, Q.pixel), maxPr: Math.min(devicePixelRatio, Q.pixel), acc: 0, n: 0, t: 0, load: 0, auto: true, frameMs: 16, lvl: 0, calm: 0, shadowEvery: Q.shadowEvery };
 var CELL = 4;
 var GRID = /* @__PURE__ */ new Map();
@@ -11144,6 +11145,7 @@ function sign(o) {
   place(M.boardT, new THREE30.PlaneGeometry(2.4, 1.2), x, y + 1.9, z, [0, o.rot, 0.04]);
   endStruct();
 }
+var toast = function(){};
 var CRATES = [];
 function planExtraLandmarks() {
   const P2 = LANDMARKS;
@@ -11542,7 +11544,148 @@ function leafBurst(x, y, z, n2, sp, dir2, spread = 1.2) {
   }
 }
 var THREE40 = ctx.THREE;
+var BGU40 = ctx.BGU;
+function m2Model(lod) {
+  // --- начало кода модели из пулимет.html ---
+const V={add:(a,b)=>a.map((x,i)=>x+b[i]),sub:(a,b)=>a.map((x,i)=>x-b[i]),mul:(a,s)=>a.map(x=>x*s),dot:(a,b)=>a.reduce((s,x,i)=>s+x*b[i],0),cross:(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]],len:a=>Math.hypot(...a),norm:a=>{let l=Math.hypot(...a)||1;return a.map(x=>x/l)},mix:(a,b,t)=>a.map((x,i)=>x+(b[i]-x)*t)};
+const M={id:()=>new Float32Array([1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]),mul:(a,b)=>{let o=new Float32Array(16);for(let c=0;c<4;c++)for(let r=0;r<4;r++)o[c*4+r]=a[r]*b[c*4]+a[4+r]*b[c*4+1]+a[8+r]*b[c*4+2]+a[12+r]*b[c*4+3];return o},tr:(x=0,y=0,z=0)=>new Float32Array([1,0,0,0,0,1,0,0,0,0,1,0,x,y,z,1]),rx:a=>{let c=Math.cos(a),s=Math.sin(a);return new Float32Array([1,0,0,0,0,c,s,0,0,-s,c,0,0,0,0,1])},ry:a=>{let c=Math.cos(a),s=Math.sin(a);return new Float32Array([c,0,-s,0,0,1,0,0,s,0,c,0,0,0,0,1])},rz:a=>{let c=Math.cos(a),s=Math.sin(a);return new Float32Array([c,s,0,0,-s,c,0,0,0,0,1,0,0,0,0,1])},point:(m,p)=>[m[0]*p[0]+m[4]*p[1]+m[8]*p[2]+m[12],m[1]*p[0]+m[5]*p[1]+m[9]*p[2]+m[13],m[2]*p[0]+m[6]*p[1]+m[10]*p[2]+m[14]],dir:(m,p)=>[m[0]*p[0]+m[4]*p[1]+m[8]*p[2],m[1]*p[0]+m[5]*p[1]+m[9]*p[2],m[2]*p[0]+m[6]*p[1]+m[10]*p[2]],perspective:(f,a,n,fa)=>{let t=1/Math.tan(f/2),d=1/(n-fa);return new Float32Array([t/a,0,0,0,0,t,0,0,0,0,(fa+n)*d,-1,0,0,2*fa*n*d,0])},ortho:(l,r,b,t,n,f)=>new Float32Array([2/(r-l),0,0,0,0,2/(t-b),0,0,0,0,-2/(f-n),0,-(r+l)/(r-l),-(t+b)/(t-b),-(f+n)/(f-n),1]),look:(e,t)=>{let z=V.norm(V.sub(e,t)),x=V.norm(V.cross([0,1,0],z)),y=V.cross(z,x);return new Float32Array([x[0],y[0],z[0],0,x[1],y[1],z[1],0,x[2],y[2],z[2],0,-V.dot(x,e),-V.dot(y,e),-V.dot(z,e),1])}};
+const compose=(...ms)=>ms.reduce((a,b)=>M.mul(a,b),M.id()),clamp=(x,a,b)=>Math.max(a,Math.min(b,x));let seed=8317;function rand(){seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296}
+class Geo{constructor(){this.v=[];this.i=[]}vertex(p,n,uv=[0,0]){this.v.push(...p,...n,...uv);return this.v.length/8-1}quad(a,b,c,d){this.i.push(a,b,c,a,c,d)}add(g,m=M.id()){let off=this.v.length/8;for(let k=0;k<g.v.length;k+=8)this.v.push(...M.point(m,g.v.slice(k,k+3)),...V.norm(M.dir(m,g.v.slice(k+3,k+6))),g.v[k+6],g.v[k+7]);this.i.push(...g.i.map(x=>x+off));return this}}
+function box(w,h,d,r=.001){let g=new Geo(),hh=[w/2,h/2,d/2];r=Math.min(r,w/2,h/2,d/2);for(let [a,u,v,s]of[[0,1,2,1],[0,2,1,-1],[1,2,0,1],[1,0,2,-1],[2,0,1,1],[2,1,0,-1]]){let hu=hh[u],hv=hh[v],us=r?[-hu,-hu+r,hu-r,hu]:[-hu,hu],vs=r?[-hv,-hv+r,hv-r,hv]:[-hv,hv],base=g.v.length/8;for(let j=0;j<vs.length;j++)for(let i=0;i<us.length;i++){let p=[0,0,0],n=[0,0,0];p[a]=hh[a]*s;p[u]=us[i];p[v]=vs[j];n[a]=s;if(r){let q=p.map((x,k)=>clamp(x,-hh[k]+r,hh[k]-r));n=V.norm(V.sub(p,q));p=V.add(q,V.mul(n,r))}g.vertex(p,n,[i/(us.length-1),j/(vs.length-1)])}for(let j=0;j<vs.length-1;j++)for(let i=0;i<us.length-1;i++){let a=base+j*us.length+i;g.quad(a,a+1,a+1+us.length,a+us.length)}}return g}
+function lathe(ps,n=20,start=0,span=Math.PI*2){let g=new Geo();for(let j=0;j<ps.length;j++){let [x,r]=ps[j],a=ps[Math.max(0,j-1)],b=ps[Math.min(ps.length-1,j+1)];for(let k=0;k<=n;k++){let t=start+k/n*span,c=Math.cos(t),s=Math.sin(t);g.vertex([x,r*c,r*s],V.norm([a[1]-b[1],(b[0]-a[0])*c,(b[0]-a[0])*s]),[k/n,j/(ps.length-1)])}}for(let j=0;j<ps.length-1;j++)for(let k=0;k<n;k++){let a=j*(n+1)+k;g.quad(a,a+n+1,a+n+2,a+1)}return g}
+const cyl=(l,r,r2=r,n=20)=>lathe([[-l/2,0],[-l/2,r],[l/2,r2],[l/2,0]],n),tube=(l,r,ri,n=20)=>lathe([[-l/2,ri],[-l/2,r],[l/2,r],[l/2,ri],[-l/2,ri]],n);
+function rod(a,b,r,n=10){let d=V.sub(b,a),x=V.norm(d),z=V.norm(V.cross(x,Math.abs(x[1])>.9?[0,0,1]:[0,1,0])),y=V.cross(z,x);return new Geo().add(cyl(V.len(d),r,r,n),new Float32Array([...x,0,...y,0,...z,0,...V.mix(a,b,.5),1]))}
+function ring(r,w,n=20,s=5,start=0,span=Math.PI*2){let g=new Geo();for(let j=0;j<=n;j++)for(let k=0;k<=s;k++){let a=start+j/n*span,b=k/s*Math.PI*2,c=Math.cos(b),sn=Math.sin(b),ca=Math.cos(a),sa=Math.sin(a);g.vertex([w*sn,(r+w*c)*ca,(r+w*c)*sa],[sn,c*ca,c*sa])}for(let j=0;j<n;j++)for(let k=0;k<s;k++){let a=j*(s+1)+k;g.quad(a,a+s+1,a+s+2,a+1)}return g}
+function plane(w,h){let g=new Geo;for(let[p,uv]of[[[-w/2,-h/2,0],[0,0]],[[w/2,-h/2,0],[1,0]],[[w/2,h/2,0],[1,1]],[[-w/2,h/2,0],[0,1]]])g.vertex(p,[0,0,1],uv);g.quad(0,1,2,3);return g}
+function disk(r,n=16){let g=new Geo;g.vertex([0,0,0],[1,0,0],[.5,.5]);for(let i=0;i<=n;i++){let t=i/n*Math.PI*2;g.vertex([0,r*Math.cos(t),r*Math.sin(t)],[1,0,0],[.5+.5*Math.cos(t),.5+.5*Math.sin(t)])}for(let i=1;i<=n;i++)g.i.push(0,i,i+1);return g}
+class Group{constructor(){this.parts=new Map;this.children=[];this.matrix=M.id()}add(mat,g,m=M.id()){if(!this.parts.has(mat))this.parts.set(mat,new Geo);this.parts.get(mat).add(g,m)}child(){let g=new Group;this.children.push(g);return g}upload(R){this.meshes=[...this.parts].map(([m,g])=>({m,g:R.upload(g)}));this.parts.clear();this.children.forEach(g=>g.upload(R))}}
+function materials(R){let mat=(c,m,r,type=0)=>({c,m,r,type}),o={steel:mat([.31,.335,.35],.68,.59,1),edge:mat([.48,.50,.51],.96,.28,2),machine:mat([.38,.40,.415],.94,.34,2),barrel:mat([.31,.335,.35],.90,.41,13),dark:mat([.115,.125,.13],.68,.62,1),paint:mat([.30,.325,.235],.04,.67,3),paintDark:mat([.215,.24,.17],.04,.69,3),primer:mat([.36,.31,.225],0,.81,3),wood:mat([.345,.19,.095],0,.42,4),oilWood:mat([.205,.098,.045],0,.28,4),brass:mat([.72,.57,.30],.98,.30,5),copper:mat([.67,.37,.235],.99,.32,6),links:mat([.17,.19,.20],.82,.44,1),grease:mat([.105,.105,.083],.01,.27),soot:mat([.07,.073,.075],0,.98),dust:mat([.245,.23,.18],0,.93),white:mat([.67,.67,.565],0,.79),ground:mat([.20,.21,.22],0,.88,10)};
+function label(key,w,h,fn){let c=document.createElement('canvas');c.width=w;c.height=h;fn(c.getContext('2d'),w,h);o[key]={...mat([1,1,1],key==='stamp'?.6:0,.66),tex:R.texture(c)}}
+label('stamp',1024,384,(c,w,h)=>{c.fillStyle='#4b5051';c.fillRect(0,0,w,h);c.fillStyle='#252b2c';c.textAlign='center';c.font='bold 55px monospace';c.fillText('BROWNING MACHINE GUN',w/2,90);c.font='48px monospace';c.fillText('CAL .50 M2 — HB',w/2,166);c.font='38px monospace';c.fillText('No. 008317 • U.S. PROPERTY',w/2,247);c.lineWidth=3;c.strokeStyle='#303737';c.strokeRect(27,28,w-54,h-56);c.font='24px monospace';c.fillText('VISUAL REFERENCE / NON-SERVICE ASSET',w/2,316)});
+label('canText',1024,512,(c,w,h)=>{c.fillStyle='#adb092';c.textAlign='center';c.font='bold 90px monospace';c.fillText('CAL .50 LINKED',w/2,140);c.font='52px monospace';c.fillText('LINKED AMMUNITION',w/2,242);c.font='38px monospace';c.fillText('LOT 0083 • STEEL LINKS',w/2,326);c.font='27px monospace';c.fillText('KEEP DRY / HANDLE WITH CARE',w/2,421);c.globalCompositeOperation='destination-out';for(let i=0;i<70;i++)c.fillRect(rand()*w,rand()*h,1+rand()*8,1+rand()*2)});
+label('head',512,512,(c,w,h)=>{c.fillStyle='#8d7a50';c.fillRect(0,0,w,h);c.strokeStyle='#514532';c.lineWidth=9;for(let r of[202,86]){c.beginPath();c.arc(256,256,r,0,Math.PI*2);c.stroke()}c.fillStyle='#b4a276';c.beginPath();c.arc(256,256,72,0,Math.PI*2);c.fill();c.fillStyle='#493d2a';c.textAlign='center';c.textBaseline='middle';c.font='bold 51px monospace';c.fillText('L C',256,120);c.fillText('5 4',256,386);c.font='38px monospace';c.save();c.translate(120,255);c.rotate(-Math.PI/2);c.fillText('50',0,0);c.restore();c.save();c.translate(392,255);c.rotate(Math.PI/2);c.fillText('BMG',0,0);c.restore()});return o}
+function modelBuild(R,m,lod=1){let seg=[24,20,14,10,7][lod],sm=[12,10,8,6,5][lod],rs=[12,10,8,7,6][lod],bev=lod<3?.0015:0;let root=new Group,yaw=root.child(),gun=yaw.child(),barrel=gun.child(),cover=gun.child(),bolt=gun.child(),handle=gun.child(),trigger=gun.child();
+const B=(g,mat,s,p,rot=M.id(),r=bev)=>g.add(mat,box(...s,r),compose(M.tr(...p),rot)),C=(g,mat,l,r,p,rot=M.id(),r2=r,n=seg)=>g.add(mat,cyl(l,r,r2,n),compose(M.tr(...p),rot)),T=(g,mat,l,r,ri,p,rot=M.id())=>g.add(mat,tube(l,r,ri,seg),compose(M.tr(...p),rot)),D=(g,mat,a,b,r,n=sm)=>g.add(mat,rod(a,b,r,n)),O=(g,mat,r,w,p,rot=M.id(),n=seg)=>g.add(mat,ring(r,w,n,4),compose(M.tr(...p),rot));
+const rivet=(g,p,side=1,r=.0048)=>{g.add(m.steel,lathe([[-.001,0],[-.001,r],[.001,r],[.003,r*.8],[.004,0]],sm),compose(M.tr(...p),M.ry(-side*Math.PI/2)));if(lod<2)C(g,m.edge,.00035,r*.4,[p[0],p[1],p[2]+side*.0037],M.ry(-side*Math.PI/2),r*.4,sm)};
+B(gun,m.steel,[.442,.153,.137],[-.243,.137,0],M.id(),.003);B(gun,m.dark,[.423,.015,.142],[-.247,.060,0]);B(gun,m.machine,[.352,.008,.101],[-.258,.217,0]);B(gun,m.dark,[.306,.009,.074],[-.265,.215,0]);for(let z of[-.052,.052]){B(gun,m.edge,[.314,.006,.009],[-.266,.227,z]);B(gun,m.grease,[.259,.002,.002],[-.258,.231,z+.006],M.id(),0)}for(let side of[-1,1]){B(gun,m.steel,[.455,.011,.008],[-.245,.203,side*.070]);for(let i=0;i<8;i++){rivet(gun,[-.435+i*.054,.079,side*.070],side);if(i<7)rivet(gun,[-.428+i*.057,.19,side*.070],side)}B(gun,m.steel,[.024,.155,.011],[-.451,.138,side*.073]);}
+B(gun,m.machine,[.169,.048,.002],[-.275,.144,.0705],M.id(),.0005);gun.add(m.stamp,plane(.158,.041),M.tr(-.275,.144,.072));for(let x of[-.355,-.195])for(let y of[.124,.164])rivet(gun,[x,y,.0725],1,.0018);
+B(gun,m.dark,[.122,.055,.002],[-.243,.117,-.070],M.id(),.002);B(gun,m.soot,[.105,.041,.001],[-.243,.118,-.0713]);B(gun,m.edge,[.117,.003,.004],[-.243,.091,-.072]);B(gun,m.machine,[.019,.044,.004],[-.181,.117,-.072]);for(let i=0;i<(lod<2?9:4);i++)B(gun,i%3?m.machine:m.brass,[.013+rand()*.025,.0003,.0004],[-.21-rand()*.05,.092+rand()*.013,-.0741],M.id(),0);B(gun,m.dark,[.13,.001,.061],[-.275,.051,0],M.id(),0);
+B(bolt,m.machine,[.105,.014,.045],[-.30,.211,0]);B(bolt,m.dark,[.032,.003,.012],[-.315,.219,0]);B(gun,m.dark,[.252,.014,.005],[-.286,.149,-.073]);B(gun,m.edge,[.249,.001,.001],[-.286,.157,-.076],M.id(),0);B(handle,m.machine,[.043,.022,.013],[-.337,.15,-.083]);C(handle,m.machine,.039,.006,[-.335,.15,-.106],M.ry(Math.PI/2));C(handle,m.steel,.033,.012,[-.335,.15,-.134],M.ry(Math.PI/2));if(lod<3)for(let i=0;i<18;i++){let a=i/18*Math.PI*2;D(handle,m.edge,[-.335+.0115*Math.cos(a),.15+.0115*Math.sin(a),-.146],[-.334+.0115*Math.cos(a+.09),.15+.0115*Math.sin(a+.09),-.121],.00035,4)}
+cover.matrix=M.tr(-.066,.243,0);B(cover,m.steel,[.354,.025,.156],[-.171,0,0],M.id(),.0045);B(cover,m.steel,[.288,.009,.116],[-.18,.015,0],M.id(),.002);B(cover,m.dark,[.306,.003,.117],[-.178,-.015,0]);for(let z of[-.044,.044])B(cover,m.machine,[.241,.007,.008],[-.173,-.021,z]);B(cover,m.machine,[.095,.009,.098],[-.21,-.023,0]);if(lod<4){for(let i=0;i<11;i++)B(cover,m.edge,[.028,.006,.003],[-.228,-.03,-.045+i*.009],M.rz(.13),.0005);for(let z of[-.06,.06]){C(cover,m.grease,.064,.003,[-.17,-.015,z]);for(let x of[-.31,-.055]){C(cover,m.machine,.003,.0034,[x,.020,z],M.rz(Math.PI/2));B(cover,m.dark,[.0045,.0004,.0007],[x,.0217,z],M.id(),0)}}}for(let z of[-.075,-.031,.032,.076])C(gun,m.steel,.031,.014,[-.066,.243,z],M.ry(-Math.PI/2));C(gun,m.edge,.184,.004,[-.066,.243,0],M.ry(-Math.PI/2));B(cover,m.machine,[.023,.015,.053],[-.355,-.004,0]);B(cover,m.edge,[.006,.023,.060],[-.363,-.01,0]);B(gun,m.steel,[.123,.032,.018],[-.246,.204,.09]);B(gun,m.edge,[.134,.002,.035],[-.248,.22,.091]);B(gun,m.grease,[.031,.003,.05],[-.278,.221,.081]);C(gun,m.machine,.132,.004,[-.245,.226,.107]);
+B(gun,m.steel,[.028,.187,.149],[-.474,.14,0]);for(let z of[-.097,.097]){B(gun,m.machine,[.068,.017,.026],[-.488,.219,z]);B(gun,m.machine,[.068,.017,.026],[-.488,.064,z]);D(gun,m.dark,[-.514,.065,z],[-.514,.218,z],.01);C(gun,m.wood,.117,.0165,[-.514,.142,z],M.rz(Math.PI/2));for(let y of[.079,.205])C(gun,m.oilWood,.012,.0167,[-.514,y,z],M.rz(Math.PI/2));for(let y of[.071,.212])C(gun,m.machine,.008,.0178,[-.514,y,z],M.rz(Math.PI/2));}B(trigger,m.machine,[.008,.034,.079],[-.498,.142,0],M.id(),.004);for(let z of[-.024,.024])B(trigger,m.edge,[.001,.018,.020],[-.503,.149,z],M.id(),.001);B(gun,m.machine,[.012,.018,.018],[-.486,.248,0]);
+B(gun,m.dark,[.044,.016,.058],[-.411,.246,0]);for(let z of[-.019,.019])B(gun,m.machine,[.010,.050,.005],[-.414,.278,z]);B(gun,m.edge,[.009,.004,.042],[-.414,.299,0]);B(gun,m.machine,[.014,.007,.019],[-.414,.275,0]);if(lod<3)for(let i=0;i<5;i++)B(gun,m.white,[.0005,.0015,.008],[-.4195,.255+i*.008,.019],M.id(),0);B(gun,m.steel,[.04,.069,.03],[-.04,.24,0]);B(gun,m.edge,[.004,.038,.004],[-.034,.278,0]);for(let z of[-.017,.017])B(gun,m.steel,[.018,.04,.007],[-.034,.280,z],M.rx(z*4));
+barrel.add(m.barrel,lathe([[-.028,0],[-.028,.032],[.024,.032],[.06,.030],[.17,.027],[.76,.0214],[1.072,.0185],[1.10,.019],[1.112,.019],[1.113,.011],[1.075,.011]],seg),M.tr(0,.155,0));for(let x of[-.006,.034,.078,.122,.166])T(barrel,m.steel,.012,.043,.029,[x,.155,0]);for(let j=0;j<4;j++)for(let k=0;k<10;k++){let a=.001+j*.043;barrel.add(m.steel,lathe([[a,.042],[a+.034,.042]],3,k*Math.PI*.2,.245),M.tr(0,.155,0))}T(barrel,m.machine,.014,.030,.026,[.183,.155,0]);barrel.add(m.steel,lathe([[1.083,.020],[1.087,.0245],[1.118,.0245],[1.125,.022],[1.125,.0115],[1.108,.0115]],seg),M.tr(0,.155,0));T(barrel,m.soot,.015,.0117,.0096,[1.117,.155,0]);C(barrel,m.soot,.001,.0097,[1.09,.155,0]);for(let k=0;k<8;k++){let a=k*Math.PI/4;B(barrel,m.soot,[.016,.0005,.006],[1.101,.155+Math.cos(a)*.0245,Math.sin(a)*.0245],M.rx(a),.0002)}T(gun,m.machine,.022,.029,.024,[.22,.155,0]);for(let x of[.16,.28])D(gun,m.machine,[x,.184,.018],[x,.267,.041],.006);C(gun,m.dark,.129,.0135,[.22,.270,.041]);for(let x of[.158,.282])T(gun,m.machine,.006,.015,.007,[x,.270,.041]);if(lod<3)for(let i=0;i<16;i++)T(gun,m.steel,.0018,.014,.012,[.17+i*.006,.270,.041]);
+C(root,m.paint,.08,.070,[-.19,.402,0],M.rz(Math.PI/2));C(root,m.dark,.018,.074,[-.19,.452,0],M.rz(Math.PI/2));C(root,m.machine,.235,.025,[-.19,.571,0],M.rz(Math.PI/2));C(root,m.grease,.012,.027,[-.19,.683,0],M.rz(Math.PI/2));C(root,m.paint,.115,.042,[-.19,.678,0],M.rz(Math.PI/2));B(yaw,m.paint,[.108,.036,.194],[0,-.042,0]);for(let z of[-.087,.087]){B(yaw,m.paint,[.088,.135,.024],[0,.018,z],M.id(),.005);C(yaw,m.machine,.029,.024,[0,.075,z],M.ry(-Math.PI/2));}C(yaw,m.edge,.211,.011,[0,.075,0],M.ry(-Math.PI/2));O(yaw,m.machine,.016,.0016,[0,.075,.115],M.rz(Math.PI/2));let wire=[[0,.071,.128],[.02,.027,.13],[.045,-.01,.12],[.033,-.045,.112],[-.03,-.045,.106],[-.041,-.01,.102]];for(let i=1;i<wire.length;i++)D(yaw,m.machine,wire[i-1],wire[i],.00065,4);
+let pivots=[[-.18,.411,0],[-.207,.40,.019],[-.207,.40,-.019]],ends=[[.66,.032,0],[-.93,.032,.60],[-.93,.032,-.60]],legs=[];for(let j=0;j<3;j++){let leg=root.child(),p=pivots[j],e=V.sub(ends[j],p),mid=V.mul(e,.59),join=V.mul(e,.62);leg.matrix=M.tr(...p);legs.push(leg);D(leg,m.paint,[0,0,0],mid,j===0?.032:.028,seg);D(leg,m.paintDark,V.mul(e,.54),e,.022,seg);D(leg,m.machine,mid,V.mix(mid,e,.035),.024,seg);D(leg,m.grease,V.mix(mid,e,.039),V.mix(mid,e,.052),.023,sm);B(leg,m.paint,[.106,.013,.10],V.add(e,[0,-.008,0]),M.ry(j===0?0:j===1?.25:-.25),.003);if(j===0)B(leg,m.paint,[.026,.041,.109],V.add(e,[.04,.008,0]),M.rz(-.28),.002);B(leg,m.primer,[.033,.0009,.019],V.add(e,[-.022,0,.028]),M.ry(.2),.001);B(leg,m.machine,[.02,.0011,.007],V.add(e,[-.026,.0002,.033]),M.ry(.24),0);C(leg,m.machine,.074,.0042,V.add(join,[0,.004,0]),M.ry(-Math.PI/2),.0042,sm);O(leg,m.machine,.009,.0012,V.add(join,[0,.004,.046]),M.id(),sm);if(lod<3){for(let k=0;k<6;k++)O(leg,m.machine,.0052,.001,V.add(join,[.004*Math.sin(k*.8),-.013-k*.009,.043]),k%2?M.ry(Math.PI/2):M.id(),sm);for(let k=0;k<4;k++){let a=V.add(V.mul(mid,.35+k*.085),[0,.024,.01]);D(leg,m.primer,a,V.add(a,V.mul(V.norm(e),.02)),.00045,4)}}}
+B(root,m.paint,[.045,.039,.62],[-.535,.25,0]);for(let z of[-.315,.315])B(root,m.paint,[.066,.081,.04],[-.535,.235,z]);if(lod<3)for(let i=0;i<=24;i++)B(root,m.white,[i%4===0?.022:.013,.0005,.0012],[-.535,.270,-.286+i*.0238],M.id(),0);C(root,m.dark,.277,.017,[-.40,.478,0],M.rz(Math.PI/2));C(root,m.machine,.303,.0115,[-.40,.592,0],M.rz(Math.PI/2));if(lod<3){let prev;for(let i=0;i<200;i++){let a=i/200*Math.PI*44,p=[-.40+.0128*Math.cos(a),.435+i/200*.287,.0128*Math.sin(a)];if(prev)D(root,m.edge,prev,p,.00085,4);prev=p}}B(root,m.machine,[.048,.053,.055],[-.4,.714,0]);C(root,m.machine,.141,.009,[-.4,.723,0],M.ry(-Math.PI/2));B(root,m.paint,[.196,.026,.056],[-.449,.292,0],M.rz(.11));C(root,m.machine,.165,.006,[-.40,.48,.015],M.ry(-Math.PI/2));C(root,m.machine,.13,.005,[-.48,.297,.015],M.ry(-Math.PI/2));let wheel1=root.child(),wheel2=root.child();for(let[g,r]of[[wheel1,.044],[wheel2,.03]]){O(g,m.brass,r,.004,[0,0,0],M.ry(-Math.PI/2));C(g,m.brass,.018,.01,[0,0,0],M.ry(-Math.PI/2));for(let i=0;i<5;i++){let a=i*Math.PI*.4;D(g,m.brass,[.006*Math.cos(a),.006*Math.sin(a),0],[r*.94*Math.cos(a),r*.94*Math.sin(a),0],.0026)}C(g,m.machine,.019,.0033,[r*.72,.002,.012],M.ry(-Math.PI/2))}
+let can=root.child();can.matrix=M.tr(-.475,.165,.515);for(let z of[-.097,.097])B(can,m.paint,[.31,.266,.004],[0,0,z],M.id(),.002);for(let x of[-.153,.153])B(can,m.paintDark,[.004,.266,.194],[x,0,0]);B(can,m.paintDark,[.306,.008,.194],[0,-.131,0]);for(let z of[-.098,.098])B(can,m.paint,[.323,.012,.010],[0,.133,z]);for(let x of[-.157,.157])B(can,m.paint,[.010,.012,.207],[x,.133,0]);can.add(m.canText,plane(.254,.126),M.tr(0,.008,.0995));B(can,m.dark,[.278,.016,.153],[0,-.07,0]);B(can,m.primer,[.037,.024,.001],[-.121,-.108,.1],M.rz(.2));B(can,m.machine,[.017,.009,.0014],[-.132,-.115,.1006],M.rz(.2),0);let lid=can.child();lid.matrix=compose(M.tr(0,.136,-.096),M.rx(-1.21),M.tr(0,0,.098));B(lid,m.paint,[.326,.011,.211],[0,0,0],M.id(),.003);B(lid,m.paintDark,[.297,.004,.174],[0,-.009,0]);for(let x of[-.06,.06])D(lid,m.machine,[x,.014,-.003],[x,.06,-.003],.004);D(lid,m.paint,[-.06,.06,-.003],[.06,.06,-.003],.005);C(can,m.machine,.175,.004,[0,.135,-.1]);B(can,m.paint,[.015,.056,.039],[.161,.087,0]);B(can,m.machine,[.003,.032,.026],[.170,.09,0]);for(let i=0;i<4;i++)B(can,m.edge,[.001,.001,.014],[.172,.078+i*.006,.001*i],M.id(),0);
+if(lod<2)for(let p of ends)for(let i=0;i<6;i++)C(root,m.dust,.0018,.001+rand()*.001,V.add(p,[(rand()-.5)*.077,-.023,(rand()-.5)*.067]),M.rz(rand()*3),.0008,5);
+let caseGeo=lathe([[-.053,0],[-.053,.010],[-.05,.010],[-.049,.0088],[-.046,.0094],[.023,.008],[.031,.0065],[.044,.0065]],rs),bullet=lathe([[.042,.00625],[.061,.00625],[.073,.0054],[.084,.0031],[.091,0]],rs),link=new Geo;for(let x of[-.03,.006])link.add(ring(.010,.0016,Math.max(7,rs),4,.1,Math.PI*1.7),M.tr(x,0,0));link.add(box(.025,.003,.007,0),M.tr(-.016,-.010,.011));link.add(box(.016,.003,.011,0),M.tr(.007,-.01,-.009));let head=new Geo().add(disk(.0093,rs),compose(M.tr(-.0534,0,0),M.ry(Math.PI))),spent=new Geo().add(caseGeo);for(let i=0;i<spent.v.length;i+=8)if(spent.v[i]>.03){let a=Math.atan2(spent.v[i+2],spent.v[i+1]),d=1-.08*Math.pow(Math.max(0,Math.cos(a+.3)),7);spent.v[i+1]*=d;spent.v[i+2]*=d}spent.add(tube(.009,.0065,.00555,rs),M.tr(.04,0,0));const mesh=(g,m)=>({g:R.upload(g),m});let belt=[mesh(caseGeo,m.brass),mesh(bullet,m.copper),mesh(link,m.links),mesh(head,m.head)],cases=[mesh(spent,m.brass),mesh(head,m.head),mesh(lathe([[.033,.0056],[.045,.0056]],rs),m.soot)],links=mesh(link,m.links);root.upload(R);return{root,yaw,gun,barrel,cover,bolt,handle,trigger,legs,pivots,wheel1,wheel2,belt,cases,links,floor:mesh(plane(100,100),m.ground),gm:M.id(),lod}}
+// --- конец кода модели ---
+  const R = { texture: (c) => c, upload: (g) => g };
+  const mats = materials(R);
+  const A = modelBuild(R, mats, lod);
+  A.wheel1.matrix = M.tr(-0.4, 0.48, 0.08);
+  A.wheel2.matrix = M.tr(-0.48, 0.297, 0.075);
+  return { A, mats };
+}
+function gunMicro(mat, paint) {
+  mat.onBeforeCompile = (sh) => {
+    sh.vertexShader = sh.vertexShader.replace("#include <common>", "#include <common>\nvarying vec3 vGP;").replace("#include <begin_vertex>", "#include <begin_vertex>\nvGP = position;");
+    sh.fragmentShader = sh.fragmentShader.replace("#include <common>", `#include <common>
+varying vec3 vGP;
+float gh3(vec3 p){ p = fract(p * 0.3183099 + 0.1); p *= 17.0; return fract(p.x * p.y * p.z * (p.x + p.y + p.z)); }
+float gn3(vec3 x){ vec3 i = floor(x), f = fract(x); f = f * f * (3.0 - 2.0 * f);
+  return mix(mix(mix(gh3(i), gh3(i + vec3(1,0,0)), f.x), mix(gh3(i + vec3(0,1,0)), gh3(i + vec3(1,1,0)), f.x), f.y),
+             mix(mix(gh3(i + vec3(0,0,1)), gh3(i + vec3(1,0,1)), f.x), mix(gh3(i + vec3(0,1,1)), gh3(i + vec3(1,1,1)), f.x), f.y), f.z); }`)
+      .replace("#include <color_fragment>", `#include <color_fragment>
+  float gFine = gn3(vGP * 260.0), gMid = gn3(vGP * 38.0 + 7.0), gBig = gn3(vGP * 7.0 + 3.0);
+  float gWear = smoothstep(0.62, 0.8, gMid * 0.6 + gBig * 0.4);
+  diffuseColor.rgb *= 0.86 + 0.2 * gFine;
+  diffuseColor.rgb = mix(diffuseColor.rgb, diffuseColor.rgb * ${paint ? "vec3(1.35, 1.3, 1.2)" : "vec3(1.5)"}, gWear * ${paint ? "0.55" : "0.4"});
+  diffuseColor.rgb *= 1.0 - 0.25 * smoothstep(0.55, 0.9, gn3(vGP * 16.0 + 11.0)) * (1.0 - gWear);`)
+      .replace("#include <roughnessmap_fragment>", `#include <roughnessmap_fragment>
+  roughnessFactor = clamp(roughnessFactor * (0.8 + 0.4 * gFine) - gWear * ${paint ? "0.25" : "0.18"} + 0.12 * smoothstep(0.5, 0.9, gBig), 0.12, 1.0);`)
+      .replace("#include <metalnessmap_fragment>", `#include <metalnessmap_fragment>
+  ${paint ? "metalnessFactor = mix(metalnessFactor, 0.75, gWear * 0.6);" : ""}`)
+      .replace("#include <normal_fragment_maps>", `#include <normal_fragment_maps>
+  { float e = 0.0012; vec3 q = vGP * 260.0;
+    vec3 gg = vec3(gn3(q + vec3(e * 260.0, 0, 0)) - gFine, gn3(q + vec3(0, e * 260.0, 0)) - gFine, gn3(q + vec3(0, 0, e * 260.0)) - gFine);
+    normal = normalize(normal - 0.35 * (mat3(viewMatrix) * gg)); }`);
+  };
+  mat.customProgramCacheKey = () => "gunMicro" + (paint ? 1 : 0);
+}
+function m2Proto(lod, hero = false) {
+  const { A } = m2Model(lod);
+  const lin = (c) => new THREE40.Color().setRGB(c[0], c[1], c[2], THREE40.LinearSRGBColorSpace);
+  const buckets = [new Map(), new Map(), new Map()];
+  const mul = (a, b) => new THREE40.Matrix4().fromArray(a).multiply(new THREE40.Matrix4().fromArray(b)).toArray();
+  const walk = (g, mtx, level) => {
+    for (const { m, g: geo } of g.meshes || []) {
+      if (!geo.i.length) continue;
+      const key = m.tex ? "tex:" + (m.tex.__id ??= Math.random()) : m.m > 0.5 ? "metal" : "paint";
+      const B2 = buckets[level];
+      if (!B2.has(key)) B2.set(key, { m, list: [] });
+      B2.get(key).list.push({ geo, mtx: mtx.slice(), col: lin(m.c) });
+    }
+    for (const c of g.children) {
+      const lv = c === A.yaw ? 1 : c === A.gun ? 2 : level;
+      const cm = c === A.yaw ? new THREE40.Matrix4().identity().toArray() : c === A.gun ? new THREE40.Matrix4().makeTranslation(0.14, 0, 0).toArray() : mul(mtx, c.matrix);
+      walk(c, cm, lv);
+    }
+  };
+  walk(A.root, new THREE40.Matrix4().identity().toArray(), 0);
+  const matCache = {};
+  const makeMat = (key, m) => {
+    if (matCache[key]) return matCache[key];
+    let mat;
+    if (m.tex) {
+      const t = new THREE40.CanvasTexture(m.tex);
+      t.colorSpace = THREE40.SRGBColorSpace;
+      t.anisotropy = 4;
+      mat = new THREE40.MeshStandardMaterial({ map: t, metalness: m.m * 0.6, roughness: m.r });
+    } else if (key === "metal") mat = new THREE40.MeshStandardMaterial({ vertexColors: true, metalness: 0.62, roughness: 0.42 });
+    else mat = new THREE40.MeshStandardMaterial({ vertexColors: true, metalness: 0.02, roughness: 0.74 });
+    if (hero && !m.tex) gunMicro(mat, key !== "metal");
+    return matCache[key] = mat;
+  };
+  const out = [[], [], []];
+  buckets.forEach((B2, level) => {
+    for (const [key, { m, list }] of B2) {
+      const geos = list.map(({ geo, mtx, col }) => {
+        const n2 = geo.v.length / 8, pos = new Float32Array(n2 * 3), nor = new Float32Array(n2 * 3), uv = new Float32Array(n2 * 2), cl = new Float32Array(n2 * 3);
+        for (let i = 0; i < n2; i++) {
+          pos.set(geo.v.slice(i * 8, i * 8 + 3), i * 3);
+          nor.set(geo.v.slice(i * 8 + 3, i * 8 + 6), i * 3);
+          uv.set(geo.v.slice(i * 8 + 6, i * 8 + 8), i * 2);
+          cl[i * 3] = col.r;
+          cl[i * 3 + 1] = col.g;
+          cl[i * 3 + 2] = col.b;
+        }
+        const bg = new THREE40.BufferGeometry();
+        bg.setAttribute("position", new THREE40.BufferAttribute(pos, 3));
+        bg.setAttribute("normal", new THREE40.BufferAttribute(nor, 3));
+        bg.setAttribute("uv", new THREE40.BufferAttribute(uv, 2));
+        bg.setAttribute("color", new THREE40.BufferAttribute(cl, 3));
+        bg.setIndex(geo.i.slice());
+        bg.applyMatrix4(new THREE40.Matrix4().fromArray(mtx));
+        return bg;
+      });
+      const merged = BGU40.mergeGeometries(geos, false);
+      geos.forEach((g) => g.dispose());
+      if (!merged) continue;
+      merged.computeBoundingSphere();
+      out[level].push({ geo: merged, mat: makeMat(key, m) });
+    }
+  });
+  return out;
+}
 var MG = { nests: [], plan: [], protoN: null, protoF: null, cur: null, bags: null, bagN: 0, bagList: [], aim: 0, fire: false, lastShot: -9, towers: [] };
+var MG_BELT = 100;
+var MG_RESERVE = 300;
+function mgTargetDir(x, z, tx, tz) {
+  return Math.atan2(tx - x, tz - z);
+}
 function inFireLane(x, z) {
   for (const pl of MG.plan) {
     if (pl.kind !== "ground") continue;
@@ -11552,8 +11695,429 @@ function inFireLane(x, z) {
   }
   return false;
 }
+function planMG() {
+  for (let k = 0; k < 4; k++) {
+    const phi = Math.PI / 4 + k * Math.PI / 2;
+    const [tx, tz] = lakeContour(phi, 6.5);
+    const [x, z] = findSpot(tx, tz, 2.4, { pathPad: 0.6, trenchPad: 2 });
+    MG.plan.push({ kind: "ground", x, z, face: mgTargetDir(x, z, 0, 0), name: "у озера" });
+    keep(x, z, 3);
+  }
+  for (const s of Object.values(SPAWNS)) {
+    for (const side2 of [-1, 1]) {
+      const tx = s.x + s.fx * 15 - s.fz * 10 * side2, tz = s.z + s.fz * 15 + s.fx * 10 * side2;
+      const [x, z] = findSpot(tx, tz, 2.4, { pathPad: 0.6, trenchPad: 2 });
+      MG.plan.push({ kind: "ground", x, z, face: mgTargetDir(x, z, 0, 0), name: "база " + s.name });
+      keep(x, z, 3);
+    }
+  }
+  for (const [sgn, name] of [[1, "D"], [-1, "A"]]) {
+    const s = SPAWNS[name];
+    const phi = (s.x > 0 ? Math.PI / 2 : -Math.PI / 2) + 0.55;
+    const [tx, tz] = lakeContour(phi, 12);
+    let [x, z] = findSpot(tx, tz, 2.6);
+    // не ставим вплотную к старым лабазам
+    for (let k = 0; k < 12 && LANDMARKS.stands.some((o) => Math.hypot(o.x - x, o.z - z) < 16); k++) [x, z] = findSpot(...lakeContour(phi + 0.12 * (k + 1), 12 + k), 2.6);
+    LANDMARKS.stands.push({ x, z, rot: Math.atan2(s.x - x, s.z - z), PH: 7.2, W: 1.25, tall: true });
+    keep(x, z, 3.2);
+    MG.towers.push({ x, z, sgn });
+  }
+  // ещё 6 гнёзд ближе к центру — на насыпных высотах, симметрично для обеих команд; смотрят через озеро друг на друга
+  for (const [tx, tz, hh] of [[-31, 31, 3.4], [-50, 6, 3], [6, 50, 3]]) {
+    const [x, z] = findSpot(tx, tz, 6.5, { sym: true, pathPad: 1, trenchPad: 3 });
+    for (const [mx, mz] of [[x, z], [-x, -z]]) {
+      const base = baseH(mx, mz);
+      MOUNDS.push({ x: mx, z: mz, r: 9.5, top: 2.6, h: hh, base });
+      keep(mx, mz, 7.5);
+      MG.plan.push({ kind: "ground", x: mx, z: mz, face: mgTargetDir(mx, mz, -mx, -mz), name: "высота", hill: true });
+    }
+  }
+}
+function buildMG() {
+  MG.protoN = m2Proto(2);
+  MG.protoF = m2Proto(4);
+  MG.protoH = m2Proto(1, true);
+  const byId = (id) => HOUSES.find((h) => h.id === id);
+  const dining = byId("dining"), lodge = byId("lodge");
+  if (dining && lodge) {
+    MG.plan.push({ kind: "roof", house: dining, face: mgTargetDir(dining.x, dining.z, lodge.x, lodge.z), name: "крыша столовой" });
+    MG.plan.push({ kind: "roof", house: lodge, face: mgTargetDir(lodge.x, lodge.z, dining.x, dining.z), name: "крыша турбазы" });
+  }
+  const R2 = rng(7707);
+  for (const pl of MG.plan) (pl.kind === "roof" ? roofNest : groundNest)(pl, R2);
+  buildMGFar();
+  buildBagMesh();
+  buildTracers();
+  buildCasings();
+  console.info(`[mg] гнёзд: ${MG.nests.length}, мешков: ${MG.bagList.length}`);
+}
+var _mgZ = new THREE40.Matrix4().makeScale(0, 0, 0);
+function buildMGFar() {
+  const off = new THREE40.Matrix4().makeTranslation(-0.19, 0.73, 0), byMat = /* @__PURE__ */ new Map();
+  MG.protoF.forEach((list, level) => {
+    for (const { geo, mat } of list) {
+      const g = geo.clone();
+      if (level > 0) g.applyMatrix4(off);
+      if (!byMat.has(mat)) byMat.set(mat, []);
+      byMat.get(mat).push(g);
+    }
+  });
+  MG.far = [];
+  for (const [mat, geos] of byMat) {
+    const g = BGU40.mergeGeometries(geos, false);
+    if (!g) continue;
+    const im = new THREE40.InstancedMesh(g, mat, MG.nests.length);
+    im.castShadow = true;
+    im.receiveShadow = true;
+    im.name = "mgFar";
+    for (let i = 0; i < MG.nests.length; i++) im.setMatrixAt(i, _mgZ);
+    scene.add(im);
+    MG.far.push(im);
+  }
+  MG.nests.forEach((N, i) => N.farI = i);
+}
+function mgFarSet(N, on) {
+  if (on) N.root.updateMatrixWorld(true);
+  for (const im of MG.far) {
+    im.setMatrixAt(N.farI, on ? N.root.matrixWorld : _mgZ);
+    im.instanceMatrix.needsUpdate = true;
+    im.boundingSphere = null;
+  }
+}
+function bagGeometry(sx = 6, sy = 2, sz = 4) {
+  const g = new THREE40.BoxGeometry(0.5, 0.16, 0.3, sx, sy, sz), p = g.attributes.position;
+  for (let i = 0; i < p.count; i++) {
+    let x = p.getX(i), y = p.getY(i), z = p.getZ(i);
+    const ax = Math.abs(x / 0.25), az = Math.abs(z / 0.15), ay = Math.abs(y / 0.08);
+    y *= 1 - 0.38 * Math.pow(ax, 3) - 0.3 * Math.pow(az, 3);
+    x *= 1 - 0.1 * ay * ay;
+    z *= 1 - 0.14 * ay * ay;
+    if (y > 0) y -= 0.012 * Math.cos(x * 9) * (1 - ax);
+    p.setXYZ(i, x, y, z);
+  }
+  g.computeVertexNormals();
+  return g;
+}
+function nestBag(N, x, y, z, rot, row) {
+  const b = { nest: N, i: MG.bagList.length, pos: new THREE40.Vector3(x, y, z), rot, row, hp: 1, alive: true, sup: [], tilt: [sr(-0.06, 0.06), sr(-0.05, 0.05)], leak: 0, col: null, tint: sr(0.82, 1.08) };
+  b.col = addBox(x, y, z, 0.5, 0.17, 0.3, rot, { walk: true });
+  b.col.nestBag = b;
+  N.bags.push(b);
+  MG.bagList.push(b);
+  return b;
+}
+function bagRing(N, cx, cz, baseY, R3, rowsSide, rowsFront, gapH, gapW, face, R2) {
+  const n2 = Math.round(TAU * R3 / 0.5), gapA = Math.PI / 2 - gapH, frontA = Math.PI / 2 - face;
+  for (let r = 0; r < rowsSide; r++) {
+    for (let i = 0; i < n2; i++) {
+      const a = (i + (r % 2) * 0.5) / n2 * TAU;
+      if (Math.abs((a - gapA + Math.PI * 3) % TAU - Math.PI) < gapW / 2) continue;
+      const front = Math.abs((a - frontA + Math.PI * 3) % TAU - Math.PI) < 0.95;
+      if (front && r >= rowsFront) continue;
+      const x = cx + Math.cos(a) * R3, z = cz + Math.sin(a) * R3;
+      const y = (baseY ?? hFast(x, z)) + 0.08 + r * 0.155;
+      nestBag(N, x, y, z, -a - Math.PI / 2 + R2.range(-0.08, 0.08), r);
+    }
+  }
+}
+function linkBags(N) {
+  for (const b of N.bags) {
+    if (b.row === 0) continue;
+    for (const c of N.bags) if (c.row === b.row - 1 && Math.hypot(c.pos.x - b.pos.x, c.pos.z - b.pos.z) < 0.46) b.sup.push(c);
+  }
+}
+function makeNest(pl, x, z, y, face) {
+  const N = { ...pl, x, z, y, face, bags: [], hp: 1, dead: false, ammo: MG_BELT, reserve: MG_RESERVE, reload: 0, yaw: face, pitch: 0, heat: 0, kick: 0, flashT: 0 };
+  const fx = Math.sin(face), fz = Math.cos(face);
+  N.gx = x + fx * 0.35;
+  N.gz = z + fz * 0.35;
+  N.gy = y;
+  N.root = new THREE40.Group();
+  N.root.position.set(N.gx, N.gy, N.gz);
+  N.root.rotation.y = face - Math.PI / 2;
+  N.yawG = new THREE40.Group();
+  N.yawG.position.set(-0.19, 0.73, 0);
+  N.gunG = new THREE40.Group();
+  N.yawG.add(N.gunG);
+  N.root.add(N.yawG);
+  N.lodMeshes = [[], [], []];
+  // 2 — «геройская» детализация: только у пулемёта, за которым стоит игрок
+  for (const [li, proto] of [[0, MG.protoN], [1, MG.protoF], [2, MG.protoH]]) {
+    // дальняя детализация — общая пачка инстансов на все гнёзда (см. buildMGFar)
+    if (li === 1) continue;
+    proto.forEach((list, level) => {
+      for (const { geo, mat } of list) {
+        const m = new THREE40.Mesh(geo, mat);
+        m.castShadow = true;
+        m.receiveShadow = true;
+        m.visible = li === 0;
+        (level === 0 ? N.root : level === 1 ? N.yawG : N.gunG).add(m);
+        N.lodMeshes[li].push(m);
+      }
+    });
+  }
+  N.lod = 0;
+  scene.add(N.root);
+  // корпус пулемёта ловит пули и мешает пройти сквозь станок
+  N.col = addBox(N.gx + fx * 0.3, N.gy + 0.5, N.gz + fz * 0.3, 0.55, 1, 1.5, face, { walk: false });
+  N.col.mgGun = N;
+  // дульное пламя создаём заранее: его шейдер компилируется при загрузке, а не на первом выстреле
+  makeFlash(N);
+  MG.nests.push(N);
+  return N;
+}
+function groundNest(pl, R2) {
+  const { x, z, face } = pl, y = hFast(x, z);
+  const N = makeNest(pl, x, z, y, face);
+  bagRing(N, x, z, null, 1.85, 5, 3, face + Math.PI, 1.15, face, R2);
+  linkBags(N);
+  // пол из досок и ящики с лентами
+  const fx = Math.sin(face), fz = Math.cos(face);
+  box(M.planksDark, x - fx * 0.7, hFast(x - fx * 0.7, z - fz * 0.7) + 0.02, z - fz * 0.7, 1.4, 0.04, 1.1, { rot: face, tile: 1 });
+  for (let i = 0; i < 3; i++) {
+    const a = face + Math.PI + sr(-1.3, 1.3), r = sr(0.9, 1.4), px = x + Math.sin(a) * r, pz = z + Math.cos(a) * r;
+    box(M.olive, px, hFast(px, pz) + 0.09 + (i === 2 ? 0.18 : 0), pz, 0.3, 0.18, 0.16, { rot: R2() * TAU, tile: 1 });
+  }
+  casings(x + fz * 0.4, z - fx * 0.4, 60, true, R2, 0.8, face);
+}
+function roofNest(pl, R2) {
+  const h = pl.house, S = h.struct, c = Math.cos(h.rot), s = Math.sin(h.rot);
+  const P2 = (lx, lz) => [h.x + lx * c + lz * s, h.z - lx * s + lz * c];
+  const topY = h.top + 0.12, lx0 = h.w / 2 + 0.45 - 1.9, slope = Math.tan(h.pitch ?? 0.6);
+  const [x, z] = P2(lx0, 0);
+  const rafters = S.panels.filter((p) => p.kind === "roof" && p.lx !== void 0);
+  beginStruct({ kind: "roofnest", name: pl.name, x, z, rot: h.rot, w: 3.6, d: 3.6, h: 1, fy: topY, fuel: 0.6 });
+  const deck = panel("roof", { hp: 3, mode: "rigid", density: 500, sup: { list: rafters.filter((p) => Math.abs(p.lx - lx0) < 2.4), frac: 0.5 } });
+  box(M.planksDark, x, topY, z, 3.8, 0.08, 3.8, { rot: h.rot, tile: 1.2 });
+  addBox(x, topY - 0.02, z, 3.8, 0.14, 3.8, h.rot, { walk: true });
+  for (const e of [-1, 1]) for (const f of [-1, 1]) {
+    const [px, pz] = P2(lx0 + e * 1.7, f * 1.7);
+    beam(M.planksDark, V(px, topY, pz), V(px, h.top - 1.7 * slope, pz), 0.06, { seg: 5 });
+  }
+  // лестница по наружной стороне фронтона, за свесом кровли
+  const [lxw, lzw] = P2(h.w / 2 + 0.55, 0.6), lnx = c, lnz = -s;
+  ladderGeo(M.planksDark, lxw, lzw, h.fy - 0.4, topY, s, c, 0.5);
+  addBox(lxw, (h.fy - 0.4 + topY + 0.9) / 2, lzw, 0.08, topY - h.fy + 1.3, 0.56, h.rot, { walk: false });
+  const [ex, ez] = P2(h.w / 2 - 0.5, 0.6);
+  addLadder({ x: lxw, z: lzw, nx: lnx, nz: lnz, y0: h.fy - 0.4, y1: topY + 0.04, w: 0.5, exit: [ex, topY + 0.06, ez], metal: false });
+  endStruct();
+  const N = makeNest(pl, x, z, topY + 0.04, pl.face);
+  N.deck = deck;
+  deck.onKill = () => nestCollapse(N, null);
+  bagRing(N, x, z, topY + 0.04, 1.55, 3, 2, Math.atan2(c, -s), 1.05, pl.face, R2);
+  linkBags(N);
+}
+var BAG_GEO = null;
+var _bm = new THREE40.Matrix4();
+var _bq = new THREE40.Quaternion();
+var _be = new THREE40.Euler();
+var _bs = new THREE40.Vector3();
+var _bc = new THREE40.Color();
+function buildBagMesh() {
+  BAG_GEO = bagGeometry();
+  // дальше 35 м мешок — «подушка» из 3×1×2 сегментов: 176 → 44 треугольника, на таком расстоянии разницы не видно
+  MG.bagLo = bagGeometry(3, 1, 2);
+  // своя пачка мешков у каждого гнезда: тень и кадр отсекают дальние гнёзда целиком
+  // (раньше все ~1200 мешков карты рисовались в каждом проходе тени)
+  const byNest = /* @__PURE__ */ new Map();
+  for (const b of MG.bagList) {
+    if (!byNest.has(b.nest)) byNest.set(b.nest, []);
+    byNest.get(b.nest).push(b);
+  }
+  for (const list of byNest.values()) {
+    const im3 = new THREE40.InstancedMesh(BAG_GEO, M.sack, list.length);
+    im3.castShadow = true;
+    im3.receiveShadow = true;
+    im3.name = "nestBags";
+    list[0].nest.bagIM = im3;
+    list.forEach((b, j) => {
+      b.im = im3;
+      b.j = j;
+      writeBag(b);
+      im3.setColorAt(j, _bc.setRGB(b.tint, b.tint * 0.97, b.tint * 0.88));
+    });
+    im3.instanceMatrix.needsUpdate = true;
+    im3.computeBoundingSphere();
+    scene.add(im3);
+    MG.bags ??= im3;
+  }
+}
+function writeBag(b) {
+  if (!b.alive) _bm.makeScale(0, 0, 0).setPosition(b.pos);
+  else {
+    const k = 0.45 + 0.55 * b.hp;
+    _be.set(b.tilt[0] * (2 - b.hp), b.rot, b.tilt[1] * (2 - b.hp), "YXZ");
+    _bq.setFromEuler(_be);
+    _bs.set(1 + (1 - b.hp) * 0.12, k, 1 + (1 - b.hp) * 0.18);
+    _bm.compose(_v40.set(b.pos.x, b.pos.y - 0.08 * (1 - k), b.pos.z), _bq, _bs);
+  }
+  b.im.setMatrixAt(b.j, _bm);
+  b.im.instanceMatrix.needsUpdate = true;
+  b.im.boundingSphere = null;
+}
+var _v40 = new THREE40.Vector3();
+var _v41 = new THREE40.Vector3();
 var _v42 = new THREE40.Vector3();
+var SAND = [0.62, 0.53, 0.37];
+function sandBurst(p, dir2, n2 = 10, big = 1) {
+  for (let i = 0; i < n2; i++) FX.dirt.spawn({ x: p.x, y: p.y, z: p.z, vx: -dir2.x * sr(0.5, 2.5) * big + sr(-0.8, 0.8), vy: sr(0.3, 2.4) * big, vz: -dir2.z * sr(0.5, 2.5) * big + sr(-0.8, 0.8), size: sr(0.015, 0.04), life: sr(0.8, 1.6), col: SAND, a: 0.95, grav: 9.8, floor: hFast(p.x, p.z) });
+  for (let i = 0; i < 2 + big * 2; i++) FX.alpha.spawn({ x: p.x, y: p.y, z: p.z, vx: -dir2.x * 0.6 + sr(-0.3, 0.3), vy: sr(0.1, 0.5), vz: -dir2.z * 0.6 + sr(-0.3, 0.3), size: sr(0.2, 0.45) * big, grow: 0.9, life: sr(1, 2.2), col: [0.6, 0.54, 0.42], a: 0.35, drag: 2, windK: 0.6 });
+}
+var FALLING_BAGS = [];
+function dropBag(b, vel) {
+  if (!b.alive) return;
+  b.alive = false;
+  b.col.dead = true;
+  removeStaticCollider(b.col);
+  writeBag(b);
+  for (const o of b.nest.bags) if (o.alive && o.sup.length && o.sup.every((q) => !q.alive)) FALLING_BAGS.push({ b: o, t: sr(0.05, 0.3), v: vel.clone().multiplyScalar(0.4) });
+  if (!PHYS.ready) return;
+  const mesh = new THREE40.Mesh(BAG_GEO, M.sack);
+  const k = 0.45 + 0.55 * Math.max(0.2, b.hp);
+  mesh.scale.set(1.05, k, 1.1);
+  mesh.castShadow = true;
+  scene.add(mesh);
+  _be.set(0, b.rot, 0, "YXZ");
+  const body = addBody({
+    shape: "box", size: [0.48, 0.15 * k, 0.28], mass: 18 * k, pos: b.pos.clone(), quat: new THREE40.Quaternion().setFromEuler(_be),
+    vel, ang: new THREE40.Vector3(sr(-1.5, 1.5), sr(-1, 1), sr(-1.5, 1.5)),
+    life: sr(50, 80), friction: 1, restitution: 0.02, damp: [0.2, 0.6], float: 0, rad: 0.07,
+    onDone: () => scene.remove(mesh),
+    sync: (q, r, f) => { mesh.position.copy(q); mesh.quaternion.copy(r); if (f < 1) mesh.scale.setScalar(Math.max(0.01, f)); }
+  });
+  if (!body) scene.remove(mesh);
+}
+function nestCollapse(N, from, power = 5) {
+  for (const b of N.bags) {
+    if (!b.alive) continue;
+    const d = from ? _v41.subVectors(b.pos, from) : _v41.set(sr(-1, 1), 0.3, sr(-1, 1));
+    const L = Math.max(0.4, d.length());
+    d.normalize();
+    const v = d.multiplyScalar(from ? power * 2.2 / L : 1).add(_v42.set(sr(-0.6, 0.6), from ? sr(1, 3) / L : 0, sr(-0.6, 0.6)));
+    b.hp = Math.min(b.hp, sr(0.3, 0.9));
+    dropBag(b, v.clone());
+    if (Math.random() < 0.4) sandBurst(b.pos, d.clone().negate(), 6, 1.4);
+  }
+  if (!N.dead) destroyGun(N, from || N.root.position.clone(), 4);
+}
+function destroyGun(N, from, force) {
+  if (N.dead) return;
+  N.dead = true;
+  N.hp = 0;
+  N.smoke = 14;
+  if (MG.cur === N) mgDismount();
+  // вдали пулемёт нарисован общим инстансом — для обломков нужна своя модель
+  if (N.lod !== 0) {
+    for (let li = 0; li < 3; li++) N.lodMeshes[li].forEach((m) => m.visible = li === 0);
+    if (N.lod === 1) mgFarSet(N, false);
+    N.lod = 0;
+  }
+  N.col.dead = true;
+  removeStaticCollider(N.col);
+  const wp = new THREE40.Vector3(), wq = new THREE40.Quaternion();
+  N.root.updateMatrixWorld(true);
+  N.yawG.getWorldPosition(wp);
+  N.yawG.getWorldQuaternion(wq);
+  const piece = new THREE40.Group();
+  for (const m of N.yawG.children.concat(N.gunG.children)) if (m.isMesh && m.visible) {
+    const c = m.clone();
+    if (m.parent === N.gunG) c.applyMatrix4(new THREE40.Matrix4().makeRotationZ(N.gunG.rotation.z));
+    piece.add(c);
+  }
+  N.yawG.visible = false;
+  scene.add(piece);
+  piece.position.copy(wp);
+  piece.quaternion.copy(wq);
+  const dir2 = new THREE40.Vector3().subVectors(wp, from);
+  dir2.y = Math.max(0.4, dir2.y);
+  dir2.normalize();
+  const b = PHYS.ready ? addBody({
+    shape: "box", size: [1.3, 0.3, 0.3], mass: 38, pos: wp.clone().add(new THREE40.Vector3(0, 0.15, 0)), quat: wq,
+    vel: dir2.multiplyScalar(force), ang: new THREE40.Vector3(sr(-3, 3), sr(-2, 2), sr(-3, 3)), keep: true,
+    friction: 0.8, restitution: 0.15, damp: [0.1, 0.3], rad: 0.12,
+    sync: (q, r) => { piece.position.copy(q); piece.quaternion.copy(r); }
+  }) : null;
+  if (!b) {
+    piece.position.y -= 0.5;
+    piece.rotation.z += 0.8;
+  }
+  N.root.rotation.x = sr(0.5, 1.2) * (Math.random() < 0.5 ? -1 : 1);
+  N.root.position.y -= 0.12;
+  sparksAt(wp, dir2, 20);
+  metalHitSound(camera.position.distanceTo(wp), 1.6);
+  woodCrack(camera.position.distanceTo(wp), 0, 0.5);
+  toast(`пулемёт уничтожен · ${N.name}`);
+}
+var sparksAt = function(){};
+function mgDismount() {
+  const N = MG.cur;
+  if (!N) return;
+  MG.cur = null;
+  MG.fire = false;
+  MG.ads = false;
+  N.recP = N.recY = N.recZ = 0;
+  poseGun(N);
+  $("#cross").style.visibility = "";
+  camera.fov = MG.fov0 || 72;
+  camera.updateProjectionMatrix();
+  PL.pos.set(N.gx - Math.sin(N.yaw) * 1.05, N.gy + 0.02, N.gz - Math.cos(N.yaw) * 1.05);
+  PL.pitch = clamp(PL.pitch, -0.6, 0.6);
+  PL.onGround = true;
+}
 var angDiff = (a, b) => Math.atan2(Math.sin(a - b), Math.cos(a - b));
+function poseGun(N) {
+  N.yawG.rotation.y = N.yaw - N.face + (N.recY || 0);
+  N.gunG.rotation.z = N.pitch + N.kick * 0.6 + (N.recP || 0);
+  N.gunG.position.x = -N.kick * 0.25 - (N.recZ || 0);
+}
+var _flashTex = null;
+function flashTex() {
+  if (_flashTex) return _flashTex;
+  const [c, x] = cv(128);
+  const g = x.createRadialGradient(64, 64, 0, 64, 64, 64);
+  g.addColorStop(0, "rgba(255,250,230,1)");
+  g.addColorStop(0.15, "rgba(255,210,120,0.9)");
+  g.addColorStop(0.5, "rgba(255,120,30,0.25)");
+  g.addColorStop(1, "rgba(255,80,0,0)");
+  x.fillStyle = g;
+  x.fillRect(0, 0, 128, 128);
+  x.globalCompositeOperation = "lighter";
+  for (let i = 0; i < 7; i++) {
+    x.save();
+    x.translate(64, 64);
+    x.rotate(i / 7 * TAU + 0.3);
+    const gg = x.createLinearGradient(0, 0, 60, 0);
+    gg.addColorStop(0, "rgba(255,230,160,0.9)");
+    gg.addColorStop(1, "rgba(255,120,20,0)");
+    x.fillStyle = gg;
+    x.beginPath();
+    x.moveTo(0, -5);
+    x.lineTo(62, 0);
+    x.lineTo(0, 5);
+    x.fill();
+    x.restore();
+  }
+  _flashTex = new THREE40.CanvasTexture(c);
+  _flashTex.colorSpace = THREE40.SRGBColorSpace;
+  return _flashTex;
+}
+var _flashMat = null;
+function makeFlash(N) {
+  const mat = _flashMat ??= new THREE40.MeshBasicMaterial({ map: flashTex(), color: new THREE40.Color(3, 2.2, 1.4), transparent: true, blending: THREE40.AdditiveBlending, depthWrite: false, side: THREE40.DoubleSide, toneMapped: false });
+  const g = new THREE40.Group();
+  const cross = new THREE40.Mesh(new THREE40.PlaneGeometry(0.42, 0.42).rotateY(Math.PI / 2), mat);
+  g.add(cross);
+  for (const r of [0, Math.PI / 2]) {
+    const q = new THREE40.Mesh(new THREE40.PlaneGeometry(0.7, 0.26).rotateX(r), mat);
+    q.position.x = 0.3;
+    g.add(q);
+  }
+  g.position.set(1.28, 0.155, 0);
+  g.visible = false;
+  g.renderOrder = 8;
+  N.gunG.add(g);
+  N.flash = g;
+}
 var REED = { im: null, pts: null, grid: null, cut: null };
 function indexReeds(im3, pts) {
   REED.im = im3;
@@ -11566,6 +12130,55 @@ function indexReeds(im3, pts) {
     REED.grid.get(k).push(i);
   });
 }
+var TRC = { mesh: null, A: null, B: null, C: null, max: 160 };
+function buildTracers() {
+  const g = new THREE40.InstancedBufferGeometry();
+  g.setAttribute("position", new THREE40.Float32BufferAttribute([0, -1, 0, 1, -1, 0, 1, 1, 0, 0, 1, 0], 3));
+  g.setIndex([0, 1, 2, 0, 2, 3]);
+  TRC.A = new Float32Array(TRC.max * 3);
+  TRC.B = new Float32Array(TRC.max * 3);
+  TRC.C = new Float32Array(TRC.max * 4);
+  g.setAttribute("aA", new THREE40.InstancedBufferAttribute(TRC.A, 3).setUsage(THREE40.DynamicDrawUsage));
+  g.setAttribute("aB", new THREE40.InstancedBufferAttribute(TRC.B, 3).setUsage(THREE40.DynamicDrawUsage));
+  g.setAttribute("aC", new THREE40.InstancedBufferAttribute(TRC.C, 4).setUsage(THREE40.DynamicDrawUsage));
+  g.instanceCount = 0;
+  const m = new THREE40.ShaderMaterial({
+    vertexShader: `attribute vec3 aA, aB; attribute vec4 aC; varying vec2 vQ; varying vec4 vC;
+      void main(){
+        vec3 p = mix(aA, aB, position.x);
+        vec3 d = aB - aA; vec3 toCam = cameraPosition - p;
+        vec3 side = normalize(cross(d, toCam) + 1e-5);
+        float dist = length(toCam);
+        // толщина растёт с расстоянием медленнее перспективы: вдали трассер остаётся виден линией
+        float w = aC.w * mix(0.35, 1.0, position.x) * (1.0 + dist * 0.012);
+        p += side * position.y * w;
+        vQ = position.xy; vC = aC;
+        gl_Position = projectionMatrix * viewMatrix * vec4(p, 1.0);
+      }`,
+    fragmentShader: `varying vec2 vQ; varying vec4 vC;
+      void main(){
+        float core = exp(-vQ.y * vQ.y * 5.0);
+        float along = smoothstep(0.0, 0.9, vQ.x);
+        vec3 c = vC.rgb * core * (0.15 + along) + vec3(1.0, 0.95, 0.85) * pow(core, 6.0) * along * 1.5;
+        gl_FragColor = vec4(c, 1.0);
+      }`,
+    transparent: true, depthWrite: false, blending: THREE40.AdditiveBlending, toneMapped: false
+  });
+  TRC.mesh = new THREE40.Mesh(g, m);
+  TRC.mesh.frustumCulled = false;
+  TRC.mesh.renderOrder = 9;
+  scene.add(TRC.mesh);
+}
+var CAS = { im: null, list: [], max: 300, n: 0 };
+function buildCasings() {
+  const g = new THREE40.CylinderGeometry(0.0075, 0.01, 0.1, 7).rotateZ(Math.PI / 2);
+  const m = new THREE40.MeshStandardMaterial({ color: 12163189, metalness: 0.85, roughness: 0.32 });
+  CAS.im = new THREE40.InstancedMesh(g, m, CAS.max);
+  CAS.im.count = 0;
+  CAS.im.castShadow = false;
+  CAS.im.frustumCulled = false;
+  scene.add(CAS.im);
+}
 var _sv = new THREE40.Vector3();
 function panOf(p) {
   if (!p) return 0;
@@ -11573,6 +12186,7 @@ function panOf(p) {
   const r = _v42.set(1, 0, 0).applyQuaternion(camera.quaternion);
   return clamp(_sv.dot(r), -1, 1) * 0.8;
 }
+var metalHitSound = function(){};
 var SL = [];
 var SL_BEAM_L = 160;
 var SLOP = { cur: null, zoom: 0, zoomHeld: false, fov0: 72 };
@@ -11600,6 +12214,7 @@ await ctx.stage('planMilitary');planMilitary();
 await ctx.stage('planProps');planProps();
 await ctx.stage('planLamps');planLamps();
 await ctx.stage('planLandmarks');planLandmarks();
+await ctx.stage('planMG');planMG();
 await ctx.stage('planWrecks');planWrecks();
 await ctx.stage('buildHeightCache');buildHeightCache();
 await ctx.stage('buildTerrain');buildTerrain();
@@ -11615,6 +12230,7 @@ await ctx.stage('buildProps');buildProps();
 await ctx.stage('buildCrates');buildCrates();
 await ctx.stage('buildBigFlag');buildBigFlag();
 await ctx.stage('buildGlass');buildGlass();
+await ctx.stage('buildMG');buildMG();
 await ctx.stage('buildLamps');buildLamps();
 await ctx.stage('finishLamps');finishLamps();
 await ctx.stage('flushStatic');flushStatic();
@@ -11695,6 +12311,8 @@ function __extra() {
   return {
     hooks: __HK,
     ladders: LADDERS,
+    mg: MG,
+    mgFarSet: mgFarSet,
     crates: CRATES.map(function (c, i) { return { id: "depot" + i, kind: "ammo", name: c.name, x: c.x, y: hFast(c.x, c.z), z: c.z, r: 4.6 * (c.s || 1) }; }),
     bulletHit: function (p, dir, power) { return __bullet(p, dir, power || 1); },
     explode: function (p, o) { o = o || {}; var size = Math.min(3, Math.max(0.3, (o.power || 1) * (o.radius || 6) / 6)); onBlast(p.x, hFast(p.x, p.z), p.z, size, false, {}); },
